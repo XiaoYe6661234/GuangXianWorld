@@ -1,0 +1,44 @@
+{
+  "monsters": [
+    {
+      "name": "恶魔小兵",
+      "Lv": 1,
+      "imc": "https://xiaoye6661234.github.io/GuangXianWorld/Monster1.png",
+      "HP": 200,
+      "Beat": 15,
+      "Def": 0,
+      "exp": 75,
+      "money": 50
+    },
+    {
+      "name": "火焰兽",
+      "Lv": 2,
+      "imc": "https://xiaoye6661234.github.io/GuangXianWorld/Monster2.png",
+      "HP": 400,
+      "Beat": 25,
+      "Def": 5,
+      "exp": 150,
+      "money": 120
+    }
+  ],
+  "foods": [
+    {
+      "name": "披萨",
+      "HP": 50,
+      "imc": "https://xiaoye6661234.github.io/GuangXianWorld/Pizza.png"
+    },
+    {
+      "name": "面条",
+      "HP": 30,
+      "imc": "https://xiaoye6661234.github.io/GuangXianWorld/Noodle.png"
+    }
+  ],
+  "weapons": [
+    {
+      "name": "冰霜剑",
+      "hit": 10,
+      "imc": "https://xiaoye6661234.github.io/GuangXianWorld/Sword.png",
+      "Lv": 1
+    }
+  ]
+}

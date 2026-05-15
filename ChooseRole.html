@@ -1,96 +1,187 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>广仙世界 - 选择角色</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>选择角色</title>
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { background: #000; display: flex; justify-content: center; align-items: center; height: 100vh; width: 100vw; overflow: hidden; }
-        #app-container { width: 100vw; height: 56.25vw; max-height: 100vh; max-width: 177.78vh; position: relative; overflow: hidden; }
-        @media (orientation: portrait) { #app-container { transform: rotate(90deg) scale(1.7778); } }
+        body {
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            background: #000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
 
-        .role-bg { width: 100%; height: 100%; position: absolute; top: 0; left: 0; z-index: 0; object-fit: cover; }
-        .role-content { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; }
-        
-        .role-title { color: #fff; font-size: 4vw; text-shadow: 0 2px 8px rgba(0,0,0,0.8); margin-bottom: 2vw; font-weight: bold; letter-spacing: 2px; }
-        
-        .role-selection { display: flex; justify-content: space-around; width: 80%; max-width: 600px; }
-        .role-card { display: flex; flex-direction: column; align-items: center; background: rgba(255,255,255,0.3); backdrop-filter: blur(10px); padding: 2vw 3vw; border-radius: 20px; cursor: pointer; border: 2px solid transparent; transition: 0.2s; }
-        .role-card:hover { border-color: #fff; background: rgba(255,255,255,0.5); }
-        .role-card.selected { border: 3px solid #FFA500; box-shadow: 0 0 20px rgba(255,165,0,0.6); }
-        .role-card img { height: 20vw; display: block; margin-bottom: 1vw; }
-        .role-name { color: #fff; font-size: 2.5vw; text-shadow: 0 2px 4px rgba(0,0,0,0.8); }
+        .container {
+            width: 100vw;
+            height: 56.25vw;
+            max-height: 100vh;
+            max-width: 177.78vh;
+            position: relative;
+            background-image: url('https://xiaoye6661234.github.io/GuangXianWorld/Choose Character.png');
+            background-size: cover;
+            background-position: center;
+        }
 
-        .btn-container { position: absolute; bottom: 5vw; width: 100%; display: flex; justify-content: center; z-index: 2; }
-        .btn-confirm { padding: 1.5vw 8vw; background-color: #FFA500; border: none; border-radius: 8px; color: #fff; font-size: 2vw; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.4); }
-        .btn-confirm:active { transform: scale(0.95); }
+        .title {
+            position: absolute;
+            top: 5%;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 4vw;
+            color: white;
+            text-shadow: 2px 2px 4px black;
+            font-weight: bold;
+        }
+
+        .characters {
+            position: absolute;
+            top: 30%;
+            width: 80%;
+            left: 10%;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+        }
+
+        .char-box {
+            text-align: center;
+            cursor: pointer;
+        }
+
+        .char-box img {
+            height: 30vw;
+            border: 3px solid transparent;
+            border-radius: 10px;
+            transition: 0.3s;
+        }
+
+        .char-box.selected img {
+            border: 3px solid yellow;
+            box-shadow: 0 0 20px yellow;
+        }
+
+        .char-name {
+            color: white;
+            font-size: 3vw;
+            margin-top: 1vw;
+            text-shadow: 1px 1px 2px black;
+        }
+
+        .btn-confirm {
+            position: absolute;
+            bottom: 8%;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #ffaa00;
+            color: white;
+            font-size: 3vw;
+            padding: 1vw 8vw;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .btn-confirm:disabled {
+            background: #888;
+            cursor: not-allowed;
+        }
+
+        @media (orientation: portrait) {
+            .container {
+                transform: rotate(-90deg) scale(0.8);
+            }
+        }
     </style>
 </head>
 <body>
-    <div id="app-container">
-        <img src="https://xiaoye6661234.github.io/GuangXianWorld/Choose%20Character.png" class="role-bg">
-        <div class="role-content">
-            <div class="role-title">请选择角色</div>
-            <div class="role-selection">
-                <div class="role-card" data-char="Qing" onclick="selectRole(this)">
-                    <img src="https://xiaoye6661234.github.io/GuangXianWorld/Qing.png" alt="清">
-                    <div class="role-name">清</div>
-                </div>
-                <div class="role-card" data-char="Ming" onclick="selectRole(this)">
-                    <img src="https://xiaoye6661234.github.io/GuangXianWorld/Ming.png" alt="铭">
-                    <div class="role-name">铭</div>
-                </div>
+    <div class="container">
+        <div class="title">请选择角色</div>
+        <div class="characters">
+            <div class="char-box" id="charQing">
+                <img src="https://xiaoye6661234.github.io/GuangXianWorld/Qing.png" />
+                <div class="char-name">清</div>
             </div>
-            <div class="btn-container">
-                <button class="btn-confirm" onclick="confirmChoice()">确定</button>
+            <div class="char-box" id="charMing">
+                <img src="https://xiaoye6661234.github.io/GuangXianWorld/Ming.png" />
+                <div class="char-name">铭</div>
             </div>
         </div>
+        <button class="btn-confirm" id="confirmBtn">确定</button>
     </div>
-    <script>
-        let selected = 'Ming';
-        function selectRole(el) {
-            document.querySelectorAll('.role-card').forEach(c => c.classList.remove('selected'));
-            el.classList.add('selected');
-            selected = el.dataset.char;
-        }
-        function confirmChoice() {
-            // 读取已有数据，更新角色
-            const SALT = 'GuangXianWorldSecretKey';
-            function decryptData(str) {
-                try {
-                    const enc = atob(str); let dec = '';
-                    for (let i = 0; i < enc.length; i++) {
-                        dec += String.fromCharCode(enc.charCodeAt(i) ^ SALT.charCodeAt(i % SALT.length));
-                    }
-                    return JSON.parse(dec);
-                } catch(e){ return null; }
-            }
-            function encryptData(obj) {
-                const str = JSON.stringify(obj);
-                let enc = '';
-                for (let i = 0; i < str.length; i++) {
-                    enc += String.fromCharCode(str.charCodeAt(i) ^ SALT.charCodeAt(i % SALT.length));
-                }
-                return btoa(enc);
-            }
 
-            const stored = localStorage.getItem('guangxianUserData');
-            if (stored) {
-                const data = decryptData(stored);
-                if (data) {
-                    data.character = selected;
-                    localStorage.setItem('guangxianUserData', encryptData(data));
-                    window.location.href = 'PersonalInformation.html';
-                } else {
-                    alert('数据异常，请重新登录');
+    <script>
+        // ========== 修复：增加数据存在性检查，防止数据丢失 ==========
+        let selectedChar = '';
+
+        // 检查是否有数据，没有则跳转回登录
+        (function checkData() {
+            const raw = localStorage.getItem('GuangXianData');
+            if (!raw) {
+                alert('请先登录！');
+                window.location.href = 'Signin.html';
+                return;
+            }
+            try {
+                const parsed = JSON.parse(raw);
+                if (!parsed || !parsed.user) {
+                    alert('数据异常，请重新登录！');
                     window.location.href = 'Signin.html';
+                    return;
                 }
-            } else {
-                alert('请先登录/注册');
+                // 如果已有角色，直接跳转到完善信息
+                if (parsed.user.role) {
+                    window.location.href = 'PersonalInformation.html';
+                    return;
+                }
+            } catch (e) {
+                alert('数据损坏，请重新登录！');
                 window.location.href = 'Signin.html';
             }
-        }
+        })();
+
+        document.querySelectorAll('.char-box').forEach(box => {
+            box.addEventListener('click', function() {
+                document.querySelectorAll('.char-box').forEach(b => b.classList.remove('selected'));
+                this.classList.add('selected');
+                selectedChar = this.id === 'charQing' ? '清' : '铭';
+                // 音效
+                let click = new Audio('https://xiaoye6661234.github.io/GuangXianWorld/click.mp3');
+                click.play();
+            });
+        });
+
+        document.getElementById('confirmBtn').addEventListener('click', function() {
+            let click = new Audio('https://xiaoye6661234.github.io/GuangXianWorld/click.mp3');
+            click.play();
+
+            if (!selectedChar) {
+                alert('请选择一个角色！');
+                return;
+            }
+
+            // 读取数据并更新角色
+            let raw = localStorage.getItem('GuangXianData');
+            if (!raw) {
+                alert('数据错误，请重新登录！');
+                window.location.href = 'Signin.html';
+                return;
+            }
+            try {
+                let parsed = JSON.parse(raw);
+                parsed.user.role = selectedChar;
+                localStorage.setItem('GuangXianData', JSON.stringify(parsed));
+                // 跳转到完善个人信息
+                window.location.href = 'PersonalInformation.html';
+            } catch (e) {
+                alert('数据保存失败，请重新登录！');
+                window.location.href = 'Signin.html';
+            }
+        });
     </script>
 </body>
 </html>
