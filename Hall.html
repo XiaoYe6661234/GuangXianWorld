@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>广仙世界 - 大厅</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Ma Shan Zheng', cursive; }
+        body { background: #000; display: flex; justify-content: center; align-items: center; height: 100vh; width: 100vw; overflow: hidden; }
+        #app-container { width: 100vw; height: 56.25vw; max-height: 100vh; max-width: 177.78vh; position: relative; overflow: hidden; }
+        @media (orientation: portrait) { #app-container { transform: rotate(90deg) scale(1.7778); } }
+        
+        .hall-bg { width: 100%; height: 100%; position: absolute; top: 0; left: 0; object-fit: cover; z-index: 0; }
+        .hall-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; pointer-events: none; }
+        .hall-content { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 2; }
+
+        /* Top UI */
+        .btn-adventure { position: absolute; left: 2vw; top: 2vw; background: #FFA500; color: #fff; border: none; padding: 1.5vw 4vw; border-radius: 8px; font-size: 2.5vw; font-weight: bold; box-shadow: 0 4px 8px rgba(0,0,0,0.4); cursor: pointer; z-index: 3; pointer-events: auto; }
+        .top-center-coin { position: absolute; top: 3vw; left: 50%; transform: translateX(-50%); display: flex; align-items: center; gap: 1vw; background: rgba(0,0,0,0.3); padding: 0.5vw 2vw; border-radius: 20px; backdrop-filter: blur(5px); z-index: 3; pointer-events: auto; }
+        .coin-img { width: 3vw; height: 3vw; object-fit: contain; }
+        .coin-amount { color: #fff; font-size: 2.5vw; min-width: 5vw; text-align: center; }
+        .btn-plus { background: #666; color: #fff; border-radius: 50%; width: 2.5vw; height: 2.5vw; display: flex; align-items: center; justify-content: center; font-size: 2vw; cursor: pointer; border: none; pointer-events: auto; }
+
+        .top-right-icons { position: absolute; top: 2vw; right: 2vw; display: flex; gap: 1.5vw; z-index: 3; pointer-events: auto; }
+        .top-right-icons img { width: 3.5vw; height: 3.5vw; cursor: pointer; }
+
+        /* Bottom UI Profile */
+        .bottom-profile { position: absolute; bottom: 2vw; left: 2vw; display: flex; align-items: center; gap: 1.5vw; background: rgba(0,0,0,0.5); backdrop-filter: blur(5px); padding: 1vw 2vw; border-radius: 8px; z-index: 3; cursor: pointer; pointer-events: auto; }
+        .profile-avatar { width: 8vw; height: 8vw; background: #ccc; border: 2px solid #fff; overflow: hidden; border-radius: 4px; }
+        .profile-avatar img { width: 100%; height: 100%; object-fit: cover; }
+        .profile-info { display: flex; flex-direction: column; }
+        .profile-name { color: #fff; font-size: 2.5vw; }
+        .profile-level { color: #fff; font-size: 2vw; background: rgba(0,0,0,0.5); padding: 0.2vw 1vw; border-radius: 4px; display: inline-block; }
+
+        /* Modal Overlay */
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); display: none; justify-content: center; align-items: center; z-index: 100; pointer-events: auto; }
+        .modal-content { width: 60%; height: 60%; background: #faf5e6; background-image: url('https://xiaoye6661234.github.io/GuangXianWorld/Setting%20background.jpg'); background-size: cover; background-blend-mode: overlay; position: relative; border-radius: 8px; overflow: hidden; }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; padding: 1vw 2vw; border-bottom: 1px solid #ddd; }
+        .modal-header h2 { margin: 0; font-size: 2.5vw; }
+        .modal-close { font-size: 3vw; cursor: pointer; }
+        
+        .modal-body { padding: 2vw; height: calc(100% - 5vw); overflow-y: auto; }
+
+        /* Specific Modal Styles */
+        .notice-tabs { display: flex; gap: 2vw; margin-bottom: 1vw; }
+        .tab-item { font-size: 2vw; font-weight: bold; cursor: pointer; position: relative; }
+        .tab-active { color: #FFA500; }
+        .tab-active::after { content: ''; display: block; width: 100%; height: 4px; background: #FFA500; margin-top: 4px; }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+
+        .signin-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 1vw; }
+        .signin-day { background: #fff; border: 3px solid #FFA500; padding: 1vw; text-align: center; border-radius: 6px; }
+        .signin-day img { width: 4vw; height: 4vw; }
+        .btn-modal-action { width: 100%; padding: 1vw; background: #FFA500; color: #fff; border: none; font-size: 2vw; border-radius: 6px; margin-top: 1vw; cursor: pointer; }
+        
+        .profile-sidebar { display: flex; gap: 2vw; }
+        .profile-sidebar img { width: 12vw; height: 12vw; object-fit: cover; border-radius: 6px; }
+        .profile-details { display: flex; flex-direction: column; gap: 0.5vw; }
+        .profile-details h3 { font-size: 2.5vw; }
+        .p-tag { display: inline-block; background: rgba(0,0,0,0.7); color: #fff; padding: 0.2vw 1vw; border-radius: 4px; font-size: 1.8vw; }
+
+        .settings-control { display: flex; align-items: center; gap: 2vw; margin-bottom: 2vw; }
+        .settings-control input[type="range"] { flex: 1; }
+        .settings-control span { font-size: 1.5vw; min-width: 4vw; }
+        .btn-settings { background: #666; color: #fff; border: none; padding: 0.8vw 2vw; font-size: 1.5vw; border-radius: 4px; cursor: pointer; }
+        
+        .modal-bg-cover { width: 100%; height: 100%; background: rgba(255,255,255,0.9); position: absolute; top: 0; left: 0; }
+    </style>
+</head>
+<body>
+    <div id="app-container">
+        <img src="https://xiaoye6661234.github.io/GuangXianWorld/Lobby%20Background.png" class="hall-bg">
+        <div class="hall-content">
+            <button class="btn-adventure" onclick="window.location.href='index.html'">开始冒险!</button>
+            <div class="top-center-coin">
+                <img src="https://xiaoye6661234.github.io/GuangXianWorld/CuangXianCoin.png" class="coin-img">
+                <span class="coin-amount" id="coinDisplay">0</span>
+                <button class="btn-plus" onclick="openModal('shopModal')">+</button>
+            </div>
+            <div class="top-right-icons">
+                <img src="https://xiaoye6661234.github.io/GuangXianWorld/email.png" onclick="alert('邮件功能开发中')">
+                <img src="https://xiaoye6661234.github.io/GuangXianWorld/Notice.png" onclick="openModal('noticeModal')">
+                <img src="https://xiaoye6661234.github.io/GuangXianWorld/Volume%20on.png" id="volumeIcon" onclick="toggleVolume()">
+                <img src="https://xiaoye6661234.github.io/GuangXianWorld/setting.png" onclick="openModal('settingsModal')">
+            </div>
+            <div class="bottom-profile" onclick="openModal('profileModal')">
+                <div class="profile-avatar"><img src="https://xiaoye6661234.github.io/GuangXianWorld/Default%20avatar.jpg" id="avatarDisplay" alt="Avatar"></div>
+                <div class="profile-info">
+                    <div class="profile-name" id="nicknameDisplay">昵称</div>
+                    <div class="profile-level" id="levelDisplay">LV.1</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 模态框区域 -->
+    
+    <!-- 1. 公告/签到 -->
+    <div class="modal-overlay" id="noticeModal">
+        <div class="modal-content" style="background-image: url('https://xiaoye6661234.github.io/GuangXianWorld/Notice.png');">
+            <div class="modal-bg-cover"></div>
+            <div class="modal-header" style="position: relative; z-index: 2; background: transparent; border: none;">
+                <h2>公告</h2>
+                <span class="modal-close" onclick="closeModal('noticeModal')">×</span>
+            </div>
+            <div class="modal-body" style="position: relative; z-index: 2; display: flex; flex-direction: column;">
+                <div class="notice-tabs">
+                    <div class="tab-item tab-active" onclick="switchTab('announcement', this)">公告</div>
+                    <div class="tab-item" onclick="switchTab('signin', this)">签到</div>
+                </div>
+                <div id="tab-announcement" class="tab-content active" style="font-size: 1.8vw; line-height: 1.6;">
+                    广仙世界今天正式上架，所以，我们特意为所有用户们准备了1000广仙币作为福利!
+                    <br><br>
+                    <button class="btn-modal-action" onclick="alert('已领取 1000 广仙币！')">领取</button>
+                </div>
+                <div id="tab-signin" class="tab-content" style="font-size: 1.5vw;">
+                    <div class="signin-grid">
+                        <div class="signin-day"><div>Day1</div><img src="https://xiaoye6661234.github.io/GuangXianWorld/CuangXianCoin.png"><div>×100</div></div>
+                        <div class="signin-day"><div>Day2</div><img src="https://xiaoye6661234.github.io/GuangXianWorld/CuangXianCoin.png"><div>×100</div></div>
+                        <div class="signin-day"><div>Day3</div><img src="https://xiaoye6661234.github.io/GuangXianWorld/CuangXianCoin.png"><div>×150</div></div>
+                        <div class="signin-day"><div>Day4</div><img src="https://xiaoye6661234.github.io/GuangXianWorld/CuangXianCoin.png"><div>×150</div></div>
+                        <div class="signin-day"><div>Day5</div><img src="https://xiaoye6661234.github.io/GuangXianWorld/CuangXianCoin.png"><div>×250</div></div>
+                        <div class="signin-day"><div>Day6</div><img src="https://xiaoye6661234.github.io/GuangXianWorld/CuangXianCoin.png"><div>×250</div></div>
+                        <div class="signin-day"><div>Day7</div><img src="https://xiaoye6661234.github.io/GuangXianWorld/CuangXianCoin.png"><div>×250</div></div>
+                    </div>
+                    <button class="btn-modal-action" onclick="alert('签到成功！')">领取</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 2. 充值/商店 -->
+    <div class="modal-overlay" id="shopModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>充值广仙币</h2>
+                <span class="modal-close" onclick="closeModal('shopModal')">×</span>
+            </div>
+            <div class="modal-body" style="display: flex; gap: 2vw;">
+                <div>
+                    <h3>每日免费</h3>
+                    <div style="border: 3px solid #FFA500; padding: 1vw; display: inline-block;">
+                        <img src="https://xiaoye6661234.github.io/GuangXianWorld/CuangXianCoin.png" style="width: 8vw;">
+                        <div>×250</div>
+                    </div>
+                    <button class="btn-modal-action" style="width: auto; margin-top: 0.5vw;">领取</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 3. 设置 -->
+    <div class="modal-overlay" id="settingsModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>设置</h2>
+                <span class="modal-close" onclick="closeModal('settingsModal')">×</span>
+            </div>
+            <div class="modal-body">
+                <div class="settings-control">
+                    <span>背景音乐:</span>
+                    <input type="range" min="0" max="100" value="0" oninput="document.getElementById('bgmVal').innerText=this.value+'%'">
+                    <span id="bgmVal">0%</span>
+                </div>
+                <div class="settings-control">
+                    <span>音效设置:</span>
+                    <input type="range" min="0" max="100" value="0" oninput="document.getElementById('sfxVal').innerText=this.value+'%'">
+                    <span id="sfxVal">0%</span>
+                </div>
+                <div class="settings-control">
+                    <span>清除数据</span>
+                    <button class="btn-settings" onclick="clearData()">清除</button>
+                </div>
+                <div class="settings-control">
+                    <span>重置密码</span>
+                    <button class="btn-settings" onclick="window.location.href='Signin.html'">验证</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 4. 个人主页 -->
+    <div class="modal-overlay" id="profileModal">
+        <div class="modal-content" style="width: 70%; height: 70%;">
+            <div class="modal-header">
+                <h2>个人主页</h2>
+                <span class="modal-close" onclick="closeModal('profileModal')">×</span>
+            </div>
+            <div class="modal-body">
+                <div class="profile-sidebar">
+                    <img src="https://xiaoye6661234.github.io/GuangXianWorld/Default%20avatar.jpg" id="profileAvatarDisplay">
+                    <div class="profile-details">
+                        <h3 id="profileNickname">昵称</h3>
+                        <div><span class="p-tag" id="profileLevel">LV.0</span> <span class="p-tag" id="profileRegion">地区</span></div>
+                    </div>
+                </div>
+                <div style="margin-top: 2vw; font-size: 2vw;">
+                    你已经加入广仙世界 xxx 年了!
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 解密与数据加载
+        const SALT = 'GuangXianWorldSecretKey';
+        function decryptData(str) {
+            try {
+                const enc = atob(str); let dec = '';
+                for (let i = 0; i < enc.length; i++) {
+                    dec += String.fromCharCode(enc.charCodeAt(i) ^ SALT.charCodeAt(i % SALT.length));
+                }
+                return JSON.parse(dec);
+            } catch(e){ return null; }
+        }
+
+        let userData = null;
+        function loadData() {
+            const stored = localStorage.getItem('guangxianUserData');
+            if (stored) {
+                userData = decryptData(stored);
+                if (userData) {
+                    // Update UI
+                    document.getElementById('coinDisplay').innerText = userData.coins || 0;
+                    document.getElementById('nicknameDisplay').innerText = userData.nickname || '未设置';
+                    document.getElementById('levelDisplay').innerText = 'LV.' + (userData.level || 1);
+                    
+                    if (userData.avatarBase64) document.getElementById('avatarDisplay').src = userData.avatarBase64;
+                    if (userData.avatarBase64) document.getElementById('profileAvatarDisplay').src = userData.avatarBase64;
+                    document.getElementById('profileNickname').innerText = userData.nickname || '未设置';
+                    document.getElementById('profileLevel').innerText = 'LV.' + (userData.level || 1);
+                    document.getElementById('profileRegion').innerText = userData.region || '未设置';
+                }
+            } else {
+                window.location.href = 'Signin.html';
+            }
+        }
+        window.onload = loadData;
+
+        // Modal Controls
+        function openModal(id) { document.getElementById(id).style.display = 'flex'; }
+        function closeModal(id) { document.getElementById(id).style.display = 'none'; }
+        // Close on click outside
+        document.querySelectorAll('.modal-overlay').forEach(el => {
+            el.addEventListener('click', function(e) {
+                if (e.target === this) this.style.display = 'none';
+            });
+        });
+
+        // Tabs
+        function switchTab(tabId, el) {
+            document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.tab-item').forEach(t => t.classList.remove('tab-active'));
+            document.getElementById('tab-' + tabId).classList.add('active');
+            el.classList.add('tab-active');
+        }
+
+        // Settings / Utility
+        function clearData() {
+            if (confirm('确认清除所有本地数据吗？')) {
+                localStorage.clear();
+                alert('数据已清除，即将重新登录');
+                window.location.href = 'Signin.html';
+            }
+        }
+
+        function toggleVolume() {
+            const icon = document.getElementById('volumeIcon');
+            if (icon.src.includes('Volume%20on')) {
+                icon.src = 'https://xiaoye6661234.github.io/GuangXianWorld/Volume%20off.png';
+            } else {
+                icon.src = 'https://xiaoye6661234.github.io/GuangXianWorld/Volume%20on.png';
+            }
+        }
+    </script>
+</body>
+</html>

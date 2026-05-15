@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>广仙世界</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { background: #000; display: flex; justify-content: center; align-items: center; height: 100vh; width: 100vw; overflow: hidden; font-family: 'Ma Shan Zheng', cursive; }
+        /* 强制横屏 16:9 */
+        #app-container { width: 100vw; height: 56.25vw; max-height: 100vh; max-width: 177.78vh; position: relative; background-color: #222; overflow: hidden; }
+        @media (orientation: portrait) { #app-container { transform: rotate(90deg) scale(1.7778); } }
+        
+        .splash-screen { width: 100%; height: 100%; position: absolute; top: 0; left: 0; z-index: 10; background: url('https://xiaoye6661234.github.io/GuangXianWorld/background.jpg') no-repeat center center; background-size: cover; display: flex; flex-direction: column; justify-content: center; align-items: center; }
+        .splash-screen img { width: 70%; max-width: 400px; margin-bottom: 20px; }
+        .btn-enter { padding: 12px 40px; background-color: #ffaa00; color: #fff; font-size: 1.2rem; border: none; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.5); cursor: pointer; letter-spacing: 2px; }
+        .btn-enter:active { transform: scale(0.95); }
+    </style>
+</head>
+<body>
+    <div id="app-container">
+        <div class="splash-screen" id="splashScreen">
+            <img src="https://xiaoye6661234.github.io/GuangXianWorld/logo.png" alt="广仙世界">
+            <button class="btn-enter" onclick="window.location.href='Signin.html'">登 录 游 戏</button>
+        </div>
+    </div>
+</body>
+</html>

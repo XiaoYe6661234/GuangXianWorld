@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>广仙世界 - 登录/注册</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { background: #000; display: flex; justify-content: center; align-items: center; height: 100vh; width: 100vw; overflow: hidden; }
+        #app-container { width: 100vw; height: 56.25vw; max-height: 100vh; max-width: 177.78vh; position: relative; background: #fff; overflow: hidden; }
+        @media (orientation: portrait) { #app-container { transform: rotate(90deg) scale(1.7778); } }
+
+        .login-wrapper { width: 100%; height: 100%; display: flex; flex-direction: column; justify-content: flex-start; align-items: center; padding: 2vw 4vw; background: #fcfcfc; }
+        .back-link { position: absolute; top: 2vw; left: 2vw; font-size: 1.2rem; text-decoration: none; color: #000; font-weight: bold; }
+        .back-link::before { content: '← '; }
+        .login-title { font-size: 2.5vw; margin-top: 2vw; margin-bottom: 1vw; font-weight: bold; }
+        .game-logo { width: 50%; max-width: 250px; margin: 0 auto; display: block; margin-bottom: 1.5vw; }
+
+        .form-group { width: 80%; max-width: 400px; display: flex; align-items: center; margin-bottom: 1.2vw; }
+        .form-group label { width: 20%; font-size: 1.2vw; font-weight: bold; }
+        .form-group input { flex: 1; background-color: #cccccc; border: none; border-radius: 4px; padding: 1vw 1.5vw; font-size: 1.2vw; height: 3.5vw; }
+        .form-group input:focus { outline: none; background-color: #ddd; }
+
+        .btn-container { margin-top: 2vw; text-align: center; width: 100%; }
+        .btn-submit { padding: 1.2vw 5vw; background-color: #6b6b6b; color: #fff; border: none; border-radius: 6px; font-size: 1.5vw; cursor: pointer; box-shadow: 0 2px 5px rgba(0,0,0,0.3); }
+        .btn-submit:active { transform: scale(0.95); }
+        #tipText { font-size: 1vw; margin-top: 1vw; color: #666; }
+
+        /* 注册时隐藏部分 */
+        #passConfirmGroup, #tipRegister { display: flex; }
+        .hidden { display: none !important; }
+    </style>
+</head>
+<body>
+    <div id="app-container">
+        <div class="login-wrapper">
+            <a href="index.html" class="back-link">返回</a>
+            <div class="login-title">登录/注册</div>
+            <img src="https://xiaoye6661234.github.io/GuangXianWorld/logo.png" class="game-logo">
+            
+            <div class="form-group">
+                <label>账号:</label>
+                <input type="text" id="usernameInput" placeholder="请输入账号">
+            </div>
+            <div class="form-group">
+                <label>密码:</label>
+                <input type="password" id="passwordInput" placeholder="请输入密码">
+            </div>
+            <div class="form-group" id="passConfirmGroup">
+                <label>确认密码:</label>
+                <input type="password" id="passwordConfirmInput" placeholder="再次输入密码">
+            </div>
+            
+            <div class="btn-container">
+                <button class="btn-submit" id="submitBtn">登录/注册</button>
+                <div id="tipText">Tip: 仅支持首次注册</div>
+            </div>
+        </div>
+    </div>
+    <script>
+        // 简易 XOR 加密
+        const SALT = 'GuangXianWorldSecretKey';
+        function encryptData(obj) {
+            const str = JSON.stringify(obj);
+            let enc = '';
+            for (let i = 0; i < str.length; i++) {
+                enc += String.fromCharCode(str.charCodeAt(i) ^ SALT.charCodeAt(i % SALT.length));
+            }
+            return btoa(enc);
+        }
+        function decryptData(str) {
+            try {
+                const enc = atob(str);
+                let dec = '';
+                for (let i = 0; i < enc.length; i++) {
+                    dec += String.fromCharCode(enc.charCodeAt(i) ^ SALT.charCodeAt(i % SALT.length));
+                }
+                return JSON.parse(dec);
+            } catch(e){ return null; }
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const stored = localStorage.getItem('guangxianUserData');
+            const submitBtn = document.getElementById('submitBtn');
+            const passConfirmGroup = document.getElementById('passConfirmGroup');
+            const tipText = document.getElementById('tipText');
+
+            if (stored) {
+                // 已注册用户 -> 转换为登录模式
+                passConfirmGroup.classList.add('hidden');
+                tipText.innerText = "欢迎回来，请直接登录";
+                submitBtn.innerText = "进入游戏";
+                submitBtn.style.backgroundColor = "#FFA500"; // 橙色
+            }
+
+            submitBtn.addEventListener('click', function() {
+                const username = document.getElementById('usernameInput').value;
+                const password = document.getElementById('passwordInput').value;
+                const stored = localStorage.getItem('guangxianUserData');
+
+                if (stored) {
+                    // 登录模式
+                    const decrypted = decryptData(stored);
+                    if (decrypted && decrypted.username === username && decrypted.password === password) {
+                        window.location.href = 'Hall.html';
+                    } else {
+                        alert('账号或密码错误！');
+                    }
+                } else {
+                    // 注册模式
+                    const pwdConfirm = document.getElementById('passwordConfirmInput').value;
+                    if (!username || !password || !pwdConfirm) {
+                        alert('请填写完整信息');
+                        return;
+                    }
+                    if (password !== pwdConfirm) {
+                        alert('两次密码输入不一致');
+                        return;
+                    }
+                    // 初始化用户数据
+                    const initData = {
+                        username: username,
+                        password: password,
+                        nickname: '',
+                        region: '',
+                        character: 'Ming',
+                        level: 1,
+                        coins: 0,
+                        joinedDate: new Date().toISOString(),
+                        avatarBase64: '',
+                        bgBase64: ''
+                    };
+                    localStorage.setItem('guangxianUserData', encryptData(initData));
+                    window.location.href = 'ChooseRole.html';
+                }
+            });
+        });
+    </script>
+</body>
+</html>

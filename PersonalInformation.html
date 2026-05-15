@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>广仙世界 - 个人信息</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { background: #000; display: flex; justify-content: center; align-items: center; height: 100vh; width: 100vw; overflow: hidden; }
+        #app-container { width: 100vw; height: 56.25vw; max-height: 100vh; max-width: 177.78vh; position: relative; background: #fff; overflow: hidden; }
+        @media (orientation: portrait) { #app-container { transform: rotate(90deg) scale(1.7778); } }
+
+        .pinfo-wrapper { width: 100%; height: 100%; padding: 2vw; display: flex; flex-direction: column; align-items: center; }
+        .back-link { position: absolute; top: 2vw; left: 2vw; font-size: 1.2rem; text-decoration: none; color: #000; font-weight: bold; }
+        .back-link::before { content: '← '; }
+        .title { font-size: 3vw; margin-top: 1vw; font-weight: bold; }
+
+        .grid-container { display: grid; grid-template-columns: 1fr 2fr 2fr 1fr; gap: 2vw; width: 90%; margin-top: 2vw; }
+        .grid-item { display: flex; flex-direction: column; align-items: flex-start; }
+        .grid-item h4 { font-size: 1.8vw; margin-bottom: 1vw; }
+
+        .upload-box { width: 100%; aspect-ratio: 1/1; background-color: #ccc; border-radius: 6px; display: flex; align-items: center; justify-content: center; color: #666; font-size: 1.5vw; text-align: center; cursor: pointer; overflow: hidden; position: relative; }
+        .upload-box img { width: 100%; height: 100%; object-fit: cover; position: absolute; top: 0; left: 0; }
+        .upload-input { opacity: 0; position: absolute; width: 100%; height: 100%; cursor: pointer; }
+
+        .input-field { width: 100%; background-color: #ccc; border: none; border-radius: 4px; padding: 0.8vw; font-size: 1.2vw; }
+        
+        .footer-tip { font-size: 1vw; margin-top: 2vw; text-align: center; }
+        .btn-confirm { padding: 1.2vw 6vw; background-color: #6b6b6b; color: #fff; border: none; border-radius: 6px; font-size: 1.8vw; cursor: pointer; margin-top: 1vw; }
+        .btn-confirm:active { transform: scale(0.95); }
+    </style>
+</head>
+<body>
+    <div id="app-container">
+        <div class="pinfo-wrapper">
+            <a href="ChooseRole.html" class="back-link">上一步</a>
+            <div class="title">请完善个人信息</div>
+            <div class="grid-container">
+                <div class="grid-item">
+                    <h4>1.头像</h4>
+                    <div class="upload-box" id="avatarBox">
+                        <span>点击从相册选择</span>
+                        <input type="file" accept="image/*" class="upload-input" onchange="previewImage(this, 'avatarBox')">
+                    </div>
+                </div>
+                <div class="grid-item">
+                    <h4>2.昵称</h4>
+                    <input type="text" class="input-field" id="nicknameInput" placeholder="输入昵称">
+                </div>
+                <div class="grid-item">
+                    <h4>3.地区</h4>
+                    <input type="text" class="input-field" id="regionInput" placeholder="输入地区">
+                </div>
+                <div class="grid-item">
+                    <h4>4.主页背景图</h4>
+                    <div class="upload-box" id="bgBox">
+                        <span>点击从相册选择</span>
+                        <input type="file" accept="image/*" class="upload-input" onchange="previewImage(this, 'bgBox')">
+                    </div>
+                </div>
+            </div>
+            <div class="footer-tip">Tip: 昵称和地区一旦保存将无法更改!</div>
+            <button class="btn-confirm" onclick="saveData()">确定</button>
+        </div>
+    </div>
+    <script>
+        const SALT = 'GuangXianWorldSecretKey';
+        function encryptData(obj) {
+            const str = JSON.stringify(obj);
+            let enc = '';
+            for (let i = 0; i < str.length; i++) {
+                enc += String.fromCharCode(str.charCodeAt(i) ^ SALT.charCodeAt(i % SALT.length));
+            }
+            return btoa(enc);
+        }
+        function decryptData(str) {
+            try {
+                const enc = atob(str);
+                let dec = '';
+                for (let i = 0; i < enc.length; i++) {
+                    dec += String.fromCharCode(enc.charCodeAt(i) ^ SALT.charCodeAt(i % SALT.length));
+                }
+                return JSON.parse(dec);
+            } catch(e){ return null; }
+        }
+
+        function previewImage(input, boxId) {
+            const box = document.getElementById(boxId);
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    box.innerHTML = `<img src="${e.target.result}" alt="preview">`;
+                }
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
+        function saveData() {
+            const stored = localStorage.getItem('guangxianUserData');
+            if (!stored) { alert('请先登录'); window.location.href='Signin.html'; return; }
+            
+            const data = decryptData(stored);
+            const nickname = document.getElementById('nicknameInput').value;
+            const region = document.getElementById('regionInput').value;
+            if (!nickname || !region) { alert('请填写完整的昵称和地区'); return; }
+
+            const avatarImg = document.querySelector('#avatarBox img');
+            const bgImg = document.querySelector('#bgBox img');
+
+            data.nickname = nickname;
+            data.region = region;
+            data.coins = 1000; // 初始福利
+            if (avatarImg) data.avatarBase64 = avatarImg.src;
+            if (bgImg) data.bgBase64 = bgImg.src;
+
+            const encData = encryptData(data);
+            localStorage.setItem('guangxianUserData', encData);
+
+            // 下载 data.json
+            const blob = new Blob([encData], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'data.json';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+
+            if (confirm('信息已保存并下载加密的 data.json 到本地。是否进入广仙世界大厅？')) {
+                window.location.href = 'Hall.html';
+            }
+        }
+    </script>
+</body>
+</html>
