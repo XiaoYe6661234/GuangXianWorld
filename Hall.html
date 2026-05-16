@@ -444,9 +444,7 @@
             </div>
         </div>
 
-        <div class="pet-btn" onclick="window.location.href='Pets.html'">
-            <img src="https://xiaoye6661234.github.io/GuangXianWorld/Pets.png" alt="宠物" />
-        </div>
+       
 
         <img src="https://xiaoye6661234.github.io/GuangXianWorld/Ming.png" class="center-char" id="centerChar" alt="角色" />
 
@@ -631,11 +629,8 @@
                             <span>音效设置:</span>
                             <input type="range" min="0" max="100" value="${sfx}" onchange="setSFXVol(this.value)" />
                             <span>${sfx}%</span>
-                        </div>
-                        <div class="settings-row">
-                            <span>📤 导出 data.json</span>
-                            <button class="settings-btn" onclick="manualExportData()">导出</button>
-                        </div>
+                       </div>
+                          
                         <div class="settings-row">
                             <span>清除数据</span>
                             <button class="settings-btn" onclick="clearData()">清除</button>
@@ -660,6 +655,7 @@
                 tempBgImage = bgImage;
 
                 body.innerHTML = `
+                    
                     <div class="profile-container">
                         <div class="profile-left" style="background-image: url('${bgImage}');">
                             <img src="${charImg}" alt="角色" />
@@ -667,6 +663,8 @@
                         <div class="profile-right">
                             <div class="profile-bg" id="profileBg" onclick="editBgImage()" style="background-image: url('${bgImage}');"></div>
                             <div class="profile-header">
+                            
+                            
                                 <img src="${gData.user.avatar || 'https://xiaoye6661234.github.io/GuangXianWorld/Default avatar.jpg'}" 
                                      class="profile-avatar" id="profileAvatar" onclick="editAvatar()" alt="头像" />
                                 <div class="profile-info">

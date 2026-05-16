@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-    <title>广仙世界 - 第一章</title>
+    <title>广仙世界 · 第一章</title>
     <style>
         * {
             margin: 0;
@@ -568,7 +568,7 @@
     </div>
     <script>
         // ============================================================
-        // 1. 全局配置与数据
+        //  1. 全局配置与数据
         // ============================================================
         const canvas = document.getElementById('gameCanvas');
         const ctx = canvas.getContext('2d');
@@ -584,7 +584,7 @@
         resizeCanvas();
         window.addEventListener('resize', resizeCanvas);
 
-        // 数据存储（从JSON加载）
+        // 不使用 objects.json，所有数据硬编码
         let monsterDB = {};
         let foodDB = {};
         let weaponDB = {};
@@ -597,15 +597,15 @@
             monsterIdCounter: 0,
             effects: [],
             taskIndex: 0,
-            taskProgress: 0, // 击杀数
-            taskClaimed1: false, // 基础奖励已领
-            taskClaimed5: false, // 双倍奖励已领
-            taskClaimed10: false, // 三倍奖励已领
+            taskProgress: 0,
+            taskClaimed1: false,
+            taskClaimed5: false,
+            taskClaimed10: false,
             lastTime: 0,
             deltaTime: 0,
             terrainSeed: Math.random() * 10000,
             isDead: false,
-            isCleared: false, // 是否通关
+            isCleared: false,
             showSettlement: false
         };
 
@@ -629,94 +629,67 @@
         let clickAudio = null;
 
         // ============================================================
-        // 2. 核心：从objects.json加载所有游戏数据
+        //  2. 加载游戏数据（硬编码，不再使用objects.json）
         // ============================================================
-        async function loadGameData() {
-            try {
-                const res = await fetch('objects.json');
-                if (!res.ok) throw new Error('HTTP ' + res.status);
-                const data = await res.json();
+        function loadGameData() {
+            // 游戏配置
+            gameConfig = {
+                resurrectionCost: 75,
+                drowningTime: 30,
+                swimImageMing: 'Ming-swim.png',
+                swimImageQing: 'Qing-swim.png',
+                mapBoundaryMultiplier: 20
+            };
 
-                gameConfig = {
-                    resurrectionCost: 75,
-                    drowningTime: 30,
-                    swimImageMing: 'Ming-swim.png',
-                    swimImageQing: 'Qing-swim.png',
-                    mapBoundaryMultiplier: 20,
-                    ...data.gameConfig
-                };
+            // 怪物数据
+            monsterDB = {};
+            monsterDB[1] = {
+                name: '恶魔小兵',
+                Lv: 1,
+                imc: 'https://xiaoye6661234.github.io/GuangXianWorld/Monster.png',
+                hp: 75,
+                maxHp: 75,
+                Beat: 10,
+                Def: 0,
+                exp: 50,
+                money: 20
+            };
 
-                monsterDB = {};
-                if (data.monsters && Array.isArray(data.monsters)) {
-                    data.monsters.forEach(m => {
-                        monsterDB[m.Lv] = m;
-                        monsterDB[m.name] = m;
-                    });
-                }
+            // 食物数据
+            foodDB = {};
+            foodDB['披萨'] = {
+                name: '披萨',
+                HP: 50,
+                imc: 'https://xiaoye6661234.github.io/GuangXianWorld/Pizza.png'
+            };
+            foodDB['面条'] = {
+                name: '面条',
+                HP: 25,
+                imc: 'https://xiaoye6661234.github.io/GuangXianWorld/Noodle.png'
+            };
 
-                foodDB = {};
-                if (data.foods && Array.isArray(data.foods)) {
-                    data.foods.forEach(f => { foodDB[f.name] = f; });
-                }
+            // 武器数据
+            weaponDB = {};
+            weaponDB['木剑'] = {
+                name: '木剑',
+                hit: 10,
+                imc: 'https://xiaoye6661234.github.io/GuangXianWorld/WoodSword.png',
+                Lv: 1
+            };
 
-                weaponDB = {};
-                if (data.weapons && Array.isArray(data.weapons)) {
-                    data.weapons.forEach(w => { weaponDB[w.name] = w; });
-                }
+            // 任务数据
+            taskDB = [
+                { word: '击杀怪物', given: { name: '披萨', num: 1 } }
+            ];
 
-                taskDB = data.tasks || [];
-
-                console.log('✅ JSON数据加载成功！');
-                return true;
-            } catch (e) {
-                console.warn('⚠️ 无法加载objects.json，使用默认数据', e);
-                gameConfig = {
-                    resurrectionCost: 75,
-                    drowningTime: 30,
-                    swimImageMing: 'Ming-swim.png',
-                    swimImageQing: 'Qing-swim.png',
-                    mapBoundaryMultiplier: 20
-                };
-                // 默认数据
-                monsterDB[1] = {
-                    name: '恶魔小兵',
-                    Lv: 1,
-                    imc: 'https://xiaoye6661234.github.io/GuangXianWorld/Monster.png',
-                    HP: 75,
-                    Beat: 10,
-                    Def: 0,
-                    exp: 50,
-                    money: 20
-                };
-                foodDB['披萨'] = {
-                    name: '披萨',
-                    HP: 50,
-                    imc: 'https://xiaoye6661234.github.io/GuangXianWorld/Pizza.png'
-                };
-                foodDB['面条'] = {
-                    name: '面条',
-                    HP: 25,
-                    imc: 'https://xiaoye6661234.github.io/GuangXianWorld/Noodle.png'
-                };
-                weaponDB['木剑'] = {
-                    name: '木剑',
-                    hit: 10,
-                    imc: 'https://xiaoye6661234.github.io/GuangXianWorld/WoodSword.png',
-                    Lv: 1
-                };
-                taskDB = [
-                    { word: '击杀怪物', given: { name: '披萨', num: 1 } }
-                ];
-                return false;
-            }
+            console.log('✅ 游戏数据已加载（硬编码）');
+            return true;
         }
 
         // ============================================================
-        // 3. 玩家系统（只创建默认数据，后续由 loadSave 覆盖）
+        //  3. 玩家系统
         // ============================================================
         function createPlayer() {
-            // 固定地图大小为 2000x2000 (25*80)
-            const MAP_PIXELS = 2000;
             const maxHP = 100;
             const baseAttack = 10;
 
@@ -759,7 +732,7 @@
         player = createPlayer();
 
         // ============================================================
-        // 4. 地形系统（25×25网格，规律生成）
+        //  4. 地形系统（25×25网格）
         // ============================================================
         const MAP_SIZE = 25;
         const TILE_SIZE = 80;
@@ -777,7 +750,6 @@
             return 'grass';
         }
 
-        // 预生成地形
         let terrainMap = [];
 
         function generateTerrain() {
@@ -792,7 +764,7 @@
         generateTerrain();
 
         // ============================================================
-        // 5. 怪物系统（10个，HP75，攻击10）
+        //  5. 怪物系统（10只，HP 75，攻击 10）
         // ============================================================
         function spawnMonster(forceLv) {
             const lv = forceLv || 1;
@@ -806,7 +778,6 @@
                 }
                 return spawnMonster(bestLv);
             }
-            // 在地图内随机位置生成，避开玩家初始位置
             let attempts = 0;
             let x, y;
             do {
@@ -825,8 +796,8 @@
                 hitFlash: 0,
                 moveTimer: 0,
                 moveAngle: Math.random() * Math.PI * 2,
-                // 强制属性
-                HP: 75,
+                hp: 75,
+                maxHp: 75,
                 Beat: 10,
                 exp: 50,
                 money: 20
@@ -835,18 +806,17 @@
             return m;
         }
 
-        // 生成10个怪物
         function initMonsters() {
             gameData.monsters = [];
             gameData.monsterIdCounter = 0;
             for (let i = 0; i < 10; i++) {
                 spawnMonster(1);
             }
-            console.log('✅ 已生成 10 只怪物');
+            console.log('✅ 已生成 10 只怪物（HP: 75, 攻击: 10）');
         }
 
         // ============================================================
-        // 6. 任务系统
+        //  6. 任务系统
         // ============================================================
         let taskState = {
             killCount: 0,
@@ -905,21 +875,18 @@
             const kills = taskState.killCount;
 
             if (kills >= 10 && !taskState.claimed10) {
-                // 三倍奖励
                 player.exp += 150;
                 player.coins += 60;
                 addItemToInventory('披萨', 3);
                 taskState.claimed10 = true;
                 alert('🎉 领取三倍奖励：150经验+3披萨+60广仙币！');
             } else if (kills >= 5 && !taskState.claimed5) {
-                // 双倍奖励
                 player.exp += 100;
                 player.coins += 40;
                 addItemToInventory('披萨', 2);
                 taskState.claimed5 = true;
                 alert('🎉 领取双倍奖励：100经验+2披萨+40广仙币！');
             } else if (kills >= 1 && !taskState.claimed1) {
-                // 基础奖励
                 player.exp += 50;
                 player.coins += 20;
                 addItemToInventory('披萨', 1);
@@ -951,16 +918,14 @@
         }
 
         // ============================================================
-        // 7. 升级系统
+        //  7. 升级系统
         // ============================================================
         function checkLevelUp() {
             while (player.exp >= player.nextExp) {
                 player.exp -= player.nextExp;
                 player.level++;
                 player.nextExp = 900 + player.level * 100;
-                // 每升一级攻击+5
                 player.attack += 5;
-                // 每3级+10HP
                 if ((player.level - 1) % 3 === 0) {
                     player.maxHP += 10;
                 }
@@ -970,7 +935,7 @@
         }
 
         // ============================================================
-        // 8. 背包与物品系统
+        //  8. 背包与物品系统
         // ============================================================
         function useFoodItem(foodKey) {
             const food = foodDB[foodKey];
@@ -979,7 +944,6 @@
                 alert('❤️ 生命值已满！');
                 return false;
             }
-            // 披萨恢复50%HP，面条恢复25HP
             let healAmount = 0;
             if (foodKey === '披萨') {
                 healAmount = Math.floor(player.maxHP * 0.5);
@@ -1007,7 +971,6 @@
             const w = weaponDB[weaponKey];
             if (!w) return;
             player.equippedWeapon = w;
-            // 攻击力 = 基础攻击 + 武器加成（木剑+10）
             const baseAttack = 10 + (player.level - 1) * 5;
             player.attack = baseAttack + (w.hit || 10);
             alert(`⚔️ 装备了 ${w.name}，攻击力 +${w.hit || 10}`);
@@ -1016,7 +979,6 @@
         }
 
         function autoHeal() {
-            // 优先使用面条（恢复量小，不浪费）
             const noodle = player.inventory.find(item => item.type === 'food' && item.key === '面条');
             if (noodle) {
                 useFoodItem('面条');
@@ -1031,25 +993,10 @@
         }
 
         // ============================================================
-        // 9. 存档系统（先尝试读取 data.json 文件，再读取 localStorage）
+        //  9. 存档系统（与 data.json 互通）
         // ============================================================
         async function loadSave() {
-            try {
-                // 第一步：尝试从服务器读取 data.json 文件
-                const res = await fetch('data.json');
-                if (res.ok) {
-                    const fileData = await res.json();
-                    console.log('📁 从 data.json 文件加载数据');
-                    applySaveData(fileData);
-                    // 同时写入 localStorage 作为缓存
-                    localStorage.setItem('data.json', JSON.stringify(fileData));
-                    return;
-                }
-            } catch (e) {
-                // 文件不存在或无法读取，忽略
-            }
-
-            // 第二步：从 localStorage 读取
+            // 从 localStorage 读取 data.json（与 Signin / PersonalInformation 保持一致）
             const raw = localStorage.getItem('data.json');
             if (raw) {
                 try {
@@ -1057,7 +1004,7 @@
                     console.log('💾 从 localStorage 加载数据');
                     applySaveData(data);
                 } catch (e) {
-                    console.warn('localStorage 数据解析失败');
+                    console.warn('localStorage 数据解析失败', e);
                 }
             } else {
                 console.log('🆕 无存档数据，使用默认初始数据');
@@ -1071,7 +1018,6 @@
                 player.level = parseInt(data.user.level) || player.level;
                 player.coins = parseInt(data.user.coins) || player.coins;
                 player.role = data.user.role || 'Ming';
-                // 计算 HP 和攻击
                 const hpBonus = Math.floor((player.level - 1) / 3) * 10;
                 player.maxHP = 100 + hpBonus;
                 player.hp = player.maxHP;
@@ -1079,7 +1025,7 @@
                 player.attack = 10 + (player.level - 1) * 5;
             }
             if (data.inventory && Array.isArray(data.inventory)) {
-                // 合并背包，保留初始物品
+                // 合并背包，避免覆盖初始物品
                 const existingKeys = new Set(player.inventory.map(i => i.key));
                 for (let item of data.inventory) {
                     if (existingKeys.has(item.key)) {
@@ -1120,14 +1066,14 @@
                     chapter: 1
                 };
                 localStorage.setItem('data.json', JSON.stringify(data));
-                console.log('💾 数据已保存到 localStorage');
+                console.log('💾 数据已保存到 localStorage (data.json)');
             } catch (e) {
                 console.warn('保存数据失败', e);
             }
         }
 
         // ============================================================
-        // 10. 战斗系统
+        //  10. 战斗系统（攻击修复）
         // ============================================================
         function performAttack() {
             if (player.attackCooldown > 0 || player.isAttacking || player.isDead || gameData.showSettlement) return;
@@ -1149,7 +1095,9 @@
             }
 
             if (target) {
+                // 计算攻击力：基础攻击 + 武器加成
                 const atk = player.attack + (player.equippedWeapon ? (player.equippedWeapon.hit || 10) : 0);
+                // 伤害 = 攻击 - 防御
                 const dmg = Math.max(1, atk - (target.Def || 0));
                 target.hp -= dmg;
                 target.hitFlash = 0.2;
@@ -1173,6 +1121,7 @@
                     audio.play().catch(() => {});
                 } catch (e) {}
 
+                // 判断怪物死亡
                 if (target.hp <= 0) {
                     target.alive = false;
                     taskState.killCount++;
@@ -1182,7 +1131,6 @@
                     // 检查是否全部击杀
                     const aliveCount = gameData.monsters.filter(m => m.alive).length;
                     if (aliveCount === 0) {
-                        // 通关！
                         gameData.isCleared = true;
                         showSettlement(true);
                     }
@@ -1197,7 +1145,7 @@
         }
 
         // ============================================================
-        // 11. 疾跑系统
+        //  11. 疾跑系统
         // ============================================================
         function activateSprint() {
             if (player.isSprinting || player.sprintCooldown > 0 || player.isDead || gameData.showSettlement) return;
@@ -1212,7 +1160,7 @@
         }
 
         // ============================================================
-        // 12. 死亡与复活系统
+        //  12. 死亡与复活系统
         // ============================================================
         function handleDeath() {
             if (gameData.isDead || gameData.showSettlement) return;
@@ -1250,7 +1198,6 @@
                 document.getElementById('settlementModal').style.display = 'none';
                 gameData.isDead = false;
                 player.isDead = false;
-                // 不保存，直接返回大厅
                 window.location.href = 'Hall.html';
             });
             btns.appendChild(btnQuit);
@@ -1281,7 +1228,7 @@
         }
 
         // ============================================================
-        // 13. 结算系统（通关）
+        //  13. 结算系统（通关）
         // ============================================================
         function showSettlement(cleared) {
             if (gameData.showSettlement) return;
@@ -1307,7 +1254,6 @@
                 btnContinue.className = 'btn-gold';
                 btnContinue.innerText = '✅ 通关晋级 (保存)';
                 btnContinue.addEventListener('click', () => {
-                    // 升级
                     player.level++;
                     player.nextExp = 900 + player.level * 100;
                     player.attack = 10 + (player.level - 1) * 5;
@@ -1315,7 +1261,6 @@
                         player.maxHP += 10;
                     }
                     player.hp = player.maxHP;
-                    // 额外奖励
                     player.exp += 50 + taskState.killCount * 10;
                     player.coins += 20 + taskState.killCount * 4;
                     checkLevelUp();
@@ -1323,7 +1268,6 @@
                     alert(`🎊 恭喜通关！等级提升至 ${player.level}，数据已保存！`);
                     document.getElementById('settlementModal').style.display = 'none';
                     gameData.showSettlement = false;
-                    // 回到大厅
                     window.location.href = 'Hall.html';
                 });
                 btns.appendChild(btnContinue);
@@ -1334,7 +1278,6 @@
                 btnQuit.addEventListener('click', () => {
                     document.getElementById('settlementModal').style.display = 'none';
                     gameData.showSettlement = false;
-                    // 不保存，直接返回大厅
                     window.location.href = 'Hall.html';
                 });
                 btns.appendChild(btnQuit);
@@ -1343,14 +1286,13 @@
         }
 
         // ============================================================
-        // 14. BGM和音效
+        //  14. BGM和音效
         // ============================================================
         function initAudio() {
             try {
                 bgm = new Audio('https://xiaoye6661234.github.io/GuangXianWorld/BGM1.mp3');
                 bgm.loop = true;
                 bgm.volume = 0.4;
-                // 自动播放
                 bgm.play().catch(() => {});
                 bgmPlaying = true;
             } catch (e) {}
@@ -1370,7 +1312,6 @@
             } catch (e) {}
         }
 
-        // 为所有按钮添加点击音效
         function addClickSounds() {
             const btns = document.querySelectorAll('button, .ctrl-btn, #invClose, #detailClose, #backToHallBtn');
             btns.forEach(btn => {
@@ -1379,7 +1320,7 @@
         }
 
         // ============================================================
-        // 15. 输入控制
+        //  15. 输入控制
         // ============================================================
         document.addEventListener('keydown', (e) => {
             const k = e.key.toLowerCase();
@@ -1456,14 +1397,13 @@
         document.getElementById('claimTaskBtn').addEventListener('click', claimTaskReward);
         document.getElementById('detailUseBtn').addEventListener('click', useDetailItem);
 
-        // 返回大厅
         document.getElementById('backToHallBtn').addEventListener('click', function() {
             saveGame();
             window.location.href = 'Hall.html';
         });
 
         // ============================================================
-        // 16. 背包UI
+        //  16. 背包UI
         // ============================================================
         function toggleInventory() {
             const modal = document.getElementById('inventoryModal');
@@ -1598,7 +1538,7 @@
         }
 
         // ============================================================
-        // 17. UI更新
+        //  17. UI更新
         // ============================================================
         function updateUI() {
             document.getElementById('lvlDisplay').innerText = `Lv.${player.level}`;
@@ -1611,7 +1551,7 @@
         }
 
         // ============================================================
-        // 18. 游戏更新循环
+        //  18. 游戏更新循环
         // ============================================================
         function update(dt) {
             if (player.isDead || gameData.showSettlement) return;
@@ -1641,12 +1581,10 @@
                 }
             }
 
-            // 边界限制（地图范围：0 ~ MAP_PIXELS）
             const margin = 30;
             player.x = Math.max(margin, Math.min(MAP_PIXELS - margin, player.x));
             player.y = Math.max(margin, Math.min(MAP_PIXELS - margin, player.y));
 
-            // 检测玩家是否在水中
             const c = Math.floor(player.x / TILE_SIZE);
             const r = Math.floor(player.y / TILE_SIZE);
             if (c >= 0 && c < MAP_SIZE && r >= 0 && r < MAP_SIZE) {
@@ -1707,7 +1645,6 @@
                     }
                 }
 
-                // 边界限制
                 m.x = Math.max(margin, Math.min(MAP_PIXELS - margin, m.x));
                 m.y = Math.max(margin, Math.min(MAP_PIXELS - margin, m.y));
 
@@ -1725,6 +1662,14 @@
                 }
             }
 
+            // 清理死亡怪物，维持10只
+            gameData.monsters = gameData.monsters.filter(m => m.alive);
+            const targetCount = 10;
+            while (gameData.monsters.length < targetCount) {
+                const lv = 1;
+                spawnMonster(lv);
+            }
+
             // 特效更新
             for (let i = gameData.effects.length - 1; i >= 0; i--) {
                 const ef = gameData.effects[i];
@@ -1738,14 +1683,13 @@
         }
 
         // ============================================================
-        // 19. 渲染
+        //  19. 渲染
         // ============================================================
         function render() {
             ctx.clearRect(0, 0, W, H);
             const offsetX = player.x - W / 2;
             const offsetY = player.y - H / 2;
 
-            // 绘制地形
             const viewCols = Math.ceil(W / TILE_SIZE) + 3;
             const viewRows = Math.ceil(H / TILE_SIZE) + 3;
             const startCol = Math.floor((player.x - W / 2) / TILE_SIZE) - 2;
@@ -1763,7 +1707,6 @@
             for (let r = startRow; r < startRow + viewRows; r++) {
                 for (let c = startCol; c < startCol + viewCols; c++) {
                     if (c < 0 || c >= MAP_SIZE || r < 0 || r >= MAP_SIZE) {
-                        // 边界外填充黑色
                         const x = c * TILE_SIZE - offsetX;
                         const y = r * TILE_SIZE - offsetY;
                         ctx.fillStyle = '#1a1a1a';
@@ -1785,12 +1728,10 @@
                 }
             }
 
-            // 绘制边界线
             ctx.strokeStyle = 'rgba(255,0,0,0.3)';
             ctx.lineWidth = 3;
             ctx.strokeRect(-offsetX, -offsetY, MAP_PIXELS, MAP_PIXELS);
 
-            // 绘制怪物
             for (let m of gameData.monsters) {
                 if (!m.alive) continue;
                 const x = m.x - offsetX;
@@ -1815,13 +1756,12 @@
                 ctx.fillText(`Lv.${m.Lv}`, x, y - size / 2 - 8);
                 ctx.shadowBlur = 0;
 
-                // 血条
                 const hpW = 40;
                 const hpH = 3;
                 ctx.fillStyle = 'rgba(0,0,0,0.7)';
                 ctx.fillRect(x - hpW / 2, y - size / 2 - 16, hpW, hpH);
                 ctx.fillStyle = '#ff3333';
-                ctx.fillRect(x - hpW / 2, y - size / 2 - 16, hpW * (m.hp / m.maxHP), hpH);
+                ctx.fillRect(x - hpW / 2, y - size / 2 - 16, hpW * (m.hp / m.maxHp), hpH);
 
                 if (m.hitFlash > 0) {
                     ctx.fillStyle = 'rgba(255,255,255,0.35)';
@@ -1831,7 +1771,6 @@
                 }
             }
 
-            // 绘制玩家
             const px = player.x - offsetX;
             const py = player.y - offsetY;
             const pSize = 50;
@@ -1859,7 +1798,6 @@
                 ctx.fill();
             }
 
-            // 攻击特效
             for (let ef of gameData.effects) {
                 const ex = ef.x - offsetX;
                 const ey = ef.y - offsetY;
@@ -1869,7 +1807,6 @@
                 }
             }
 
-            // 攻击动作
             if (player.isAttacking) {
                 const angle = player.facing === 'right' ? 0 : player.facing === 'left' ? Math.PI : player.facing === 'up' ? -Math
                     .PI / 2 : Math.PI / 2;
@@ -1889,7 +1826,7 @@
         }
 
         // ============================================================
-        // 20. 游戏循环
+        //  20. 游戏循环
         // ============================================================
         function loop(timestamp) {
             const dt = Math.min((timestamp - gameData.lastTime) / 1000, 0.05);
@@ -1900,34 +1837,29 @@
         }
 
         // ============================================================
-        // 21. 初始化启动
+        //  21. 初始化启动
         // ============================================================
         async function init() {
-            await loadGameData();
-            // 生成地形
+            loadGameData();
             generateTerrain();
-            // 加载玩家数据（优先读取 data.json 文件，其次 localStorage）
+            // 加载数据（从 localStorage 读取 data.json）
             await loadSave();
-            // 确保玩家攻击力正确
+            // 确保攻击力正确
             const baseAttack = 10 + (player.level - 1) * 5;
             if (player.equippedWeapon) {
                 player.attack = baseAttack + (player.equippedWeapon.hit || 10);
             } else {
                 player.attack = baseAttack;
             }
-            // 修正玩家位置到地图中央
             player.x = 1000;
             player.y = 1000;
-            // 初始化怪物（确保场内一定有怪物）
             initMonsters();
 
             updateUI();
             updateInventoryGrid();
             updateTaskUI();
 
-            // 初始化BGM
             initAudio();
-            // 添加点击音效
             addClickSounds();
 
             gameData.lastTime = performance.now();
@@ -1938,7 +1870,7 @@
         window.addEventListener('resize', () => { resizeCanvas(); });
         document.addEventListener('contextmenu', e => e.preventDefault());
 
-        console.log('🎮 广仙世界 - 第一章 已启动！');
+        console.log('🎮 广仙世界 · 第一章 已启动！');
         console.log('📖 快捷键: W/A/S/D 移动 | H 攻击 | Q 疾跑 | R 恢复 | B 背包 | F 领任务');
         console.log('🎯 目标: 击杀10只怪物通关晋级！');
     </script>
