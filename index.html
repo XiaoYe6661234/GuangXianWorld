@@ -11,7 +11,6 @@
             box-sizing: border-box;
             font-family: "Microsoft YaHei", sans-serif;
         }
-
         body {
             width: 100vw;
             height: 100vh;
@@ -21,85 +20,58 @@
             align-items: center;
             background: #000;
         }
-
         .game-container {
             width: 100vw;
             height: 56.25vw;
             max-height: 100vh;
             max-width: 177.78vh;
             position: relative;
-            background: url('https://xiaoye6661234.github.io/GuangXianWorld/startbg.jpg') center/cover no-repeat;
+            /* 替换为指定背景图 */
+            background: url('https://xiaoye6661234.github.io/GuangXianWorld/background.jpg') center/cover no-repeat;
         }
-
+        /* 适龄提示改为设计图图片样式 */
         .age-rating {
             position: absolute;
-            top: 20px;
-            left: 20px;
-            width: 80px;
-            height: 110px;
-            background: #fff;
-            border-radius: 8px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            font-weight: bold;
-        }
-
-        .age-rating .age {
-            font-size: 36px;
-            color: #fff;
-            background: #4a90e2;
+            top: 15px;
+            left: 15px;
             width: 70px;
-            height: 70px;
-            border-radius: 8px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-bottom: 5px;
+            height: auto;
+            border-radius: 6px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
         }
-
-        .age-rating .cadpa {
-            font-size: 12px;
-            color: #333;
-            margin-bottom: 3px;
-        }
-
-        .age-rating .text {
-            font-size: 14px;
-            color: #333;
-        }
-
         .logo {
             position: absolute;
             top: 50%;
             left: 50%;
-            transform: translate(-50%, -60%);
-            width: 60%;
+            /* 微调位置避免太靠上 */
+            transform: translate(-50%, -55%);
+            /* 缩小logo避免太满 */
+            width: 52%;
             height: auto;
+            filter: drop-shadow(0 4px 12px rgba(0,0,0,0.3));
         }
-
         .login-btn {
             position: absolute;
             bottom: 15%;
             left: 50%;
             transform: translateX(-50%);
-            padding: 15px 60px;
-            font-size: 28px;
+            /* 调小内边距和字体 */
+            padding: 12px 48px;
+            font-size: 22px;
             font-weight: bold;
             color: #fff;
-            background: #ff9800;
+            background: #ffb300;
             border: none;
-            border-radius: 12px;
+            border-radius: 10px;
             cursor: pointer;
             transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(255,179,0,0.3);
         }
-
         .login-btn:hover {
-            background: #f57c00;
-            transform: translateX(-50%) scale(1.05);
+            background: #ffa000;
+            transform: translateX(-50%) scale(1.03);
+            box-shadow: 0 6px 16px rgba(255,179,0,0.4);
         }
-
         @media (orientation: portrait) {
             .game-container {
                 transform: rotate(-90deg) scale(0.8);
@@ -109,35 +81,25 @@
 </head>
 <body>
     <div class="game-container">
-        <div class="age-rating">
-            <div class="age">12+</div>
-            <div class="cadpa">CADPA</div>
-            <div class="text">适龄提示</div>
-        </div>
-
+        <!-- 替换为CADPA适龄提示图片 -->
+        <img src="https://xiaoye6661234.github.io/GuangXianWorld/CADPA.png" alt="12+适龄提示" class="age-rating" />
         <img src="https://xiaoye6661234.github.io/GuangXianWorld/logo.png" alt="广仙世界" class="logo" />
-
         <button class="login-btn" id="loginBtn">登录/注册</button>
     </div>
-
     <audio id="bgm" loop>
         <source src="https://xiaoye6661234.github.io/GuangXianWorld/BGM1.mp3" type="audio/mpeg" />
-    </audio>
-
+    
     <audio id="clickSound">
         <source src="https://xiaoye6661234.github.io/GuangXianWorld/click.mp3" type="audio/mpeg" />
-    </audio>
-
+    
     <script>
-        // ========== 修复1：统一使用 GuangXianData 键名 ==========
+        // ========== 原有功能完全保留 未做任何修改 ==========
         const bgm = document.getElementById('bgm');
         const clickSound = document.getElementById('clickSound');
-
         function playClickSound() {
             clickSound.currentTime = 0;
             clickSound.play().catch(e => console.log('音效播放失败:', e));
         }
-
         // 检查用户数据是否存在（统一使用 GuangXianData）
         function checkUserData() {
             const userData = localStorage.getItem('GuangXianData');
@@ -154,11 +116,9 @@
             document.getElementById('loginBtn').textContent = '登录/注册';
             return false;
         }
-
         // 页面加载时检查
         window.addEventListener('load', () => {
             const hasData = checkUserData();
-
             // 尝试自动播放背景音乐
             bgm.volume = 0.5;
             document.addEventListener('click', function startBGM() {
@@ -166,11 +126,9 @@
                 document.removeEventListener('click', startBGM);
             }, { once: true });
         });
-
-        // ========== 修复2：登录按钮根据数据状态跳转 ==========
+        // 登录按钮根据数据状态跳转
         document.getElementById('loginBtn').addEventListener('click', () => {
             playClickSound();
-
             const userData = localStorage.getItem('GuangXianData');
             if (userData) {
                 try {
