@@ -81,7 +81,6 @@
             width: 32%;
             max-width: 220px;
             pointer-events: none;
-            /* 完全禁止交互 → 无法长按 */
             -webkit-touch-callout: none;
             -webkit-user-select: none;
             user-select: none;
@@ -133,7 +132,6 @@
             min-height: 3.2vw;
             -webkit-user-select: text;
             user-select: text;
-            /* 输入框内允许选中文本以便编辑 */;
         }
         .row input::placeholder {
             color: #777;
@@ -202,13 +200,7 @@
         <div class="title">登录/注册</div>
 
         <!-- Logo (防下载) -->
-        <img
-        src="https://xiaoye6661234.github.io/GuangXianWorld/logo.png"
-        class="logo-mini"
-        draggable="false"
-        oncontextmenu="return false"
-        alt="广仙世界"
-        />
+        <img src="https://xiaoye6661234.github.io/GuangXianWorld/logo.png" class="logo-mini" draggable="false" oncontextmenu="return false" alt="广仙世界" />
 
         <!-- 表单 -->
         <div class="form-area">
@@ -233,7 +225,60 @@
 
     <script>
         // ================================================================
-        //  核心功能 100% 保留（仅跳转目标改为 PersonalInformation.html）
+        //  统一 data.json 操作函数（与所有页面共享）
+        // ================================================================
+
+        function loadData() {
+            var raw = localStorage.getItem('data.json');
+            if (!raw) return null;
+            try {
+                return JSON.parse(raw);
+            } catch (e) {
+                return null;
+            }
+        }
+
+        function saveData(data) {
+            localStorage.setItem('data.json', JSON.stringify(data));
+            localStorage.setItem('GuangXianData', JSON.stringify(data));
+        }
+
+        function createDefaultData() {
+            var now = new Date().toISOString().split('T')[0];
+            return {
+                user: {
+                    username: '',
+                    password: '',
+                    nickname: '云游仙友',
+                    avatar: 'https://xiaoye6661234.github.io/GuangXianWorld/Default avatar.jpg',
+                    region: '',
+                    bgImage: '',
+                    level: 1,
+                    coins: 1000,
+                    exp: 0,
+                    nextExp: 1000,
+                    role: '',
+                    joinedDate: now,
+                    lastLoginDate: now,
+                    loginStreak: 0,
+                    signHistory: [],
+                    settings: { bgm: true, bgmVolume: 40, sfxVolume: 50 },
+                    hasClaimedNotice: false,
+                    lastDailyWelfare: '',
+                    lastFreeClaim: ''
+                },
+                inventory: [],
+                equippedWeapon: null,
+                taskProgress: 0,
+                taskClaimed1: false,
+                taskClaimed5: false,
+                taskClaimed10: false,
+                chapter: 1
+            };
+        }
+
+        // ================================================================
+        //  核心功能
         // ================================================================
 
         var confirmBtn = document.getElementById('confirmBtn');
@@ -244,18 +289,13 @@
 
         // ---- 检查模式：已有数据则进入登录模式 ----
         (function checkMode() {
-            var existing = localStorage.getItem('GuangXianData');
-            if (existing) {
-                try {
-                    var data = JSON.parse(existing);
-                    if (data && data.user && data.user.username) {
-                        usernameInput.value = data.user.username;
-                        usernameInput.disabled = true;
-                        confirmRow.style.display = 'none';
-                        document.querySelector('.title').textContent = '欢迎回来';
-                        return;
-                    }
-                } catch (e) { /* 数据损坏，按注册处理 */ }
+            var data = loadData();
+            if (data && data.user && data.user.username) {
+                usernameInput.value = data.user.username;
+                usernameInput.disabled = true;
+                confirmRow.style.display = 'none';
+                document.querySelector('.title').textContent = '欢迎回来';
+                return;
             }
             usernameInput.disabled = false;
             confirmRow.style.display = 'flex';
@@ -264,7 +304,7 @@
 
         // ---- 确定按钮 ----
         confirmBtn.addEventListener('click', function() {
-            // 点击音效（不影响核心逻辑）
+            // 点击音效
             var clickAudio = new Audio('https://xiaoye6661234.github.io/GuangXianWorld/click.mp3');
             clickAudio.volume = 0.5;
             clickAudio.play().catch(function(e) {});
@@ -279,30 +319,24 @@
             }
 
             // 读取已有数据
-            var existing = localStorage.getItem('GuangXianData');
-            var parsedExisting = null;
-            if (existing) {
-                try {
-                    parsedExisting = JSON.parse(existing);
-                } catch (e) { /* 忽略 */ }
-            }
+            var data = loadData();
 
             // ===== 登录模式（已有账号且用户名匹配） =====
-            if (parsedExisting && parsedExisting.user && parsedExisting.user.username === username) {
-                if (parsedExisting.user.password !== password) {
+            if (data && data.user && data.user.username === username) {
+                if (data.user.password !== password) {
                     alert('密码错误！');
                     return;
                 }
-                // 登录成功，保存数据
-                localStorage.setItem('GuangXianData', JSON.stringify(parsedExisting));
-                // ★ 统一跳转到 PersonalInformation.html
+                // 登录成功，保存数据（刷新时间戳）
+                data.user.lastLoginDate = new Date().toISOString().split('T')[0];
+                saveData(data);
                 window.location.href = 'PersonalInformation.html';
                 return;
             }
 
             // ===== 注册模式（新账号 或 用户名不匹配） =====
-            if (parsedExisting && parsedExisting.user && parsedExisting.user.username !== username) {
-                if (!confirm('当前已有账号 "' + parsedExisting.user.username + '"，是否创建新账号 "' + username + '"？\n（原有数据将被覆盖）')) {
+            if (data && data.user && data.user.username !== username) {
+                if (!confirm('当前已有账号 "' + data.user.username + '"，是否创建新账号 "' + username + '"？\n（原有数据将被覆盖）')) {
                     return;
                 }
             }
@@ -313,27 +347,13 @@
                 return;
             }
 
-            // 创建新账号
-            var newData = {
-                user: {
-                    username: username,
-                    password: password,
-                    nickname: '云游仙友',
-                    avatar: 'https://xiaoye6661234.github.io/GuangXianWorld/Default avatar.jpg',
-                    region: '',
-                    bgImage: '',
-                    level: 1,
-                    coins: 1000,
-                    exp: 0,
-                    loginStreak: 0,
-                    lastLoginDate: new Date().toISOString().split('T')[0],
-                    joinedDate: new Date().toISOString().split('T')[0],
-                    role: '',
-                    signHistory: [],
-                    settings: { bgm: true, bgmVolume: 40, sfxVolume: 50 }
-                }
-            };
-            localStorage.setItem('GuangXianData', JSON.stringify(newData));
+            // 创建新账号（使用统一数据结构）
+            var newData = createDefaultData();
+            newData.user.username = username;
+            newData.user.password = password;
+            newData.user.lastLoginDate = new Date().toISOString().split('T')[0];
+            newData.user.joinedDate = new Date().toISOString().split('T')[0];
+            saveData(newData);
 
             // 询问是否下载 data.json
             if (confirm('注册成功！是否现在下载您的 data.json 数据文件？')) {
@@ -342,11 +362,12 @@
                 var a = document.createElement('a');
                 a.href = url;
                 a.download = 'data.json';
+                document.body.appendChild(a);
                 a.click();
+                document.body.removeChild(a);
                 URL.revokeObjectURL(url);
             }
 
-            // ★ 统一跳转到 PersonalInformation.html
             window.location.href = 'PersonalInformation.html';
         });
     </script>

@@ -267,16 +267,75 @@
     </div>
 
     <script>
-        let userData = null;
-        let avatarBase64 = null;
-        let bgBase64 = null;
+        // ================================================================
+        //  统一 data.json 操作函数（与所有页面共享）
+        // ================================================================
 
+        function loadData() {
+            var raw = localStorage.getItem('data.json');
+            if (!raw) return null;
+            try {
+                return JSON.parse(raw);
+            } catch (e) {
+                return null;
+            }
+        }
+
+        function saveData(data) {
+            localStorage.setItem('data.json', JSON.stringify(data));
+            localStorage.setItem('GuangXianData', JSON.stringify(data));
+        }
+
+        function createDefaultData() {
+            var now = new Date().toISOString().split('T')[0];
+            return {
+                user: {
+                    username: '',
+                    password: '',
+                    nickname: '云游仙友',
+                    avatar: 'https://xiaoye6661234.github.io/GuangXianWorld/Default avatar.jpg',
+                    region: '',
+                    bgImage: '',
+                    level: 1,
+                    coins: 1000,
+                    exp: 0,
+                    nextExp: 1000,
+                    role: '',
+                    joinedDate: now,
+                    lastLoginDate: now,
+                    loginStreak: 0,
+                    signHistory: [],
+                    settings: { bgm: true, bgmVolume: 40, sfxVolume: 50 },
+                    hasClaimedNotice: false,
+                    lastDailyWelfare: '',
+                    lastFreeClaim: ''
+                },
+                inventory: [],
+                equippedWeapon: null,
+                taskProgress: 0,
+                taskClaimed1: false,
+                taskClaimed5: false,
+                taskClaimed10: false,
+                chapter: 1
+            };
+        }
+
+        // ================================================================
+        //  核心功能
+        // ================================================================
+
+        var userData = null;
+        var avatarBase64 = null;
+        var bgBase64 = null;
+
+        // ---- 加载 data.json 文件（上传） ----
         document.getElementById('dataJsonInput').addEventListener('change', function(e) {
             if (this.files && this.files[0]) {
-                const reader = new FileReader();
+                var reader = new FileReader();
                 reader.onload = function(ev) {
                     try {
-                        const parsed = JSON.parse(ev.target.result);
+                        var parsed = JSON.parse(ev.target.result);
+                        // 验证数据结构是否包含 user
                         if (!parsed || !parsed.user) {
                             alert('❌ data.json 格式无效：缺少 user 字段');
                             return;
@@ -293,37 +352,17 @@
             }
         });
 
+        // ---- 创建新数据 ----
         function createNewData() {
-            const defaultData = {
-                user: {
-                    username: '',
-                    password: '',
-                    nickname: '云游仙友',
-                    avatar: 'https://xiaoye6661234.github.io/GuangXianWorld/Default avatar.jpg',
-                    region: '',
-                    bgImage: '',
-                    level: 1,
-                    coins: 1000,
-                    exp: 0,
-                    loginStreak: 0,
-                    lastLoginDate: new Date().toISOString().split('T')[0],
-                    joinedDate: new Date().toISOString().split('T')[0],
-                    role: '铭',
-                    signHistory: [],
-                    settings: { bgm: true, bgmVolume: 40, sfxVolume: 50 },
-                    hasClaimedNotice: false,
-                    lastDailyWelfare: '',
-                    lastFreeClaim: ''
-                }
-            };
-            userData = defaultData;
+            userData = createDefaultData();
             fillForm(userData);
             document.getElementById('loadingOverlay').style.display = 'none';
             alert('✅ 已创建新数据，请完善您的个人信息');
         }
 
+        // ---- 填充表单 ----
         function fillForm(data) {
-            const u = data.user;
+            var u = data.user;
             if (u.nickname && u.nickname !== '云游仙友') {
                 document.getElementById('nickname').value = u.nickname;
             }
@@ -332,29 +371,30 @@
             }
             if (u.avatar && u.avatar !== 'https://xiaoye6661234.github.io/GuangXianWorld/Default avatar.jpg') {
                 avatarBase64 = u.avatar;
-                const img = document.getElementById('avatarPreview');
+                var img = document.getElementById('avatarPreview');
                 img.src = u.avatar;
                 img.style.display = 'block';
                 document.getElementById('avatarPlaceholder').style.display = 'none';
             }
             if (u.bgImage) {
                 bgBase64 = u.bgImage;
-                const img = document.getElementById('bgPreview');
+                var img = document.getElementById('bgPreview');
                 img.src = u.bgImage;
                 img.style.display = 'block';
                 document.getElementById('bgPlaceholder').style.display = 'none';
             }
         }
 
+        // ---- 头像选择 ----
         document.getElementById('avatarBox').addEventListener('click', function() {
             document.getElementById('avatarInput').click();
         });
         document.getElementById('avatarInput').addEventListener('change', function(e) {
             if (this.files && this.files[0]) {
-                const reader = new FileReader();
+                var reader = new FileReader();
                 reader.onload = function(ev) {
                     avatarBase64 = ev.target.result;
-                    const img = document.getElementById('avatarPreview');
+                    var img = document.getElementById('avatarPreview');
                     img.src = avatarBase64;
                     img.style.display = 'block';
                     document.getElementById('avatarPlaceholder').style.display = 'none';
@@ -363,15 +403,16 @@
             }
         });
 
+        // ---- 背景图选择 ----
         document.getElementById('bgBox').addEventListener('click', function() {
             document.getElementById('bgInput').click();
         });
         document.getElementById('bgInput').addEventListener('change', function(e) {
             if (this.files && this.files[0]) {
-                const reader = new FileReader();
+                var reader = new FileReader();
                 reader.onload = function(ev) {
                     bgBase64 = ev.target.result;
-                    const img = document.getElementById('bgPreview');
+                    var img = document.getElementById('bgPreview');
                     img.src = bgBase64;
                     img.style.display = 'block';
                     document.getElementById('bgPlaceholder').style.display = 'none';
@@ -380,42 +421,24 @@
             }
         });
 
+        // ---- 确定按钮 ----
         document.getElementById('confirmBtn').addEventListener('click', function() {
-            let click = new Audio('https://xiaoye6661234.github.io/GuangXianWorld/click.mp3');
+            var click = new Audio('https://xiaoye6661234.github.io/GuangXianWorld/click.mp3');
             click.volume = 0.5;
-            click.play().catch(() => {});
+            click.play().catch(function() {});
 
-            const nickname = document.getElementById('nickname').value.trim();
-            const region = document.getElementById('region').value.trim();
+            var nickname = document.getElementById('nickname').value.trim();
+            var region = document.getElementById('region').value.trim();
 
             if (!nickname) { alert('请输入昵称！'); return; }
             if (!region) { alert('请输入地区！'); return; }
 
+            // 如果 userData 为空，创建默认数据
             if (!userData) {
-                userData = {
-                    user: {
-                        username: '',
-                        password: '',
-                        nickname: nickname,
-                        avatar: 'https://xiaoye6661234.github.io/GuangXianWorld/Default avatar.jpg',
-                        region: region,
-                        bgImage: '',
-                        level: 1,
-                        coins: 1000,
-                        exp: 0,
-                        loginStreak: 0,
-                        lastLoginDate: new Date().toISOString().split('T')[0],
-                        joinedDate: new Date().toISOString().split('T')[0],
-                        role: '铭',
-                        signHistory: [],
-                        settings: { bgm: true, bgmVolume: 40, sfxVolume: 50 },
-                        hasClaimedNotice: false,
-                        lastDailyWelfare: '',
-                        lastFreeClaim: ''
-                    }
-                };
+                userData = createDefaultData();
             }
 
+            // 更新数据
             userData.user.nickname = nickname;
             userData.user.region = region;
             if (avatarBase64) {
@@ -427,16 +450,17 @@
                 userData.user.bgImage = bgBase64;
             }
             if (!userData.user.role) {
-                userData.user.role = '铭';
+                userData.user.role = '铭'; // 默认角色，后续可在 ChooseRole 修改
             }
 
-            localStorage.setItem('GuangXianData', JSON.stringify(userData));
+            // 保存到 data.json
+            saveData(userData);
 
             if (confirm('✅ 信息已保存！是否下载您的 data.json 数据文件？')) {
-                const jsonStr = JSON.stringify(userData, null, 2);
-                const blob = new Blob([jsonStr], { type: 'application/json' });
-                const url = URL.createObjectURL(blob);
-                const a = document.createElement('a');
+                var jsonStr = JSON.stringify(userData, null, 2);
+                var blob = new Blob([jsonStr], { type: 'application/json' });
+                var url = URL.createObjectURL(blob);
+                var a = document.createElement('a');
                 a.href = url;
                 a.download = 'data.json';
                 document.body.appendChild(a);
@@ -448,19 +472,16 @@
             window.location.href = 'Hall.html';
         });
 
+        // ---- 页面初始化：优先从 data.json 加载 ----
         (function init() {
-            const cached = localStorage.getItem('GuangXianData');
-            if (cached) {
-                try {
-                    const parsed = JSON.parse(cached);
-                    if (parsed && parsed.user && parsed.user.nickname && parsed.user.region) {
-                        userData = parsed;
-                        fillForm(userData);
-                        document.getElementById('loadingOverlay').style.display = 'none';
-                        return;
-                    }
-                } catch (e) {}
+            var data = loadData();
+            if (data && data.user && data.user.nickname && data.user.region) {
+                userData = data;
+                fillForm(userData);
+                document.getElementById('loadingOverlay').style.display = 'none';
+                return;
             }
+            // 如果没有完整数据，显示加载弹窗
             document.getElementById('loadingOverlay').style.display = 'flex';
         })();
     </script>

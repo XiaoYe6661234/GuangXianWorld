@@ -45,7 +45,6 @@
             border-radius: 6px;
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
             pointer-events: none;
-            /* 禁止所有交互 → 无法长按 */
             -webkit-touch-callout: none;
             -webkit-user-select: none;
             user-select: none;
@@ -62,7 +61,6 @@
             height: auto;
             filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.3));
             pointer-events: none;
-            /* 禁止所有交互 → 无法长按 */
             -webkit-touch-callout: none;
             -webkit-user-select: none;
             user-select: none;
@@ -76,7 +74,6 @@
             left: 50%;
             transform: translateX(-50%);
             padding: 10px 38px;
-            /* 字体从 22px → 16px，更小巧 */
             font-size: 16px;
             font-weight: bold;
             color: #fff;
@@ -86,7 +83,6 @@
             cursor: pointer;
             transition: all 0.3s ease;
             box-shadow: 0 4px 12px rgba(255, 179, 0, 0.3);
-            /* 防止按钮文字被选中 */
             -webkit-touch-callout: none;
             -webkit-user-select: none;
             user-select: none;
@@ -112,22 +108,10 @@
 
     <div class="game-container">
         <!-- 适龄提示图片：完全防长按/右键/拖拽 -->
-        <img
-        src="https://xiaoye6661234.github.io/GuangXianWorld/CADPA.png"
-        alt="12+适龄提示"
-        class="age-rating"
-        draggable="false"
-        oncontextmenu="return false"
-        />
+        <img src="https://xiaoye6661234.github.io/GuangXianWorld/CADPA.png" alt="12+适龄提示" class="age-rating" draggable="false" oncontextmenu="return false" />
 
         <!-- Logo图片：完全防长按/右键/拖拽 -->
-        <img
-        src="https://xiaoye6661234.github.io/GuangXianWorld/logo.png"
-        alt="广仙世界"
-        class="logo"
-        draggable="false"
-        oncontextmenu="return false"
-        />
+        <img src="https://xiaoye6661234.github.io/GuangXianWorld/logo.png" alt="广仙世界" class="logo" draggable="false" oncontextmenu="return false" />
 
         <!-- 登录按钮 -->
         <button class="login-btn" id="loginBtn">登录/注册</button>
@@ -145,7 +129,128 @@
 
     <script>
         // ================================================================
-        //  核心功能 100% 保留 (仅增加防下载属性 & 字体调小)
+        //  统一 data.json 操作函数（与所有页面共享）
+        // ================================================================
+
+        // 从 localStorage 读取 data.json
+        function loadData() {
+            var raw = localStorage.getItem('data.json');
+            if (!raw) return null;
+            try {
+                return JSON.parse(raw);
+            } catch (e) {
+                return null;
+            }
+        }
+
+        // 保存 data.json 到 localStorage，同时兼容旧 GuangXianData
+        function saveData(data) {
+            localStorage.setItem('data.json', JSON.stringify(data));
+            // 为兼容旧代码，同时写入 GuangXianData
+            localStorage.setItem('GuangXianData', JSON.stringify(data));
+        }
+
+        // 创建默认数据结构（完全符合统一规范）
+        function createDefaultData() {
+            var now = new Date().toISOString().split('T')[0];
+            return {
+                user: {
+                    username: '',
+                    password: '',
+                    nickname: '云游仙友',
+                    avatar: 'https://xiaoye6661234.github.io/GuangXianWorld/Default avatar.jpg',
+                    region: '',
+                    bgImage: '',
+                    level: 1,
+                    coins: 1000,
+                    exp: 0,
+                    nextExp: 1000,
+                    role: '',
+                    joinedDate: now,
+                    lastLoginDate: now,
+                    loginStreak: 0,
+                    signHistory: [],
+                    settings: { bgm: true, bgmVolume: 40, sfxVolume: 50 },
+                    hasClaimedNotice: false,
+                    lastDailyWelfare: '',
+                    lastFreeClaim: ''
+                },
+                inventory: [],
+                equippedWeapon: null,
+                taskProgress: 0,
+                taskClaimed1: false,
+                taskClaimed5: false,
+                taskClaimed10: false,
+                chapter: 1
+            };
+        }
+
+        // ================================================================
+        //  数据迁移：从旧版 GuangXianData 迁移到 data.json
+        // ================================================================
+        function migrateFromOldData() {
+            var oldRaw = localStorage.getItem('GuangXianData');
+            if (!oldRaw) return null;
+            try {
+                var oldData = JSON.parse(oldRaw);
+                if (!oldData || !oldData.user) return null;
+
+                // 构造符合新标准的数据
+                var newData = createDefaultData();
+                var u = oldData.user;
+                newData.user.username = u.username || '';
+                newData.user.password = u.password || '';
+                newData.user.nickname = u.nickname || '云游仙友';
+                newData.user.avatar = u.avatar || 'https://xiaoye6661234.github.io/GuangXianWorld/Default avatar.jpg';
+                newData.user.region = u.region || '';
+                newData.user.bgImage = u.bgImage || '';
+                newData.user.level = parseInt(u.level) || 1;
+                newData.user.coins = parseInt(u.coins) || 1000;
+                newData.user.exp = parseInt(u.exp) || 0;
+                newData.user.nextExp = u.nextExp || 1000;
+                newData.user.role = u.role || '';
+                newData.user.joinedDate = u.joinedDate || new Date().toISOString().split('T')[0];
+                newData.user.lastLoginDate = u.lastLoginDate || new Date().toISOString().split('T')[0];
+                newData.user.loginStreak = parseInt(u.loginStreak) || 0;
+                newData.user.signHistory = u.signHistory || [];
+                newData.user.settings = u.settings || { bgm: true, bgmVolume: 40, sfxVolume: 50 };
+                newData.user.hasClaimedNotice = u.hasClaimedNotice || false;
+                newData.user.lastDailyWelfare = u.lastDailyWelfare || '';
+                newData.user.lastFreeClaim = u.lastFreeClaim || '';
+
+                // 迁移背包和任务数据（如果存在）
+                if (oldData.inventory && Array.isArray(oldData.inventory)) {
+                    newData.inventory = oldData.inventory;
+                }
+                if (oldData.equippedWeapon !== undefined) {
+                    newData.equippedWeapon = oldData.equippedWeapon;
+                }
+                if (oldData.taskProgress !== undefined) {
+                    newData.taskProgress = oldData.taskProgress;
+                }
+                if (oldData.taskClaimed1 !== undefined) {
+                    newData.taskClaimed1 = oldData.taskClaimed1;
+                }
+                if (oldData.taskClaimed5 !== undefined) {
+                    newData.taskClaimed5 = oldData.taskClaimed5;
+                }
+                if (oldData.taskClaimed10 !== undefined) {
+                    newData.taskClaimed10 = oldData.taskClaimed10;
+                }
+                if (oldData.chapter !== undefined) {
+                    newData.chapter = oldData.chapter;
+                }
+
+                // 保存到 data.json
+                saveData(newData);
+                return newData;
+            } catch (e) {
+                return null;
+            }
+        }
+
+        // ================================================================
+        //  核心功能
         // ================================================================
 
         var bgm = document.getElementById('bgm');
@@ -158,17 +263,21 @@
             });
         }
 
-        // 检查用户数据是否存在（统一使用 GuangXianData）
+        // 检查用户数据是否存在（统一使用 data.json）
         function checkUserData() {
-            var userData = localStorage.getItem('GuangXianData');
-            if (userData) {
-                try {
-                    var parsed = JSON.parse(userData);
-                    if (parsed && parsed.user) {
-                        document.getElementById('loginBtn').textContent = '进入游戏';
-                        return true;
-                    }
-                } catch (e) { /* 数据解析失败，视为无数据 */ }
+            var data = loadData();
+
+            // 如果没有 data.json，尝试从旧数据迁移
+            if (!data) {
+                var migrated = migrateFromOldData();
+                if (migrated) {
+                    data = migrated;
+                }
+            }
+
+            if (data && data.user && data.user.username) {
+                document.getElementById('loginBtn').textContent = '进入游戏';
+                return true;
             }
             document.getElementById('loginBtn').textContent = '登录/注册';
             return false;
@@ -190,28 +299,34 @@
         // 登录按钮根据数据状态跳转
         document.getElementById('loginBtn').addEventListener('click', function() {
             playClickSound();
-            var userData = localStorage.getItem('GuangXianData');
-            if (userData) {
-                try {
-                    var parsed = JSON.parse(userData);
-                    if (parsed && parsed.user) {
-                        var user = parsed.user;
-                        // 如果缺少角色，先去选角色
-                        if (!user.role) {
-                            window.location.href = 'ChooseRole.html';
-                            return;
-                        }
-                        // 如果缺少昵称或地区，先去完善信息
-                        if (!user.nickname || user.nickname === '云游仙友' || !user.region) {
-                            window.location.href = 'PersonalInformation.html';
-                            return;
-                        }
-                        // 数据完整 → 直接进入大厅
-                        window.location.href = 'Hall.html';
-                        return;
-                    }
-                } catch (e) { /* 数据损坏，重新登录 */ }
+
+            var data = loadData();
+
+            // 如果没有 data.json，尝试从旧数据迁移
+            if (!data) {
+                var migrated = migrateFromOldData();
+                if (migrated) {
+                    data = migrated;
+                }
             }
+
+            if (data && data.user) {
+                var user = data.user;
+                // 如果缺少角色，先去选角色
+                if (!user.role) {
+                    window.location.href = 'ChooseRole.html';
+                    return;
+                }
+                // 如果缺少昵称或地区，先去完善信息
+                if (!user.nickname || user.nickname === '云游仙友' || !user.region) {
+                    window.location.href = 'PersonalInformation.html';
+                    return;
+                }
+                // 数据完整 → 直接进入大厅
+                window.location.href = 'Hall.html';
+                return;
+            }
+
             // 无数据或数据损坏 → 进入登录页
             window.location.href = 'Signin.html';
         });

@@ -32,7 +32,6 @@
             background-position: center;
             overflow: hidden;
         }
-        /* 返回按钮 - 字号调小 */
         .back-btn {
             position: absolute;
             top: 3%;
@@ -43,7 +42,6 @@
             color: #000;
             z-index: 10;
         }
-        /* 标题 - 字号调小 */
         .title {
             position: absolute;
             top: 5%;
@@ -52,9 +50,8 @@
             font-size: 3.8vw;
             font-weight: bold;
             color: #fff;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
         }
-        /* 难度卡片容器 - 缩小间距放大卡片 */
         .difficulty-container {
             position: absolute;
             top: 22%;
@@ -69,11 +66,9 @@
             -webkit-overflow-scrolling: touch;
             padding-bottom: 2%;
         }
-        /* 隐藏滚动条 */
         .difficulty-container::-webkit-scrollbar {
             display: none;
         }
-        /* 难度卡片 - 显著放大 */
         .difficulty-card {
             flex-shrink: 0;
             width: 23.5%;
@@ -97,22 +92,19 @@
         }
         .difficulty-card.selected .card-top {
             border-color: #ff8800;
-            box-shadow: 0 0 15px rgba(255,136,0,0.5);
+            box-shadow: 0 0 15px rgba(255, 136, 0, 0.5);
         }
-        /* 等级字号 - 大幅调小 */
         .card-level {
             font-size: 3vw;
             font-weight: bold;
             color: #000;
             margin-bottom: 1vw;
         }
-        /* 怪物图片 - 放大 */
         .card-monster {
             width: 75%;
             height: 70%;
             object-fit: contain;
         }
-        /* 按钮字号 - 调小 */
         .card-btn {
             width: 100%;
             height: 20%;
@@ -136,7 +128,6 @@
         .card-btn.unlocked:active {
             transform: scale(0.97);
         }
-        /* 底部进度条 - 稍微加粗 */
         .progress-bar {
             position: absolute;
             bottom: 8%;
@@ -171,11 +162,68 @@
         </div>
     </div>
     <script>
-        // ========== 全局数据 ==========
-        let gData = {};
-        let selectedDifficulty = 0;
+        // ================================================================
+        //  统一 data.json 操作函数
+        // ================================================================
+
+        function loadData() {
+            var raw = localStorage.getItem('data.json');
+            if (!raw) return null;
+            try {
+                return JSON.parse(raw);
+            } catch (e) {
+                return null;
+            }
+        }
+
+        function saveData(data) {
+            localStorage.setItem('data.json', JSON.stringify(data));
+            localStorage.setItem('GuangXianData', JSON.stringify(data));
+        }
+
+        function createDefaultData() {
+            var now = new Date().toISOString().split('T')[0];
+            return {
+                user: {
+                    username: '',
+                    password: '',
+                    nickname: '云游仙友',
+                    avatar: 'https://xiaoye6661234.github.io/GuangXianWorld/Default avatar.jpg',
+                    region: '',
+                    bgImage: '',
+                    level: 1,
+                    coins: 1000,
+                    exp: 0,
+                    nextExp: 1000,
+                    role: '',
+                    joinedDate: now,
+                    lastLoginDate: now,
+                    loginStreak: 0,
+                    signHistory: [],
+                    settings: { bgm: true, bgmVolume: 40, sfxVolume: 50 },
+                    hasClaimedNotice: false,
+                    lastDailyWelfare: '',
+                    lastFreeClaim: ''
+                },
+                inventory: [],
+                equippedWeapon: null,
+                taskProgress: 0,
+                taskClaimed1: false,
+                taskClaimed5: false,
+                taskClaimed10: false,
+                chapter: 1
+            };
+        }
+
+        // ================================================================
+        //  全局数据
+        // ================================================================
+
+        var gData = {};
+        var selectedDifficulty = 0;
+
         // 难度配置（可无限扩展，自动生成卡片）
-        const difficultyList = [
+        var difficultyList = [
             { level: 1, name: "Lv.1", scene: "Level1.html" },
             { level: 2, name: "Lv.2", scene: "Level2.html" },
             { level: 3, name: "Lv.3", scene: "Level3.html" },
@@ -186,43 +234,52 @@
             { level: 8, name: "Lv.8", scene: "Level8.html" }
         ];
 
-        // ========== 数据检查 ==========
-        function loadData() {
-            const raw = localStorage.getItem('GuangXianData');
-            if (!raw) {
+        // ================================================================
+        //  数据检查
+        // ================================================================
+
+        function loadDataAndCheck() {
+            var data = loadData();
+            if (!data) {
                 alert('请先登录！');
                 window.location.href = 'Signin.html';
                 return;
             }
-            try {
-                gData = JSON.parse(raw);
-                if (!gData.user) {
-                    alert('数据异常，请重新登录！');
-                    window.location.href = 'Signin.html';
-                    return;
-                }
-                renderDifficultyCards();
-                initScrollSync();
-            } catch (e) {
-                alert('数据损坏，请重新登录！');
+            if (!data.user) {
+                alert('数据异常，请重新登录！');
                 window.location.href = 'Signin.html';
+                return;
             }
+            if (!data.user.role) {
+                window.location.href = 'ChooseRole.html';
+                return;
+            }
+            if (!data.user.nickname || data.user.nickname === '云游仙友' || !data.user.region) {
+                window.location.href = 'PersonalInformation.html';
+                return;
+            }
+            gData = data;
+            renderDifficultyCards();
+            initScrollSync();
         }
 
-        // ========== 渲染难度卡片 ==========
+        // ================================================================
+        //  渲染难度卡片
+        // ================================================================
+
         function renderDifficultyCards() {
-            const container = document.getElementById('difficultyContainer');
-            const userLevel = gData.user.level || 1;
-            
+            var container = document.getElementById('difficultyContainer');
+            var userLevel = gData.user.level || 1;
+
             container.innerHTML = '';
-            difficultyList.forEach((diff, index) => {
-                const isUnlocked = userLevel >= diff.level;
-                const card = document.createElement('div');
-                card.className = `difficulty-card ${index === 0 ? 'selected' : ''}`;
+            difficultyList.forEach(function(diff, index) {
+                var isUnlocked = userLevel >= diff.level;
+                var card = document.createElement('div');
+                card.className = 'difficulty-card ' + (index === 0 ? 'selected' : '');
                 card.dataset.index = index;
                 card.dataset.unlocked = isUnlocked;
                 card.dataset.scene = diff.scene;
-                
+
                 card.innerHTML = `
                     <div class="card-top">
                         <div class="card-level">${diff.name}</div>
@@ -233,65 +290,77 @@
                         ${isUnlocked ? '开始游玩' : '暂未解锁'}
                     </button>
                 `;
-                
+
                 // 卡片点击事件
-                card.addEventListener('click', () => {
+                card.addEventListener('click', function() {
                     playClickSound();
                     selectDifficulty(index);
                 });
-                
+
                 // 按钮点击事件（开始游戏）
-                card.querySelector('.card-btn').addEventListener('click', (e) => {
+                card.querySelector('.card-btn').addEventListener('click', function(e) {
                     e.stopPropagation();
                     if (isUnlocked) {
                         playClickSound();
                         startGame(diff.scene);
                     } else {
-                        alert(`需要达到 Lv.${diff.level} 才能解锁此难度！`);
+                        alert('需要达到 Lv.' + diff.level + ' 才能解锁此难度！');
                     }
                 });
-                
+
                 container.appendChild(card);
             });
         }
 
-        // ========== 选择难度 ==========
+        // ================================================================
+        //  选择难度
+        // ================================================================
+
         function selectDifficulty(index) {
-            document.querySelectorAll('.difficulty-card').forEach(card => {
+            document.querySelectorAll('.difficulty-card').forEach(function(card) {
                 card.classList.remove('selected');
             });
-            document.querySelector(`.difficulty-card[data-index="${index}"]`).classList.add('selected');
+            document.querySelector('.difficulty-card[data-index="' + index + '"]').classList.add('selected');
             selectedDifficulty = index;
         }
 
-        // ========== 开始游戏 ==========
+        // ================================================================
+        //  开始游戏
+        // ================================================================
+
         function startGame(scene) {
             // 这里可以添加游戏开始前的准备逻辑
             window.location.href = scene;
         }
 
-        // ========== 滚动与进度条同步 ==========
+        // ================================================================
+        //  滚动与进度条同步
+        // ================================================================
+
         function initScrollSync() {
-            const container = document.getElementById('difficultyContainer');
-            const progressFill = document.getElementById('progressFill');
-            
-            container.addEventListener('scroll', () => {
-                const scrollLeft = container.scrollLeft;
-                const scrollWidth = container.scrollWidth - container.clientWidth;
-                const progress = (scrollLeft / scrollWidth) * 100;
-                progressFill.style.width = `${progress}%`;
+            var container = document.getElementById('difficultyContainer');
+            var progressFill = document.getElementById('progressFill');
+
+            container.addEventListener('scroll', function() {
+                var scrollLeft = container.scrollLeft;
+                var scrollWidth = container.scrollWidth - container.clientWidth;
+                var progress = (scrollLeft / scrollWidth) * 100;
+                progressFill.style.width = progress + '%';
             });
         }
 
-        // ========== 播放点击音效 ==========
+        // ================================================================
+        //  播放点击音效
+        // ================================================================
+
         function playClickSound() {
-            let click = new Audio('https://xiaoye6661234.github.io/GuangXianWorld/click.mp3');
+            var click = new Audio('https://xiaoye6661234.github.io/GuangXianWorld/click.mp3');
             click.volume = (gData.user.settings?.sfxVolume || 50) / 100;
-            click.play().catch(e => {});
+            click.play().catch(function(e) {});
         }
 
         // 页面加载
-        loadData();
+        loadDataAndCheck();
     </script>
 </body>
 </html>
