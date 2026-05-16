@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-    <title>广仙世界 · 第二章</title>
+    <title>广仙世界 · 第七章</title>
     <style>
         * {
             margin: 0;
@@ -144,7 +144,7 @@
             background: rgba(255, 170, 0, 0.3);
         }
 
-        /* 任务面板 */
+        /* 任务面板 - 多目标 */
         #taskContainer {
             position: absolute;
             top: 12%;
@@ -155,7 +155,7 @@
             color: white;
             font-size: 1vw;
             line-height: 1.3;
-            min-width: 16vw;
+            min-width: 18vw;
         }
         #taskContainer .task-title {
             font-size: 1.2vw;
@@ -179,6 +179,26 @@
             font-size: 0.9vw;
             margin-top: 0.3vw;
             display: none;
+        }
+        #taskProgressList {
+            font-size: 0.9vw;
+            line-height: 1.5;
+            margin-top: 0.2vw;
+        }
+        .task-progress-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .task-progress-item .label {
+            color: #ccc;
+        }
+        .task-progress-item .count {
+            color: #ffcc00;
+            font-weight: bold;
+        }
+        .task-progress-item.done .count {
+            color: #44ff44;
         }
 
         /* 右侧控制按钮 */
@@ -491,18 +511,31 @@
                 <div id="avatarBox"><img id="avatarImg" src="https://xiaoye6661234.github.io/GuangXianWorld/Default avatar.jpg" /></div>
                 <div class="info-text">
                     <div class="nickname" id="nickDisplay">昵称</div>
-                    <div class="lvl" id="lvlDisplay">Lv.2</div>
+                    <div class="lvl" id="lvlDisplay">Lv.7</div>
                 </div>
             </div>
             <!-- 血条 -->
             <div id="hpBarContainer">
                 <div id="hpBarInner" style="width:100%">100%</div>
             </div>
-            <!-- 任务面板 -->
+            <!-- 任务面板 - 多目标 -->
             <div id="taskContainer">
                 <div class="task-title">📜 任务</div>
-                <div id="taskDesc">击败骷髅战士 (0/10)</div>
-                <div class="task-reward" id="taskReward">奖励: 80经验 + 35金币</div>
+                <div id="taskProgressList">
+                    <div class="task-progress-item">
+                        <span class="label">击败暗影领主</span>
+                        <span class="count" id="killBoss">0/35</span>
+                    </div>
+                    <div class="task-progress-item">
+                        <span class="label">击败高级小兵</span>
+                        <span class="count" id="killElite">0/15</span>
+                    </div>
+                    <div class="task-progress-item">
+                        <span class="label">击败中级小兵</span>
+                        <span class="count" id="killMid">0/10</span>
+                    </div>
+                </div>
+                <div class="task-reward" id="taskReward">奖励: 800经验 + 300金币</div>
                 <button id="claimTaskBtn">领取奖励</button>
             </div>
             <!-- 摇杆 -->
@@ -553,9 +586,10 @@
                 <div id="settlementPanel">
                     <div class="title" id="settlementTitle">⚔️ 战斗结算</div>
                     <div class="info" id="settlementInfo">
-                        击败怪物: <span id="killCount">0</span>/10<br />
+                        击败暗影领主: <span id="killBossDisplay">0</span>/35<br />
+                        击败高级小兵: <span id="killEliteDisplay">0</span>/15<br />
+                        击败中级小兵: <span id="killMidDisplay">0</span>/10<br />
                         获得经验: <span id="rewardExp">0</span><br />
-                        获得物品: <span id="rewardItems">-</span><br />
                         获得广仙币: <span id="rewardCoins">0</span>
                     </div>
                     <div class="btns" id="settlementBtns">
@@ -612,22 +646,26 @@
                 },
                 inventory: [],
                 equippedWeapon: null,
-                // 章节任务数据独立存储
                 chapterProgress: {
-                    "1": {
-                        taskProgress: 0,
-                        taskClaimed1: false,
-                        taskClaimed5: false,
-                        taskClaimed10: false
+                    "1": { taskProgress: 0, taskClaimed1: false, taskClaimed5: false, taskClaimed10: false },
+                    "2": { taskProgress: 0, taskClaimed1: false, taskClaimed5: false, taskClaimed10: false },
+                    "3": { taskProgress: 0, taskClaimed1: false, taskClaimed5: false, taskClaimed10: false },
+                    "4": { taskProgress: 0, taskClaimed1: false, taskClaimed5: false, taskClaimed10: false },
+                    "5": { taskProgress: 0, taskClaimed1: false, taskClaimed5: false, taskClaimed10: false },
+                    "6": { 
+                        giantKills: 0, 
+                        eliteKills: 0, 
+                        midKills: 0,
+                        claimed: false 
                     },
-                    "2": {
-                        taskProgress: 0,
-                        taskClaimed1: false,
-                        taskClaimed5: false,
-                        taskClaimed10: false
+                    "7": { 
+                        bossKills: 0, 
+                        eliteKills: 0, 
+                        midKills: 0,
+                        claimed: false 
                     }
                 },
-                chapter: 2
+                chapter: 7
             };
         }
 
@@ -649,25 +687,27 @@
         resizeCanvas();
         window.addEventListener('resize', resizeCanvas);
 
-        // 怪物配置 - Lv.2 骷髅战士
+        // 怪物配置
         var monsterDB = {};
         var foodDB = {};
         var weaponDB = {};
-        var taskDB = [];
         var gameConfig = {};
 
         var gameData = {
             monsters: [],
             monsterIdCounter: 0,
             effects: [],
-            taskIndex: 0,
-            // 不再使用全局 taskProgress，改用 chapterProgress[2]
             lastTime: 0,
             deltaTime: 0,
             terrainSeed: Math.random() * 10000,
             isDead: false,
             isCleared: false,
-            showSettlement: false
+            showSettlement: false,
+            // 第七章任务数据
+            bossKills: 0,
+            eliteKills: 0,
+            midKills: 0,
+            taskClaimed: false
         };
 
         var player = {};
@@ -681,30 +721,64 @@
         var clickAudio = null;
 
         // ================================================================
-        //  3. 加载游戏数据（Lv.2 配置）
+        //  3. 加载游戏数据（Lv.7 配置）
         // ================================================================
 
         function loadGameData() {
             gameConfig = {
-                resurrectionCost: 100,
-                drowningTime: 25,
+                resurrectionCost: 400,
+                drowningTime: 12,
                 swimImageMing: 'Ming-swim.png',
                 swimImageQing: 'Qing-swim.png',
                 mapBoundaryMultiplier: 20
             };
 
-            // Lv.2 骷髅战士
+            // Lv.7 暗影领主
             monsterDB = {};
-            monsterDB[2] = {
-                name: '骷髅战士',
-                Lv: 2,
-                imc: 'https://xiaoye6661234.github.io/GuangXianWorld/Monster2.png',
+            monsterDB['boss'] = {
+                name: '暗影领主',
+                Lv: 7,
+                imc: 'https://xiaoye6661234.github.io/GuangXianWorld/Monster6.png',
+                hp: 250,
+                maxHp: 250,
+                Beat: 50,
+                Def: 10,
+                exp: 100,
+                money: 50,
+                isBoss: true,
+                size: 80
+            };
+
+            // 中级小兵 - Monster4.png
+            monsterDB['mid'] = {
+                name: '中级小兵',
+                Lv: 5,
+                imc: 'https://xiaoye6661234.github.io/GuangXianWorld/Monster4.png',
+                hp: 100,
+                maxHp: 100,
+                Beat: 15,
+                Def: 4,
+                exp: 20,
+                money: 10,
+                isMinion: true,
+                isMid: true,
+                size: 45
+            };
+
+            // 高级小兵 - Monster5.png
+            monsterDB['elite'] = {
+                name: '高级小兵',
+                Lv: 6,
+                imc: 'https://xiaoye6661234.github.io/GuangXianWorld/Monster5.png',
                 hp: 125,
                 maxHp: 125,
-                Beat: 15,
-                Def: 3,
-                exp: 80,
-                money: 35
+                Beat: 25,
+                Def: 6,
+                exp: 30,
+                money: 15,
+                isMinion: true,
+                isElite: true,
+                size: 50
             };
 
             foodDB = {};
@@ -723,6 +797,11 @@
                 HP: 25,
                 imc: 'https://xiaoye6661234.github.io/GuangXianWorld/Cake.png'
             };
+            foodDB['广仙果'] = {
+                name: '广仙果',
+                HP: 75,
+                imc: 'https://xiaoye6661234.github.io/GuangXianWorld/GuangXianApple.png'
+            };
 
             weaponDB = {};
             weaponDB['木剑'] = {
@@ -737,12 +816,26 @@
                 imc: 'https://xiaoye6661234.github.io/GuangXianWorld/WoodSword.png',
                 Lv: 2
             };
+            weaponDB['青铜剑'] = {
+                name: '青铜剑',
+                hit: 5,
+                imc: 'https://xiaoye6661234.github.io/GuangXianWorld/WoodSword.png',
+                Lv: 4
+            };
+            weaponDB['精钢剑'] = {
+                name: '精钢剑',
+                hit: 10,
+                imc: 'https://xiaoye6661234.github.io/GuangXianWorld/WoodSword.png',
+                Lv: 6
+            };
+            weaponDB['暗影剑'] = {
+                name: '暗影剑',
+                hit: 15,
+                imc: 'https://xiaoye6661234.github.io/GuangXianWorld/WoodSword.png',
+                Lv: 7
+            };
 
-            taskDB = [
-                { word: '击败骷髅战士', given: { name: '披萨', num: 1 } }
-            ];
-
-            console.log('✅ 广仙世界 · 第二章 数据加载完成');
+            console.log('✅ 广仙世界 · 第七章 数据加载完成');
             return true;
         }
 
@@ -755,21 +848,22 @@
                 x: 1000,
                 y: 1000,
                 speed: 350,
-                hp: 100,
-                maxHP: 100,
-                attack: 10,
+                hp: 200,
+                maxHP: 200,
+                attack: 45,
                 defense: 0,
-                level: 1,
+                level: 7,
                 exp: 0,
                 nextExp: 1000,
                 coins: 0,
                 nickname: '用户',
                 avatar: 'https://xiaoye6661234.github.io/GuangXianWorld/Default avatar.jpg',
                 inventory: [
-                    { type: 'food', key: '披萨', qty: 1 },
-                    { type: 'food', key: '蛋糕', qty: 1 },
-                    { type: 'food', key: '面条', qty: 1 },
-                    { type: 'weapon', key: '木剑', qty: 1 }
+                    { type: 'food', key: '披萨', qty: 2 },
+                    { type: 'food', key: '蛋糕', qty: 3 },
+                    { type: 'food', key: '面条', qty: 2 },
+                    { type: 'food', key: '广仙果', qty: 2 },
+                    { type: 'weapon', key: '暗影剑', qty: 1 }
                 ],
                 equippedWeapon: null,
                 attackCooldown: 0,
@@ -796,48 +890,93 @@
 
             p.nickname = u.nickname || '广仙道友';
             p.avatar = u.avatar || 'https://xiaoye6661234.github.io/GuangXianWorld/Default avatar.jpg';
-            p.level = parseInt(u.level) || 1;
+            p.level = parseInt(u.level) || 7;
             p.coins = parseInt(u.coins) || 0;
             p.exp = parseInt(u.exp) || 0;
             p.nextExp = u.nextExp || (900 + p.level * 100);
             p.role = u.role || 'Ming';
 
-            var hpBonus = Math.floor((p.level - 1) / 3) * 10;
-            p.maxHP = 100 + hpBonus;
+            // 固定血量与攻击
+            p.maxHP = 200;
             p.hp = p.maxHP;
-            p.attack = 10 + (p.level - 1) * 5;
+            p.attack = 45;
 
-            if (data.equippedWeapon && weaponDB[data.equippedWeapon]) {
-                p.equippedWeapon = weaponDB[data.equippedWeapon];
-                p.attack += (p.equippedWeapon.hit || 10);
+            // 自动装备暗影剑
+            var hasWeapon = false;
+            for (var i = 0; i < p.inventory.length; i++) {
+                if (p.inventory[i].type === 'weapon' && p.inventory[i].key === '暗影剑') {
+                    hasWeapon = true;
+                    break;
+                }
+            }
+            if (!hasWeapon) {
+                p.inventory.push({ type: 'weapon', key: '暗影剑', qty: 1 });
+            }
+
+            // 装备暗影剑
+            if (weaponDB['暗影剑']) {
+                p.equippedWeapon = weaponDB['暗影剑'];
+                p.attack = 45 + (p.equippedWeapon.hit || 15);
+            }
+
+            // 确保食物数量正确
+            var foodCount = { '披萨': 0, '蛋糕': 0, '面条': 0, '广仙果': 0 };
+            for (var i = 0; i < p.inventory.length; i++) {
+                if (p.inventory[i].type === 'food') {
+                    foodCount[p.inventory[i].key] = (foodCount[p.inventory[i].key] || 0) + p.inventory[i].qty;
+                }
+            }
+            var required = { '披萨': 2, '蛋糕': 3, '面条': 2, '广仙果': 2 };
+            for (var key in required) {
+                if (foodCount[key] < required[key]) {
+                    var need = required[key] - foodCount[key];
+                    var found = false;
+                    for (var i = 0; i < p.inventory.length; i++) {
+                        if (p.inventory[i].type === 'food' && p.inventory[i].key === key) {
+                            p.inventory[i].qty += need;
+                            found = true;
+                            break;
+                        }
+                    }
+                    if (!found) {
+                        p.inventory.push({ type: 'food', key: key, qty: need });
+                    }
+                }
             }
 
             if (data.inventory && Array.isArray(data.inventory)) {
-                p.inventory = JSON.parse(JSON.stringify(data.inventory));
+                var existingKeys = {};
+                for (var i = 0; i < p.inventory.length; i++) {
+                    existingKeys[p.inventory[i].key] = true;
+                }
+                for (var i = 0; i < data.inventory.length; i++) {
+                    var item = data.inventory[i];
+                    if (existingKeys[item.key]) {
+                        for (var j = 0; j < p.inventory.length; j++) {
+                            if (p.inventory[j].key === item.key) {
+                                p.inventory[j].qty += item.qty;
+                                break;
+                            }
+                        }
+                    } else {
+                        p.inventory.push(item);
+                        existingKeys[item.key] = true;
+                    }
+                }
             }
 
-            // ================================================================
-            //  读取第二章独立任务数据（从 chapterProgress[2]）
-            // ================================================================
-            if (data.chapterProgress && data.chapterProgress[2]) {
-                var cp = data.chapterProgress[2];
-                gameData.taskProgress = cp.taskProgress || 0;
-                gameData.taskClaimed1 = cp.taskClaimed1 || false;
-                gameData.taskClaimed5 = cp.taskClaimed5 || false;
-                gameData.taskClaimed10 = cp.taskClaimed10 || false;
+            // 读取第七章独立任务数据
+            if (data.chapterProgress && data.chapterProgress[7]) {
+                var cp = data.chapterProgress[7];
+                gameData.bossKills = cp.bossKills || 0;
+                gameData.eliteKills = cp.eliteKills || 0;
+                gameData.midKills = cp.midKills || 0;
+                gameData.taskClaimed = cp.claimed || false;
             } else {
-                // 兼容旧数据（如果玩家从旧版本升级）
-                if (data.taskProgress !== undefined) {
-                    gameData.taskProgress = data.taskProgress || 0;
-                    gameData.taskClaimed1 = data.taskClaimed1 || false;
-                    gameData.taskClaimed5 = data.taskClaimed5 || false;
-                    gameData.taskClaimed10 = data.taskClaimed10 || false;
-                } else {
-                    gameData.taskProgress = 0;
-                    gameData.taskClaimed1 = false;
-                    gameData.taskClaimed5 = false;
-                    gameData.taskClaimed10 = false;
-                }
+                gameData.bossKills = 0;
+                gameData.eliteKills = 0;
+                gameData.midKills = 0;
+                gameData.taskClaimed = false;
             }
 
             return p;
@@ -849,23 +988,18 @@
                 data = createDefaultData();
             }
 
-            // 确保 chapterProgress 存在
             if (!data.chapterProgress) {
-                data.chapterProgress = {
-                    "1": { taskProgress: 0, taskClaimed1: false, taskClaimed5: false, taskClaimed10: false },
-                    "2": { taskProgress: 0, taskClaimed1: false, taskClaimed5: false, taskClaimed10: false }
-                };
+                data.chapterProgress = {};
             }
-            if (!data.chapterProgress[2]) {
-                data.chapterProgress[2] = {
-                    taskProgress: 0,
-                    taskClaimed1: false,
-                    taskClaimed5: false,
-                    taskClaimed10: false
+            if (!data.chapterProgress[7]) {
+                data.chapterProgress[7] = {
+                    bossKills: 0,
+                    eliteKills: 0,
+                    midKills: 0,
+                    claimed: false
                 };
             }
 
-            // 更新用户信息
             data.user.nickname = player.nickname;
             data.user.avatar = player.avatar;
             data.user.level = player.level;
@@ -874,22 +1008,18 @@
             data.user.nextExp = player.nextExp;
             data.user.role = player.role;
 
-            // 更新背包和装备
             data.inventory = player.inventory;
             data.equippedWeapon = player.equippedWeapon ? player.equippedWeapon.name : null;
 
-            // ================================================================
-            //  保存第二章独立任务数据到 chapterProgress[2]
-            // ================================================================
-            data.chapterProgress[2].taskProgress = gameData.taskProgress || 0;
-            data.chapterProgress[2].taskClaimed1 = gameData.taskClaimed1 || false;
-            data.chapterProgress[2].taskClaimed5 = gameData.taskClaimed5 || false;
-            data.chapterProgress[2].taskClaimed10 = gameData.taskClaimed10 || false;
+            data.chapterProgress[7].bossKills = gameData.bossKills || 0;
+            data.chapterProgress[7].eliteKills = gameData.eliteKills || 0;
+            data.chapterProgress[7].midKills = gameData.midKills || 0;
+            data.chapterProgress[7].claimed = gameData.taskClaimed || false;
 
-            data.chapter = 2;
+            data.chapter = 7;
 
             saveData(data);
-            console.log('💾 第二章数据已保存到 data.json');
+            console.log('💾 第七章数据已保存到 data.json');
         }
 
         // ================================================================
@@ -926,30 +1056,17 @@
         generateTerrain();
 
         // ================================================================
-        //  6. 怪物系统（10只骷髅战士）
+        //  6. 怪物系统
         // ================================================================
 
-        function spawnMonster(forceLv) {
-            var lv = forceLv || 2;
-            var template = monsterDB[lv];
-            if (!template) {
-                var levels = Object.keys(monsterDB).filter(function(k) { return !isNaN(k); }).map(Number).sort(function(a, b) {
-                    return a - b;
-                });
-                if (levels.length === 0) return null;
-                var bestLv = levels[0];
-                for (var i = 0; i < levels.length; i++) {
-                    if (Math.abs(levels[i] - lv) < Math.abs(bestLv - lv)) bestLv = levels[i];
-                }
-                return spawnMonster(bestLv);
-            }
-            var attempts = 0;
-            var x, y;
-            do {
-                x = 80 + Math.random() * (MAP_PIXELS - 160);
-                y = 80 + Math.random() * (MAP_PIXELS - 160);
-                attempts++;
-            } while (Math.sqrt((x - 1000) * (x - 1000) + (y - 1000) * (y - 1000)) < 300 && attempts < 50);
+        function spawnBoss() {
+            var template = monsterDB['boss'];
+            if (!template) return null;
+
+            var x = 1000 + (Math.random() - 0.5) * 400;
+            var y = 1000 + (Math.random() - 0.5) * 400;
+            x = Math.max(80, Math.min(MAP_PIXELS - 80, x));
+            y = Math.max(80, Math.min(MAP_PIXELS - 80, y));
 
             var m = {
                 id: gameData.monsterIdCounter++,
@@ -968,7 +1085,48 @@
                 attackCooldown: 0,
                 hitFlash: 0,
                 moveTimer: 0,
-                moveAngle: Math.random() * Math.PI * 2
+                moveAngle: Math.random() * Math.PI * 2,
+                isBoss: true,
+                size: template.size || 80,
+                summoned1: false
+            };
+            gameData.monsters.push(m);
+            return m;
+        }
+
+        function spawnMinion(type, bossX, bossY) {
+            var template = monsterDB[type];
+            if (!template) return null;
+
+            var angle = Math.random() * Math.PI * 2;
+            var dist = 60 + Math.random() * 80;
+            var x = bossX + Math.cos(angle) * dist;
+            var y = bossY + Math.sin(angle) * dist;
+            x = Math.max(80, Math.min(MAP_PIXELS - 80, x));
+            y = Math.max(80, Math.min(MAP_PIXELS - 80, y));
+
+            var m = {
+                id: gameData.monsterIdCounter++,
+                x: x,
+                y: y,
+                name: template.name,
+                Lv: template.Lv,
+                imc: template.imc,
+                hp: template.hp,
+                maxHp: template.maxHp,
+                Beat: template.Beat,
+                Def: template.Def,
+                exp: template.exp,
+                money: template.money,
+                alive: true,
+                attackCooldown: 0,
+                hitFlash: 0,
+                moveTimer: 0,
+                moveAngle: Math.random() * Math.PI * 2,
+                isMinion: true,
+                isMid: template.isMid || false,
+                isElite: template.isElite || false,
+                size: template.size || 45
             };
             gameData.monsters.push(m);
             return m;
@@ -977,107 +1135,65 @@
         function initMonsters() {
             gameData.monsters = [];
             gameData.monsterIdCounter = 0;
-            for (var i = 0; i < 10; i++) {
-                spawnMonster(2);
+            // 初始生成4只暗影领主
+            for (var i = 0; i < 4; i++) {
+                spawnBoss();
             }
-            console.log('✅ 已生成 10 只骷髅战士（HP: 125, 攻击: 15）');
+            console.log('✅ 已生成 4 只暗影领主（HP: 250, 攻击: 50）');
         }
 
         // ================================================================
-        //  7. 任务系统（使用 chapterProgress[2] 独立数据）
+        //  7. 任务系统（多目标）
         // ================================================================
-
-        var taskState = {
-            killCount: 0,
-            claimed1: false,
-            claimed5: false,
-            claimed10: false
-        };
-
-        function initTaskState() {
-            taskState.killCount = gameData.taskProgress || 0;
-            taskState.claimed1 = gameData.taskClaimed1 || false;
-            taskState.claimed5 = gameData.taskClaimed5 || false;
-            taskState.claimed10 = gameData.taskClaimed10 || false;
-        }
 
         function updateTaskUI() {
-            var desc = document.getElementById('taskDesc');
-            var reward = document.getElementById('taskReward');
+            var bossKills = gameData.bossKills || 0;
+            var eliteKills = gameData.eliteKills || 0;
+            var midKills = gameData.midKills || 0;
+
+            document.getElementById('killBoss').innerText = bossKills + '/35';
+            document.getElementById('killElite').innerText = eliteKills + '/15';
+            document.getElementById('killMid').innerText = midKills + '/10';
+
             var btn = document.getElementById('claimTaskBtn');
 
-            var kills = taskState.killCount;
-            desc.innerText = '击败骷髅战士 (' + kills + '/10)';
+            var allDone = bossKills >= 35 && eliteKills >= 15 && midKills >= 10;
+            var rewardText = '奖励: 800经验 + 300金币';
 
-            var rewardText = '';
-            var showBtn = false;
-            var btnText = '';
-
-            if (!taskState.claimed10 && kills >= 10) {
-                rewardText = '🎉 三倍奖励: 240经验+3披萨+105金币';
-                showBtn = true;
-                btnText = '领取三倍奖励';
-            } else if (!taskState.claimed5 && kills >= 5) {
-                rewardText = '🎉 双倍奖励: 160经验+2披萨+70金币';
-                showBtn = true;
-                btnText = '领取双倍奖励';
-            } else if (!taskState.claimed1 && kills >= 1) {
-                rewardText = '🎁 基础奖励: 80经验+1披萨+35金币';
-                showBtn = true;
-                btnText = '领取奖励';
-            } else {
-                if (kills >= 10) {
-                    rewardText = '✅ 所有奖励已领取！';
-                } else if (kills >= 5) {
-                    rewardText = '击败5只可领双倍奖励 (已领)';
-                } else if (kills >= 1) {
-                    rewardText = '击败1只可领基础奖励 (已领)';
-                } else {
-                    rewardText = '击败1只骷髅战士获得奖励';
-                }
-                showBtn = false;
-            }
-
-            reward.innerText = rewardText;
-            if (showBtn) {
+            if (allDone && !gameData.taskClaimed) {
+                document.getElementById('taskReward').innerText = '🎉 任务完成！' + rewardText;
                 btn.style.display = 'block';
-                btn.innerText = btnText;
+                btn.innerText = '领取奖励';
+            } else if (gameData.taskClaimed) {
+                document.getElementById('taskReward').innerText = '✅ 奖励已领取！';
+                btn.style.display = 'none';
             } else {
+                document.getElementById('taskReward').innerText = rewardText;
                 btn.style.display = 'none';
             }
+
+            // 更新结算面板信息
+            document.getElementById('killBossDisplay').innerText = bossKills;
+            document.getElementById('killEliteDisplay').innerText = eliteKills;
+            document.getElementById('killMidDisplay').innerText = midKills;
         }
 
         function claimTaskReward() {
-            var kills = taskState.killCount;
+            var bossKills = gameData.bossKills || 0;
+            var eliteKills = gameData.eliteKills || 0;
+            var midKills = gameData.midKills || 0;
 
-            if (kills >= 10 && !taskState.claimed10) {
-                player.exp += 240;
-                player.coins += 105;
-                addItemToInventory('披萨', 3);
-                taskState.claimed10 = true;
-                gameData.taskClaimed10 = true;
-                alert('🎉 领取三倍奖励：240经验+3披萨+105金币！');
-            } else if (kills >= 5 && !taskState.claimed5) {
-                player.exp += 160;
-                player.coins += 70;
-                addItemToInventory('披萨', 2);
-                taskState.claimed5 = true;
-                gameData.taskClaimed5 = true;
-                alert('🎉 领取双倍奖励：160经验+2披萨+70金币！');
-            } else if (kills >= 1 && !taskState.claimed1) {
-                player.exp += 80;
-                player.coins += 35;
-                addItemToInventory('披萨', 1);
-                taskState.claimed1 = true;
-                gameData.taskClaimed1 = true;
-                alert('🎁 领取基础奖励：80经验+1披萨+35金币！');
+            if (bossKills >= 35 && eliteKills >= 15 && midKills >= 10 && !gameData.taskClaimed) {
+                player.exp += 800;
+                player.coins += 300;
+                gameData.taskClaimed = true;
+                alert('🎉 领取奖励：800经验 + 300金币！');
+                checkLevelUp();
+                saveGame();
+                updateUI();
+                updateInventoryGrid();
+                updateTaskUI();
             }
-
-            checkLevelUp();
-            saveGame();
-            updateUI();
-            updateInventoryGrid();
-            updateTaskUI();
         }
 
         function addItemToInventory(key, num) {
@@ -1105,12 +1221,11 @@
                 player.exp -= player.nextExp;
                 player.level++;
                 player.nextExp = 900 + player.level * 100;
-                player.attack += 5;
                 if ((player.level - 1) % 3 === 0) {
                     player.maxHP += 10;
                 }
                 player.hp = player.maxHP;
-                alert('🎉 升级！当前等级 ' + player.level + '，攻击力 +5');
+                alert('🎉 升级！当前等级 ' + player.level + '，生命上限 +10');
             }
         }
 
@@ -1128,10 +1243,10 @@
             var healAmount = 0;
             if (foodKey === '披萨') {
                 healAmount = Math.floor(player.maxHP * 0.5);
-            } else if (foodKey === '面条') {
+            } else if (foodKey === '面条' || foodKey === '蛋糕') {
                 healAmount = 25;
-            } else if (foodKey === '蛋糕') {
-                healAmount = 25;
+            } else if (foodKey === '广仙果') {
+                healAmount = 75;
             } else {
                 healAmount = food.HP || 25;
             }
@@ -1160,14 +1275,26 @@
             var w = weaponDB[weaponKey];
             if (!w) return;
             player.equippedWeapon = w;
-            var baseAttack = 10 + (player.level - 1) * 5;
-            player.attack = baseAttack + (w.hit || 10);
-            alert('⚔️ 装备了 ' + w.name + '，攻击力 +' + (w.hit || 10));
+            var baseAttack = 45;
+            player.attack = baseAttack + (w.hit || 0);
+            alert('⚔️ 装备了 ' + w.name + '，攻击力 +' + (w.hit || 0));
             updateUI();
             saveGame();
         }
 
         function autoHeal() {
+            // 优先使用广仙果
+            var apple = null;
+            for (var i = 0; i < player.inventory.length; i++) {
+                if (player.inventory[i].type === 'food' && player.inventory[i].key === '广仙果') {
+                    apple = player.inventory[i];
+                    break;
+                }
+            }
+            if (apple) {
+                useFoodItem('广仙果');
+                return;
+            }
             var noodle = null;
             for (var i = 0; i < player.inventory.length; i++) {
                 if (player.inventory[i].type === 'food' && player.inventory[i].key === '面条') {
@@ -1218,7 +1345,7 @@
             }
 
             if (target) {
-                var atk = player.attack + (player.equippedWeapon ? (player.equippedWeapon.hit || 10) : 0);
+                var atk = player.attack;
                 var dmg = Math.max(1, atk - (target.Def || 0));
                 target.hp -= dmg;
                 target.hitFlash = 0.2;
@@ -1240,20 +1367,42 @@
                     audio.play().catch(function() {});
                 } catch (e) {}
 
+                // 如果是暗影领主，检查召唤
+                if (target.isBoss && target.alive) {
+                    if (target.hp < 125 && !target.summoned1) {
+                        target.summoned1 = true;
+                        // 召唤1-2只中级或高级小兵
+                        var count = 1 + Math.floor(Math.random() * 2);
+                        for (var k = 0; k < count; k++) {
+                            var type = Math.random() < 0.5 ? 'mid' : 'elite';
+                            spawnMinion(type, target.x, target.y);
+                        }
+                        console.log('⚔️ 暗影领主召唤了 ' + count + ' 只小兵！');
+                    }
+                }
+
                 if (target.hp <= 0) {
                     target.alive = false;
-                    taskState.killCount++;
-                    gameData.taskProgress = taskState.killCount;
-                    player.exp += target.exp || 80;
-                    player.coins += target.money || 35;
-
-                    var aliveCount = 0;
-                    for (var j = 0; j < gameData.monsters.length; j++) {
-                        if (gameData.monsters[j].alive) aliveCount++;
+                    if (target.isBoss) {
+                        gameData.bossKills++;
+                        player.exp += target.exp || 100;
+                        player.coins += target.money || 50;
+                    } else if (target.isElite) {
+                        gameData.eliteKills++;
+                        player.exp += target.exp || 30;
+                        player.coins += target.money || 15;
+                    } else if (target.isMid) {
+                        gameData.midKills++;
+                        player.exp += target.exp || 20;
+                        player.coins += target.money || 10;
                     }
-                    if (aliveCount === 0) {
+
+                    // 检查是否所有目标达成
+                    var boss = gameData.bossKills || 0;
+                    var elites = gameData.eliteKills || 0;
+                    var mids = gameData.midKills || 0;
+                    if (boss >= 35 && elites >= 15 && mids >= 10 && !gameData.isCleared) {
                         gameData.isCleared = true;
-                        // 自动晋级：直接调用晋级逻辑，不再弹窗
                         autoPromote();
                     }
 
@@ -1267,40 +1416,33 @@
         }
 
         // ================================================================
-        //  11. 自动晋级（新增函数）
+        //  11. 自动晋级（任务完成自动晋级Lv.8）
         // ================================================================
 
         function autoPromote() {
             if (gameData.showSettlement) return;
             gameData.showSettlement = true;
 
-            // 自动晋级
             player.level++;
             player.nextExp = 900 + player.level * 100;
-            player.attack = 10 + (player.level - 1) * 5;
             if ((player.level - 1) % 3 === 0) {
                 player.maxHP += 10;
             }
             player.hp = player.maxHP;
-            player.exp += 80 + taskState.killCount * 8;
-            player.coins += 35 + taskState.killCount * 3;
+            player.exp += 800;
+            player.coins += 300;
 
-            // 保存数据到 data.json
             var data = loadData();
             if (data) {
-                // 确保 chapterProgress 存在
                 if (!data.chapterProgress) {
-                    data.chapterProgress = {
-                        "1": { taskProgress: 0, taskClaimed1: false, taskClaimed5: false, taskClaimed10: false },
-                        "2": { taskProgress: 0, taskClaimed1: false, taskClaimed5: false, taskClaimed10: false }
-                    };
+                    data.chapterProgress = {};
                 }
-                if (!data.chapterProgress[2]) {
-                    data.chapterProgress[2] = {
-                        taskProgress: 0,
-                        taskClaimed1: false,
-                        taskClaimed5: false,
-                        taskClaimed10: false
+                if (!data.chapterProgress[7]) {
+                    data.chapterProgress[7] = {
+                        bossKills: 0,
+                        eliteKills: 0,
+                        midKills: 0,
+                        claimed: false
                     };
                 }
 
@@ -1311,17 +1453,16 @@
                 data.inventory = player.inventory;
                 data.equippedWeapon = player.equippedWeapon ? player.equippedWeapon.name : null;
 
-                // 保存第二章任务数据
-                data.chapterProgress[2].taskProgress = taskState.killCount;
-                data.chapterProgress[2].taskClaimed1 = taskState.claimed1;
-                data.chapterProgress[2].taskClaimed5 = taskState.claimed5;
-                data.chapterProgress[2].taskClaimed10 = taskState.claimed10;
+                data.chapterProgress[7].bossKills = gameData.bossKills;
+                data.chapterProgress[7].eliteKills = gameData.eliteKills;
+                data.chapterProgress[7].midKills = gameData.midKills;
+                data.chapterProgress[7].claimed = gameData.taskClaimed;
 
-                data.chapter = 3; // 解锁第三章
+                data.chapter = 8;
                 saveData(data);
             }
 
-            alert('🎊 恭喜通关第二章！自动晋级至 Lv.' + player.level + '，解锁第三章！');
+            alert('🎊 恭喜通关第七章！自动晋级至 Lv.' + player.level + '，解锁第八章！');
             window.location.href = 'Hall.html';
         }
 
@@ -1350,7 +1491,7 @@
             gameData.isDead = true;
             player.isDead = true;
 
-            var cost = gameConfig.resurrectionCost || 100;
+            var cost = gameConfig.resurrectionCost || 400;
             var notice = document.getElementById('settlementModal');
             var title = document.getElementById('settlementTitle');
             var info = document.getElementById('settlementInfo');
@@ -1387,7 +1528,7 @@
         }
 
         function resurrectPlayer() {
-            var cost = gameConfig.resurrectionCost || 100;
+            var cost = gameConfig.resurrectionCost || 400;
             if (player.coins < cost) {
                 alert('广仙币不足，无法复活！');
                 return;
@@ -1617,12 +1758,12 @@
             if (item.type === 'food' && foodDB[item.key]) {
                 var food = foodDB[item.key];
                 imgSrc = food.imc;
-                description = '❤️ 可恢复 ' + (item.key === '披萨' ? '50% HP' : '25 HP');
+                description = '❤️ 可恢复 ' + (item.key === '披萨' ? '50% HP' : (item.key === '广仙果' ? '75 HP' : '25 HP'));
                 btnText = '使用恢复';
             } else if (item.type === 'weapon' && weaponDB[item.key]) {
                 var weapon = weaponDB[item.key];
                 imgSrc = weapon.imc;
-                description = '⚔️ 攻击力 +' + (weapon.hit || 10) + ' (Lv.' + (weapon.Lv || 1) + ')';
+                description = '⚔️ 攻击力 +' + (weapon.hit || 0) + ' (Lv.' + (weapon.Lv || 1) + ')';
                 btnText = '装备武器';
             } else {
                 imgSrc = 'https://xiaoye6661234.github.io/GuangXianWorld/Default avatar.jpg';
@@ -1770,7 +1911,7 @@
                 m.y = Math.max(margin, Math.min(MAP_PIXELS - margin, m.y));
 
                 if (dist < 70 && m.attackCooldown <= 0 && player.invincible <= 0) {
-                    var dmg = Math.max(1, (m.Beat || 15) - player.defense);
+                    var dmg = Math.max(1, (m.Beat || 0) - player.defense);
                     player.hp -= dmg;
                     player.invincible = 0.5;
                     m.attackCooldown = 1.0;
@@ -1783,10 +1924,20 @@
                 }
             }
 
+            // 清理已死亡的怪物
             gameData.monsters = gameData.monsters.filter(function(m) { return m.alive; });
-            var targetCount = 10;
-            while (gameData.monsters.length < targetCount) {
-                spawnMonster(2);
+
+            // 补充暗影领主，保持总数在4-7只
+            var bossCount = 0;
+            for (var i = 0; i < gameData.monsters.length; i++) {
+                if (gameData.monsters[i].isBoss) {
+                    bossCount++;
+                }
+            }
+            var targetCount = Math.min(4 + Math.floor(gameData.bossKills / 10), 7);
+            while (bossCount < targetCount && !gameData.isCleared) {
+                spawnBoss();
+                bossCount++;
             }
 
             for (var j = gameData.effects.length - 1; j >= 0; j--) {
@@ -1856,7 +2007,7 @@
                 if (!m.alive) continue;
                 var mx = m.x - offsetX;
                 var my = m.y - offsetY;
-                var size = 50;
+                var size = m.size || 50;
 
                 var img = new Image();
                 img.src = m.imc;
@@ -1868,16 +2019,26 @@
                     ctx.arc(mx, my, size / 2, 0, Math.PI * 2);
                     ctx.fill();
                 }
+
+                if (m.isBoss) {
+                    ctx.strokeStyle = '#ffd700';
+                    ctx.lineWidth = 3;
+                    ctx.beginPath();
+                    ctx.arc(mx, my, size / 2 + 4, 0, Math.PI * 2);
+                    ctx.stroke();
+                }
+
                 ctx.fillStyle = 'white';
-                ctx.font = '1vw Arial';
+                ctx.font = (m.isBoss ? '1.2vw' : '1vw') + ' Arial';
                 ctx.textAlign = 'center';
                 ctx.shadowColor = 'black';
                 ctx.shadowBlur = 4;
-                ctx.fillText('Lv.' + m.Lv, mx, my - size / 2 - 8);
+                var label = m.isBoss ? '🌑 ' : '';
+                ctx.fillText(label + 'Lv.' + m.Lv, mx, my - size / 2 - 8);
                 ctx.shadowBlur = 0;
 
-                var hpW = 40;
-                var hpH = 3;
+                var hpW = m.isBoss ? 60 : 40;
+                var hpH = m.isBoss ? 4 : 3;
                 ctx.fillStyle = 'rgba(0,0,0,0.7)';
                 ctx.fillRect(mx - hpW / 2, my - size / 2 - 16, hpW, hpH);
                 ctx.fillStyle = '#ff3333';
@@ -1987,15 +2148,13 @@
             }
 
             player = loadPlayerFromData(data);
-            initTaskState();
+            updateUI();
+            updateInventoryGrid();
+            updateTaskUI();
 
             player.x = 1000;
             player.y = 1000;
             initMonsters();
-
-            updateUI();
-            updateInventoryGrid();
-            updateTaskUI();
 
             initAudio();
             addClickSounds();
@@ -2008,10 +2167,10 @@
         window.addEventListener('resize', function() { resizeCanvas(); });
         document.addEventListener('contextmenu', function(e) { e.preventDefault(); });
 
-        console.log('🎮 广仙世界 · 第二章 已启动！');
+        console.log('🎮 广仙世界 · 第七章 已启动！');
         console.log('📖 快捷键: W/A/S/D 移动 | H 攻击 | Q 疾跑 | R 恢复 | B 背包 | F 领任务');
-        console.log('🎯 目标: 击败10只骷髅战士自动晋级！');
-        console.log('💾 数据与 data.json 完全互通，第二章任务数据独立存储');
+        console.log('🎯 目标: 击败暗影领主×35、高级小兵×15、中级小兵×10 自动晋级！');
+        console.log('💾 数据与 data.json 完全互通，第七章任务数据独立存储');
     </script>
 </body>
 </html>

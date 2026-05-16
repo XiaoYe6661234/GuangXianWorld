@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-    <title>广仙世界 · 第二章</title>
+    <title>广仙世界 · 第三章</title>
     <style>
         * {
             margin: 0;
@@ -491,7 +491,7 @@
                 <div id="avatarBox"><img id="avatarImg" src="https://xiaoye6661234.github.io/GuangXianWorld/Default avatar.jpg" /></div>
                 <div class="info-text">
                     <div class="nickname" id="nickDisplay">昵称</div>
-                    <div class="lvl" id="lvlDisplay">Lv.2</div>
+                    <div class="lvl" id="lvlDisplay">Lv.3</div>
                 </div>
             </div>
             <!-- 血条 -->
@@ -501,8 +501,8 @@
             <!-- 任务面板 -->
             <div id="taskContainer">
                 <div class="task-title">📜 任务</div>
-                <div id="taskDesc">击败骷髅战士 (0/10)</div>
-                <div class="task-reward" id="taskReward">奖励: 80经验 + 35金币</div>
+                <div id="taskDesc">击败骷髅大怪 (0/15)</div>
+                <div class="task-reward" id="taskReward">奖励: 100经验 + 50金币</div>
                 <button id="claimTaskBtn">领取奖励</button>
             </div>
             <!-- 摇杆 -->
@@ -553,7 +553,7 @@
                 <div id="settlementPanel">
                     <div class="title" id="settlementTitle">⚔️ 战斗结算</div>
                     <div class="info" id="settlementInfo">
-                        击败怪物: <span id="killCount">0</span>/10<br />
+                        击败怪物: <span id="killCount">0</span>/15<br />
                         获得经验: <span id="rewardExp">0</span><br />
                         获得物品: <span id="rewardItems">-</span><br />
                         获得广仙币: <span id="rewardCoins">0</span>
@@ -612,22 +612,12 @@
                 },
                 inventory: [],
                 equippedWeapon: null,
-                // 章节任务数据独立存储
                 chapterProgress: {
-                    "1": {
-                        taskProgress: 0,
-                        taskClaimed1: false,
-                        taskClaimed5: false,
-                        taskClaimed10: false
-                    },
-                    "2": {
-                        taskProgress: 0,
-                        taskClaimed1: false,
-                        taskClaimed5: false,
-                        taskClaimed10: false
-                    }
+                    "1": { taskProgress: 0, taskClaimed1: false, taskClaimed5: false, taskClaimed10: false },
+                    "2": { taskProgress: 0, taskClaimed1: false, taskClaimed5: false, taskClaimed10: false },
+                    "3": { taskProgress: 0, taskClaimed1: false, taskClaimed5: false, taskClaimed10: false }
                 },
-                chapter: 2
+                chapter: 3
             };
         }
 
@@ -649,7 +639,7 @@
         resizeCanvas();
         window.addEventListener('resize', resizeCanvas);
 
-        // 怪物配置 - Lv.2 骷髅战士
+        // 怪物配置 - Lv.3 骷髅大怪
         var monsterDB = {};
         var foodDB = {};
         var weaponDB = {};
@@ -661,7 +651,6 @@
             monsterIdCounter: 0,
             effects: [],
             taskIndex: 0,
-            // 不再使用全局 taskProgress，改用 chapterProgress[2]
             lastTime: 0,
             deltaTime: 0,
             terrainSeed: Math.random() * 10000,
@@ -681,30 +670,30 @@
         var clickAudio = null;
 
         // ================================================================
-        //  3. 加载游戏数据（Lv.2 配置）
+        //  3. 加载游戏数据（Lv.3 配置）
         // ================================================================
 
         function loadGameData() {
             gameConfig = {
-                resurrectionCost: 100,
-                drowningTime: 25,
+                resurrectionCost: 150,
+                drowningTime: 20,
                 swimImageMing: 'Ming-swim.png',
                 swimImageQing: 'Qing-swim.png',
                 mapBoundaryMultiplier: 20
             };
 
-            // Lv.2 骷髅战士
+            // Lv.3 骷髅大怪
             monsterDB = {};
-            monsterDB[2] = {
-                name: '骷髅战士',
-                Lv: 2,
-                imc: 'https://xiaoye6661234.github.io/GuangXianWorld/Monster2.png',
-                hp: 125,
-                maxHp: 125,
+            monsterDB[3] = {
+                name: '骷髅大怪',
+                Lv: 3,
+                imc: 'https://xiaoye6661234.github.io/GuangXianWorld/Monster3.png',
+                hp: 150,
+                maxHp: 150,
                 Beat: 15,
-                Def: 3,
-                exp: 80,
-                money: 35
+                Def: 5,
+                exp: 100,
+                money: 50
             };
 
             foodDB = {};
@@ -739,10 +728,10 @@
             };
 
             taskDB = [
-                { word: '击败骷髅战士', given: { name: '披萨', num: 1 } }
+                { word: '击败骷髅大怪', given: { name: '披萨', num: 1 } }
             ];
 
-            console.log('✅ 广仙世界 · 第二章 数据加载完成');
+            console.log('✅ 广仙世界 · 第三章 数据加载完成');
             return true;
         }
 
@@ -755,11 +744,11 @@
                 x: 1000,
                 y: 1000,
                 speed: 350,
-                hp: 100,
-                maxHP: 100,
-                attack: 10,
+                hp: 115,
+                maxHP: 115,
+                attack: 15,
                 defense: 0,
-                level: 1,
+                level: 3,
                 exp: 0,
                 nextExp: 1000,
                 coins: 0,
@@ -796,16 +785,16 @@
 
             p.nickname = u.nickname || '广仙道友';
             p.avatar = u.avatar || 'https://xiaoye6661234.github.io/GuangXianWorld/Default avatar.jpg';
-            p.level = parseInt(u.level) || 1;
+            p.level = parseInt(u.level) || 3;
             p.coins = parseInt(u.coins) || 0;
             p.exp = parseInt(u.exp) || 0;
             p.nextExp = u.nextExp || (900 + p.level * 100);
             p.role = u.role || 'Ming';
 
-            var hpBonus = Math.floor((p.level - 1) / 3) * 10;
-            p.maxHP = 100 + hpBonus;
+            // 固定血量与攻击（按用户要求）
+            p.maxHP = 115;
             p.hp = p.maxHP;
-            p.attack = 10 + (p.level - 1) * 5;
+            p.attack = 15;
 
             if (data.equippedWeapon && weaponDB[data.equippedWeapon]) {
                 p.equippedWeapon = weaponDB[data.equippedWeapon];
@@ -816,28 +805,18 @@
                 p.inventory = JSON.parse(JSON.stringify(data.inventory));
             }
 
-            // ================================================================
-            //  读取第二章独立任务数据（从 chapterProgress[2]）
-            // ================================================================
-            if (data.chapterProgress && data.chapterProgress[2]) {
-                var cp = data.chapterProgress[2];
+            // 读取第三章独立任务数据（从 chapterProgress[3]）
+            if (data.chapterProgress && data.chapterProgress[3]) {
+                var cp = data.chapterProgress[3];
                 gameData.taskProgress = cp.taskProgress || 0;
                 gameData.taskClaimed1 = cp.taskClaimed1 || false;
                 gameData.taskClaimed5 = cp.taskClaimed5 || false;
                 gameData.taskClaimed10 = cp.taskClaimed10 || false;
             } else {
-                // 兼容旧数据（如果玩家从旧版本升级）
-                if (data.taskProgress !== undefined) {
-                    gameData.taskProgress = data.taskProgress || 0;
-                    gameData.taskClaimed1 = data.taskClaimed1 || false;
-                    gameData.taskClaimed5 = data.taskClaimed5 || false;
-                    gameData.taskClaimed10 = data.taskClaimed10 || false;
-                } else {
-                    gameData.taskProgress = 0;
-                    gameData.taskClaimed1 = false;
-                    gameData.taskClaimed5 = false;
-                    gameData.taskClaimed10 = false;
-                }
+                gameData.taskProgress = 0;
+                gameData.taskClaimed1 = false;
+                gameData.taskClaimed5 = false;
+                gameData.taskClaimed10 = false;
             }
 
             return p;
@@ -851,13 +830,10 @@
 
             // 确保 chapterProgress 存在
             if (!data.chapterProgress) {
-                data.chapterProgress = {
-                    "1": { taskProgress: 0, taskClaimed1: false, taskClaimed5: false, taskClaimed10: false },
-                    "2": { taskProgress: 0, taskClaimed1: false, taskClaimed5: false, taskClaimed10: false }
-                };
+                data.chapterProgress = {};
             }
-            if (!data.chapterProgress[2]) {
-                data.chapterProgress[2] = {
+            if (!data.chapterProgress[3]) {
+                data.chapterProgress[3] = {
                     taskProgress: 0,
                     taskClaimed1: false,
                     taskClaimed5: false,
@@ -874,22 +850,19 @@
             data.user.nextExp = player.nextExp;
             data.user.role = player.role;
 
-            // 更新背包和装备
             data.inventory = player.inventory;
             data.equippedWeapon = player.equippedWeapon ? player.equippedWeapon.name : null;
 
-            // ================================================================
-            //  保存第二章独立任务数据到 chapterProgress[2]
-            // ================================================================
-            data.chapterProgress[2].taskProgress = gameData.taskProgress || 0;
-            data.chapterProgress[2].taskClaimed1 = gameData.taskClaimed1 || false;
-            data.chapterProgress[2].taskClaimed5 = gameData.taskClaimed5 || false;
-            data.chapterProgress[2].taskClaimed10 = gameData.taskClaimed10 || false;
+            // 保存第三章独立任务数据
+            data.chapterProgress[3].taskProgress = gameData.taskProgress || 0;
+            data.chapterProgress[3].taskClaimed1 = gameData.taskClaimed1 || false;
+            data.chapterProgress[3].taskClaimed5 = gameData.taskClaimed5 || false;
+            data.chapterProgress[3].taskClaimed10 = gameData.taskClaimed10 || false;
 
-            data.chapter = 2;
+            data.chapter = 3;
 
             saveData(data);
-            console.log('💾 第二章数据已保存到 data.json');
+            console.log('💾 第三章数据已保存到 data.json');
         }
 
         // ================================================================
@@ -926,11 +899,11 @@
         generateTerrain();
 
         // ================================================================
-        //  6. 怪物系统（10只骷髅战士）
+        //  6. 怪物系统（15只骷髅大怪）
         // ================================================================
 
         function spawnMonster(forceLv) {
-            var lv = forceLv || 2;
+            var lv = forceLv || 3;
             var template = monsterDB[lv];
             if (!template) {
                 var levels = Object.keys(monsterDB).filter(function(k) { return !isNaN(k); }).map(Number).sort(function(a, b) {
@@ -977,14 +950,14 @@
         function initMonsters() {
             gameData.monsters = [];
             gameData.monsterIdCounter = 0;
-            for (var i = 0; i < 10; i++) {
-                spawnMonster(2);
+            for (var i = 0; i < 15; i++) {
+                spawnMonster(3);
             }
-            console.log('✅ 已生成 10 只骷髅战士（HP: 125, 攻击: 15）');
+            console.log('✅ 已生成 15 只骷髅大怪（HP: 150, 攻击: 15）');
         }
 
         // ================================================================
-        //  7. 任务系统（使用 chapterProgress[2] 独立数据）
+        //  7. 任务系统（使用 chapterProgress[3] 独立数据）
         // ================================================================
 
         var taskState = {
@@ -1007,22 +980,23 @@
             var btn = document.getElementById('claimTaskBtn');
 
             var kills = taskState.killCount;
-            desc.innerText = '击败骷髅战士 (' + kills + '/10)';
+            desc.innerText = '击败骷髅大怪 (' + kills + '/15)';
 
             var rewardText = '';
             var showBtn = false;
             var btnText = '';
 
+            // 奖励档次：1、5、10 只（每5只一档）
             if (!taskState.claimed10 && kills >= 10) {
-                rewardText = '🎉 三倍奖励: 240经验+3披萨+105金币';
+                rewardText = '🎉 三倍奖励: 300经验+3披萨+150金币';
                 showBtn = true;
                 btnText = '领取三倍奖励';
             } else if (!taskState.claimed5 && kills >= 5) {
-                rewardText = '🎉 双倍奖励: 160经验+2披萨+70金币';
+                rewardText = '🎉 双倍奖励: 200经验+2披萨+100金币';
                 showBtn = true;
                 btnText = '领取双倍奖励';
             } else if (!taskState.claimed1 && kills >= 1) {
-                rewardText = '🎁 基础奖励: 80经验+1披萨+35金币';
+                rewardText = '🎁 基础奖励: 100经验+1披萨+50金币';
                 showBtn = true;
                 btnText = '领取奖励';
             } else {
@@ -1033,7 +1007,7 @@
                 } else if (kills >= 1) {
                     rewardText = '击败1只可领基础奖励 (已领)';
                 } else {
-                    rewardText = '击败1只骷髅战士获得奖励';
+                    rewardText = '击败1只骷髅大怪获得奖励';
                 }
                 showBtn = false;
             }
@@ -1051,28 +1025,29 @@
             var kills = taskState.killCount;
 
             if (kills >= 10 && !taskState.claimed10) {
-                player.exp += 240;
-                player.coins += 105;
+                player.exp += 300;
+                player.coins += 150;
                 addItemToInventory('披萨', 3);
                 taskState.claimed10 = true;
                 gameData.taskClaimed10 = true;
-                alert('🎉 领取三倍奖励：240经验+3披萨+105金币！');
+                alert('🎉 领取三倍奖励：300经验+3披萨+150金币！');
             } else if (kills >= 5 && !taskState.claimed5) {
-                player.exp += 160;
-                player.coins += 70;
+                player.exp += 200;
+                player.coins += 100;
                 addItemToInventory('披萨', 2);
                 taskState.claimed5 = true;
                 gameData.taskClaimed5 = true;
-                alert('🎉 领取双倍奖励：160经验+2披萨+70金币！');
+                alert('🎉 领取双倍奖励：200经验+2披萨+100金币！');
             } else if (kills >= 1 && !taskState.claimed1) {
-                player.exp += 80;
-                player.coins += 35;
+                player.exp += 100;
+                player.coins += 50;
                 addItemToInventory('披萨', 1);
                 taskState.claimed1 = true;
                 gameData.taskClaimed1 = true;
-                alert('🎁 领取基础奖励：80经验+1披萨+35金币！');
+                alert('🎁 领取基础奖励：100经验+1披萨+50金币！');
             }
 
+            // 检查升级（但根据用户要求，攻击力固定，升级仅提升等级数字）
             checkLevelUp();
             saveGame();
             updateUI();
@@ -1097,7 +1072,7 @@
         }
 
         // ================================================================
-        //  8. 升级系统
+        //  8. 升级系统（仅提升等级数字，不改变攻击力）
         // ================================================================
 
         function checkLevelUp() {
@@ -1105,12 +1080,13 @@
                 player.exp -= player.nextExp;
                 player.level++;
                 player.nextExp = 900 + player.level * 100;
-                player.attack += 5;
+                // 不增加攻击力（保持固定15）
+                // 每3级增加10点血量
                 if ((player.level - 1) % 3 === 0) {
                     player.maxHP += 10;
                 }
                 player.hp = player.maxHP;
-                alert('🎉 升级！当前等级 ' + player.level + '，攻击力 +5');
+                alert('🎉 升级！当前等级 ' + player.level + '，生命上限 +10');
             }
         }
 
@@ -1128,9 +1104,7 @@
             var healAmount = 0;
             if (foodKey === '披萨') {
                 healAmount = Math.floor(player.maxHP * 0.5);
-            } else if (foodKey === '面条') {
-                healAmount = 25;
-            } else if (foodKey === '蛋糕') {
+            } else if (foodKey === '面条' || foodKey === '蛋糕') {
                 healAmount = 25;
             } else {
                 healAmount = food.HP || 25;
@@ -1160,7 +1134,8 @@
             var w = weaponDB[weaponKey];
             if (!w) return;
             player.equippedWeapon = w;
-            var baseAttack = 10 + (player.level - 1) * 5;
+            // 攻击力固定15，装备额外增加
+            var baseAttack = 15;
             player.attack = baseAttack + (w.hit || 10);
             alert('⚔️ 装备了 ' + w.name + '，攻击力 +' + (w.hit || 10));
             updateUI();
@@ -1218,7 +1193,7 @@
             }
 
             if (target) {
-                var atk = player.attack + (player.equippedWeapon ? (player.equippedWeapon.hit || 10) : 0);
+                var atk = player.attack;
                 var dmg = Math.max(1, atk - (target.Def || 0));
                 target.hp -= dmg;
                 target.hitFlash = 0.2;
@@ -1244,8 +1219,8 @@
                     target.alive = false;
                     taskState.killCount++;
                     gameData.taskProgress = taskState.killCount;
-                    player.exp += target.exp || 80;
-                    player.coins += target.money || 35;
+                    player.exp += target.exp || 100;
+                    player.coins += target.money || 50;
 
                     var aliveCount = 0;
                     for (var j = 0; j < gameData.monsters.length; j++) {
@@ -1253,7 +1228,6 @@
                     }
                     if (aliveCount === 0) {
                         gameData.isCleared = true;
-                        // 自动晋级：直接调用晋级逻辑，不再弹窗
                         autoPromote();
                     }
 
@@ -1267,7 +1241,7 @@
         }
 
         // ================================================================
-        //  11. 自动晋级（新增函数）
+        //  11. 自动晋级（击败15只自动晋级Lv.4）
         // ================================================================
 
         function autoPromote() {
@@ -1277,26 +1251,21 @@
             // 自动晋级
             player.level++;
             player.nextExp = 900 + player.level * 100;
-            player.attack = 10 + (player.level - 1) * 5;
+            // 不增加攻击（固定15）
             if ((player.level - 1) % 3 === 0) {
                 player.maxHP += 10;
             }
             player.hp = player.maxHP;
-            player.exp += 80 + taskState.killCount * 8;
-            player.coins += 35 + taskState.killCount * 3;
+            player.exp += 100 + taskState.killCount * 5;
+            player.coins += 50 + taskState.killCount * 3;
 
-            // 保存数据到 data.json
             var data = loadData();
             if (data) {
-                // 确保 chapterProgress 存在
                 if (!data.chapterProgress) {
-                    data.chapterProgress = {
-                        "1": { taskProgress: 0, taskClaimed1: false, taskClaimed5: false, taskClaimed10: false },
-                        "2": { taskProgress: 0, taskClaimed1: false, taskClaimed5: false, taskClaimed10: false }
-                    };
+                    data.chapterProgress = {};
                 }
-                if (!data.chapterProgress[2]) {
-                    data.chapterProgress[2] = {
+                if (!data.chapterProgress[3]) {
+                    data.chapterProgress[3] = {
                         taskProgress: 0,
                         taskClaimed1: false,
                         taskClaimed5: false,
@@ -1311,17 +1280,16 @@
                 data.inventory = player.inventory;
                 data.equippedWeapon = player.equippedWeapon ? player.equippedWeapon.name : null;
 
-                // 保存第二章任务数据
-                data.chapterProgress[2].taskProgress = taskState.killCount;
-                data.chapterProgress[2].taskClaimed1 = taskState.claimed1;
-                data.chapterProgress[2].taskClaimed5 = taskState.claimed5;
-                data.chapterProgress[2].taskClaimed10 = taskState.claimed10;
+                data.chapterProgress[3].taskProgress = taskState.killCount;
+                data.chapterProgress[3].taskClaimed1 = taskState.claimed1;
+                data.chapterProgress[3].taskClaimed5 = taskState.claimed5;
+                data.chapterProgress[3].taskClaimed10 = taskState.claimed10;
 
-                data.chapter = 3; // 解锁第三章
+                data.chapter = 4;
                 saveData(data);
             }
 
-            alert('🎊 恭喜通关第二章！自动晋级至 Lv.' + player.level + '，解锁第三章！');
+            alert('🎊 恭喜通关第三章！自动晋级至 Lv.' + player.level + '，解锁第四章！');
             window.location.href = 'Hall.html';
         }
 
@@ -1350,7 +1318,7 @@
             gameData.isDead = true;
             player.isDead = true;
 
-            var cost = gameConfig.resurrectionCost || 100;
+            var cost = gameConfig.resurrectionCost || 150;
             var notice = document.getElementById('settlementModal');
             var title = document.getElementById('settlementTitle');
             var info = document.getElementById('settlementInfo');
@@ -1387,7 +1355,7 @@
         }
 
         function resurrectPlayer() {
-            var cost = gameConfig.resurrectionCost || 100;
+            var cost = gameConfig.resurrectionCost || 150;
             if (player.coins < cost) {
                 alert('广仙币不足，无法复活！');
                 return;
@@ -1784,9 +1752,9 @@
             }
 
             gameData.monsters = gameData.monsters.filter(function(m) { return m.alive; });
-            var targetCount = 10;
+            var targetCount = 15;
             while (gameData.monsters.length < targetCount) {
-                spawnMonster(2);
+                spawnMonster(3);
             }
 
             for (var j = gameData.effects.length - 1; j >= 0; j--) {
@@ -2008,10 +1976,10 @@
         window.addEventListener('resize', function() { resizeCanvas(); });
         document.addEventListener('contextmenu', function(e) { e.preventDefault(); });
 
-        console.log('🎮 广仙世界 · 第二章 已启动！');
+        console.log('🎮 广仙世界 · 第三章 已启动！');
         console.log('📖 快捷键: W/A/S/D 移动 | H 攻击 | Q 疾跑 | R 恢复 | B 背包 | F 领任务');
-        console.log('🎯 目标: 击败10只骷髅战士自动晋级！');
-        console.log('💾 数据与 data.json 完全互通，第二章任务数据独立存储');
+        console.log('🎯 目标: 击败15只骷髅大怪自动晋级！');
+        console.log('💾 数据与 data.json 完全互通，第三章任务数据独立存储');
     </script>
 </body>
 </html>
