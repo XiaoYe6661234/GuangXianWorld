@@ -2,15 +2,20 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
     <title>广仙世界</title>
     <style>
+        /* ===== 全局重置 & 防下载 ===== */
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: "Microsoft YaHei", sans-serif;
+            font-family: "Microsoft YaHei", "PingFang SC", system-ui, sans-serif;
+            -webkit-touch-callout: none;
+            -webkit-user-select: none;
+            user-select: none;
         }
+
         body {
             width: 100vw;
             height: 100vh;
@@ -20,16 +25,17 @@
             align-items: center;
             background: #000;
         }
+
         .game-container {
             width: 100vw;
             height: 56.25vw;
             max-height: 100vh;
             max-width: 177.78vh;
             position: relative;
-            /* 替换为指定背景图 */
             background: url('https://xiaoye6661234.github.io/GuangXianWorld/background.jpg') center/cover no-repeat;
         }
-        /* 适龄提示改为设计图图片样式 */
+
+        /* ===== 适龄提示 (彻底防下载) ===== */
         .age-rating {
             position: absolute;
             top: 15px;
@@ -37,27 +43,41 @@
             width: 70px;
             height: auto;
             border-radius: 6px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+            pointer-events: none;
+            /* 禁止所有交互 → 无法长按 */
+            -webkit-touch-callout: none;
+            -webkit-user-select: none;
+            user-select: none;
+            draggable: false;
         }
+
+        /* ===== Logo (彻底防下载) ===== */
         .logo {
             position: absolute;
             top: 50%;
             left: 50%;
-            /* 微调位置避免太靠上 */
             transform: translate(-50%, -55%);
-            /* 缩小logo避免太满 */
             width: 52%;
             height: auto;
-            filter: drop-shadow(0 4px 12px rgba(0,0,0,0.3));
+            filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.3));
+            pointer-events: none;
+            /* 禁止所有交互 → 无法长按 */
+            -webkit-touch-callout: none;
+            -webkit-user-select: none;
+            user-select: none;
+            draggable: false;
         }
+
+        /* ===== 登录按钮 (字体调小) ===== */
         .login-btn {
             position: absolute;
             bottom: 15%;
             left: 50%;
             transform: translateX(-50%);
-            /* 调小内边距和字体 */
-            padding: 12px 48px;
-            font-size: 22px;
+            padding: 10px 38px;
+            /* 字体从 22px → 16px，更小巧 */
+            font-size: 16px;
             font-weight: bold;
             color: #fff;
             background: #ffb300;
@@ -65,13 +85,22 @@
             border-radius: 10px;
             cursor: pointer;
             transition: all 0.3s ease;
-            box-shadow: 0 4px 12px rgba(255,179,0,0.3);
+            box-shadow: 0 4px 12px rgba(255, 179, 0, 0.3);
+            /* 防止按钮文字被选中 */
+            -webkit-touch-callout: none;
+            -webkit-user-select: none;
+            user-select: none;
         }
         .login-btn:hover {
             background: #ffa000;
             transform: translateX(-50%) scale(1.03);
-            box-shadow: 0 6px 16px rgba(255,179,0,0.4);
+            box-shadow: 0 6px 16px rgba(255, 179, 0, 0.4);
         }
+        .login-btn:active {
+            transform: translateX(-50%) scale(0.96);
+        }
+
+        /* ===== 竖屏适配 ===== */
         @media (orientation: portrait) {
             .game-container {
                 transform: rotate(-90deg) scale(0.8);
@@ -80,33 +109,61 @@
     </style>
 </head>
 <body>
+
     <div class="game-container">
-        <!-- 替换为CADPA适龄提示图片 -->
-        <img src="https://xiaoye6661234.github.io/GuangXianWorld/CADPA.png" alt="12+适龄提示" class="age-rating" />
-        <img src="https://xiaoye6661234.github.io/GuangXianWorld/logo.png" alt="广仙世界" class="logo" />
+        <!-- 适龄提示图片：完全防长按/右键/拖拽 -->
+        <img
+        src="https://xiaoye6661234.github.io/GuangXianWorld/CADPA.png"
+        alt="12+适龄提示"
+        class="age-rating"
+        draggable="false"
+        oncontextmenu="return false"
+        />
+
+        <!-- Logo图片：完全防长按/右键/拖拽 -->
+        <img
+        src="https://xiaoye6661234.github.io/GuangXianWorld/logo.png"
+        alt="广仙世界"
+        class="logo"
+        draggable="false"
+        oncontextmenu="return false"
+        />
+
+        <!-- 登录按钮 -->
         <button class="login-btn" id="loginBtn">登录/注册</button>
     </div>
+
+    <!-- 背景音乐 -->
     <audio id="bgm" loop>
         <source src="https://xiaoye6661234.github.io/GuangXianWorld/BGM1.mp3" type="audio/mpeg" />
-    
+    </audio>
+
+    <!-- 点击音效 -->
     <audio id="clickSound">
         <source src="https://xiaoye6661234.github.io/GuangXianWorld/click.mp3" type="audio/mpeg" />
-    
+    </audio>
+
     <script>
-        // ========== 原有功能完全保留 未做任何修改 ==========
-        const bgm = document.getElementById('bgm');
-        const clickSound = document.getElementById('clickSound');
+        // ================================================================
+        //  核心功能 100% 保留 (仅增加防下载属性 & 字体调小)
+        // ================================================================
+
+        var bgm = document.getElementById('bgm');
+        var clickSound = document.getElementById('clickSound');
+
         function playClickSound() {
             clickSound.currentTime = 0;
-            clickSound.play().catch(e => console.log('音效播放失败:', e));
+            clickSound.play().catch(function(e) {
+                console.log('音效播放失败:', e);
+            });
         }
+
         // 检查用户数据是否存在（统一使用 GuangXianData）
         function checkUserData() {
-            const userData = localStorage.getItem('GuangXianData');
+            var userData = localStorage.getItem('GuangXianData');
             if (userData) {
                 try {
-                    const parsed = JSON.parse(userData);
-                    // 检查是否有完整的用户信息
+                    var parsed = JSON.parse(userData);
                     if (parsed && parsed.user) {
                         document.getElementById('loginBtn').textContent = '进入游戏';
                         return true;
@@ -116,26 +173,29 @@
             document.getElementById('loginBtn').textContent = '登录/注册';
             return false;
         }
+
         // 页面加载时检查
-        window.addEventListener('load', () => {
-            const hasData = checkUserData();
+        window.addEventListener('load', function() {
+            var hasData = checkUserData();
             // 尝试自动播放背景音乐
             bgm.volume = 0.5;
             document.addEventListener('click', function startBGM() {
-                bgm.play().catch(e => console.log('背景音乐播放失败:', e));
+                bgm.play().catch(function(e) {
+                    console.log('背景音乐播放失败:', e);
+                });
                 document.removeEventListener('click', startBGM);
             }, { once: true });
         });
+
         // 登录按钮根据数据状态跳转
-        document.getElementById('loginBtn').addEventListener('click', () => {
+        document.getElementById('loginBtn').addEventListener('click', function() {
             playClickSound();
-            const userData = localStorage.getItem('GuangXianData');
+            var userData = localStorage.getItem('GuangXianData');
             if (userData) {
                 try {
-                    const parsed = JSON.parse(userData);
+                    var parsed = JSON.parse(userData);
                     if (parsed && parsed.user) {
-                        // 已有数据 → 检查完整性后进入大厅
-                        const user = parsed.user;
+                        var user = parsed.user;
                         // 如果缺少角色，先去选角色
                         if (!user.role) {
                             window.location.href = 'ChooseRole.html';
@@ -156,5 +216,6 @@
             window.location.href = 'Signin.html';
         });
     </script>
+
 </body>
 </html>

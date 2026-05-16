@@ -30,7 +30,6 @@
             overflow: hidden;
             background: #f0f0f0;
         }
-        /* 大厅背景 */
         .hall-bg {
             position: absolute;
             top: 0;
@@ -41,7 +40,6 @@
             background-size: cover;
             background-position: center;
         }
-        /* 顶栏 */
         .top-bar {
             position: absolute;
             top: 3%;
@@ -107,7 +105,6 @@
         .top-icons img:active {
             transform: scale(0.95);
         }
-        /* 左下角用户信息 */
         .user-card {
             position: absolute;
             bottom: 5%;
@@ -143,7 +140,6 @@
             padding: 0.3vw 1.5vw;
             border-radius: 6px;
         }
-        /* 右下角宠物按钮 */
         .pet-btn {
             position: absolute;
             bottom: 5%;
@@ -163,7 +159,6 @@
             width: 5vw;
             height: 5vw;
         }
-        /* 中心角色 */
         .center-char {
             position: absolute;
             left: 50%;
@@ -172,7 +167,6 @@
             height: 65%;
             z-index: 5;
         }
-        /* 弹窗容器 - 统一宣纸背景 */
         .modal-overlay {
             position: absolute;
             top: 0;
@@ -189,7 +183,7 @@
             width: 100%;
             height: 100%;
             position: relative;
-            background-image: url('https://xiaoye6661234.github.io/GuangXianWorld/settingbackground.jpg');
+            background-image: url('https://xiaoye6661234.github.io/GuangXianWorld/Setting background.jpg');
             background-size: cover;
             background-position: center;
             box-sizing: border-box;
@@ -205,7 +199,6 @@
             z-index: 25;
             line-height: 1;
         }
-        /* 公告弹窗 - 左侧标签页 */
         .notice-tabs {
             position: absolute;
             top: 0;
@@ -263,7 +256,6 @@
             background: #aaa;
             cursor: not-allowed;
         }
-        /* 充值弹窗 */
         .recharge-container {
             padding: 8% 5%;
         }
@@ -292,7 +284,6 @@
             font-size: 2.5vw;
             font-weight: bold;
         }
-        /* 设置弹窗 */
         .settings-container {
             padding: 8% 8%;
         }
@@ -318,7 +309,6 @@
             cursor: pointer;
             font-weight: bold;
         }
-        /* 个人主页弹窗 - 左右分栏 */
         .profile-container {
             display: flex;
             width: 100%;
@@ -379,7 +369,8 @@
             display: flex;
             gap: 1vw;
         }
-        .profile-lvl, .profile-region {
+        .profile-lvl,
+        .profile-region {
             background: rgba(0, 0, 0, 0.7);
             color: white;
             font-size: 2.2vw;
@@ -416,7 +407,6 @@
             font-weight: bold;
             display: none;
         }
-        /* 隐藏文件输入 */
         .hidden-input {
             display: none;
         }
@@ -430,7 +420,7 @@
 <body>
     <div class="container">
         <div class="hall-bg"></div>
-        <!-- 大厅UI -->
+
         <div class="top-bar">
             <button class="btn-adventure" id="adventureBtn">开始冒险!</button>
             <div class="currency-box">
@@ -445,29 +435,32 @@
                 <img src="https://xiaoye6661234.github.io/GuangXianWorld/setting.png" alt="设置" onclick="openModal('settings')" />
             </div>
         </div>
+
         <div class="user-card" onclick="openModal('profile')">
             <img id="avatarDisplay" src="https://xiaoye6661234.github.io/GuangXianWorld/Default avatar.jpg" alt="头像" />
             <div class="user-info">
                 <div class="nickname" id="nickDisplay">昵称</div>
-                <div class="lvl" id="lvlDisplay">正式用户</div>
+                <div class="lvl" id="lvlDisplay">LV.1</div>
             </div>
         </div>
-        <!-- 右下角宠物按钮 -->
+
         <div class="pet-btn" onclick="window.location.href='Pets.html'">
             <img src="https://xiaoye6661234.github.io/GuangXianWorld/Pets.png" alt="宠物" />
         </div>
+
         <img src="https://xiaoye6661234.github.io/GuangXianWorld/Ming.png" class="center-char" id="centerChar" alt="角色" />
-        <!-- 弹窗区 -->
+
         <div id="modalOverlay" class="modal-overlay">
             <div class="modal-content" id="modalContent">
                 <div class="modal-close" onclick="closeModal()">✕</div>
                 <div id="modalBody"></div>
             </div>
         </div>
-        <!-- 隐藏文件输入 -->
+
         <input type="file" id="avatarEditInput" accept="image/*" class="hidden-input" />
         <input type="file" id="bgEditInput" accept="image/*" class="hidden-input" />
     </div>
+
     <script>
         // ========== 全局数据 ==========
         let currentModal = '';
@@ -492,12 +485,10 @@
                     window.location.href = 'Signin.html';
                     return;
                 }
-                // 检查角色是否已选
                 if (!gData.user.role) {
                     window.location.href = 'ChooseRole.html';
                     return;
                 }
-                // 检查昵称和地区是否完善
                 if (!gData.user.nickname || gData.user.nickname === '云游仙友' || !gData.user.region) {
                     window.location.href = 'PersonalInformation.html';
                     return;
@@ -517,7 +508,6 @@
             if (gData.user.avatar) {
                 document.getElementById('avatarDisplay').src = gData.user.avatar;
             }
-            // 角色图片
             if (gData.user.role === '清') {
                 document.getElementById('centerChar').src = 'https://xiaoye6661234.github.io/GuangXianWorld/Qing.png';
             } else {
@@ -525,9 +515,49 @@
             }
         }
 
-        // 保存数据到本地
+        // 保存数据到 localStorage
         function saveData() {
             localStorage.setItem('GuangXianData', JSON.stringify(gData));
+            // 自动导出 data.json（静默下载）
+            autoExportData();
+        }
+
+        // ========== 自动导出 data.json ==========
+        function autoExportData() {
+            try {
+                const jsonStr = JSON.stringify(gData, null, 2);
+                const blob = new Blob([jsonStr], { type: 'application/json' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'data.json';
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+            } catch (e) {
+                console.warn('自动导出 data.json 失败:', e);
+            }
+        }
+
+        // ========== 手动导出 data.json（供设置按钮调用） ==========
+        function manualExportData() {
+            playClickSound();
+            try {
+                const jsonStr = JSON.stringify(gData, null, 2);
+                const blob = new Blob([jsonStr], { type: 'application/json' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'data.json';
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+                alert('✅ data.json 已导出！');
+            } catch (e) {
+                alert('❌ 导出失败: ' + e.message);
+            }
         }
 
         // 页面加载
@@ -539,11 +569,8 @@
             isProfileEditing = false;
             document.getElementById('modalOverlay').style.display = 'flex';
             const body = document.getElementById('modalBody');
-            
-            // 播放点击音效
             playClickSound();
 
-            // 官方邮件
             if (type === 'mail') {
                 body.innerHTML = `
                     <div style="padding:8% 5%;">
@@ -555,9 +582,7 @@
                         </div>
                     </div>
                 `;
-            }
-            // 公告弹窗（含标签页）
-            else if (type === 'notice') {
+            } else if (type === 'notice') {
                 const today = new Date().toISOString().split('T')[0];
                 const isDailyClaimed = gData.user.lastDailyWelfare === today;
                 const isNoticeClaimed = gData.user.hasClaimedNotice || false;
@@ -576,9 +601,7 @@
                         </button>
                     </div>
                 `;
-            }
-            // 充值弹窗
-            else if (type === 'recharge') {
+            } else if (type === 'recharge') {
                 body.innerHTML = `
                     <div class="recharge-container">
                         <div class="modal-title">充值广仙币</div>
@@ -593,9 +616,7 @@
                         </div>
                     </div>
                 `;
-            }
-            // 设置弹窗
-            else if (type === 'settings') {
+            } else if (type === 'settings') {
                 const vol = gData.user.settings?.bgmVolume || 50;
                 const sfx = gData.user.settings?.sfxVolume || 50;
                 body.innerHTML = `
@@ -612,6 +633,10 @@
                             <span>${sfx}%</span>
                         </div>
                         <div class="settings-row">
+                            <span>📤 导出 data.json</span>
+                            <button class="settings-btn" onclick="manualExportData()">导出</button>
+                        </div>
+                        <div class="settings-row">
                             <span>清除数据</span>
                             <button class="settings-btn" onclick="clearData()">清除</button>
                         </div>
@@ -621,17 +646,15 @@
                         </div>
                     </div>
                 `;
-            }
-            // 个人主页弹窗（可编辑）
-            else if (type === 'profile') {
+            } else if (type === 'profile') {
                 const joinDate = gData.user.joinedDate ? new Date(gData.user.joinedDate) : new Date();
                 const now = new Date();
                 const years = now.getFullYear() - joinDate.getFullYear();
                 const bgImage = gData.user.bgImage || 'https://xiaoye6661234.github.io/GuangXianWorld/Lobby Background.png';
-                const charImg = gData.user.role === '清' 
-                    ? 'https://xiaoye6661234.github.io/GuangXianWorld/Qing.png' 
-                    : 'https://xiaoye6661234.github.io/GuangXianWorld/Ming.png';
-                
+                const charImg = gData.user.role === '清' ?
+                    'https://xiaoye6661234.github.io/GuangXianWorld/Qing.png' :
+                    'https://xiaoye6661234.github.io/GuangXianWorld/Ming.png';
+
                 tempNickname = gData.user.nickname;
                 tempAvatar = gData.user.avatar;
                 tempBgImage = bgImage;
@@ -669,12 +692,11 @@
             isProfileEditing = false;
         }
 
-        // 公告标签页切换
         function switchTab(tab) {
             playClickSound();
             document.querySelectorAll('.tab-item').forEach(item => item.classList.remove('active'));
             document.querySelector(`.tab-item[onclick="switchTab('${tab}')"]`).classList.add('active');
-            
+
             const content = document.querySelector('.notice-content');
             if (tab === 'notice') {
                 const isNoticeClaimed = gData.user.hasClaimedNotice || false;
@@ -716,10 +738,10 @@
         function editNickname() {
             playClickSound();
             if (isProfileEditing) return;
-            
             const nickEl = document.getElementById('profileNickname');
             const currentNick = nickEl.textContent;
-            nickEl.innerHTML = `<input type="text" id="nickInput" value="${currentNick}" style="width:100%; background:transparent; border:none; color:white; font-size:inherit; font-weight:inherit; outline:none;" />`;
+            nickEl.innerHTML =
+                `<input type="text" id="nickInput" value="${currentNick}" style="width:100%; background:transparent; border:none; color:white; font-size:inherit; font-weight:inherit; outline:none;" />`;
             document.getElementById('nickInput').focus();
             showSaveButton();
         }
@@ -729,7 +751,6 @@
             document.getElementById('profileSaveBtn').style.display = 'block';
         }
 
-        // 头像上传处理
         document.getElementById('avatarEditInput').addEventListener('change', function(e) {
             if (this.files && this.files[0]) {
                 const reader = new FileReader();
@@ -742,7 +763,6 @@
             }
         });
 
-        // 背景图上传处理
         document.getElementById('bgEditInput').addEventListener('change', function(e) {
             if (this.files && this.files[0]) {
                 const reader = new FileReader();
@@ -756,11 +776,8 @@
             }
         });
 
-        // 保存个人信息修改
         function saveProfileChanges() {
             playClickSound();
-            
-            // 获取昵称输入值
             const nickInput = document.getElementById('nickInput');
             if (nickInput) {
                 tempNickname = nickInput.value.trim();
@@ -769,19 +786,12 @@
                     return;
                 }
             }
-
-            // 更新全局数据
             gData.user.nickname = tempNickname;
             gData.user.avatar = tempAvatar;
             gData.user.bgImage = tempBgImage;
-
-            // 保存到本地
             saveData();
-
-            // 更新大厅UI
             updateUI();
 
-            // 询问是否下载更新后的data.json
             if (confirm('信息已保存！是否下载更新后的 data.json 数据文件？')) {
                 const blob = new Blob([JSON.stringify(gData, null, 2)], { type: 'application/json' });
                 const url = URL.createObjectURL(blob);
@@ -791,17 +801,12 @@
                 a.click();
                 URL.revokeObjectURL(url);
             }
-
-            // 关闭编辑状态
             isProfileEditing = false;
             document.getElementById('profileSaveBtn').style.display = 'none';
-
-            // 刷新个人主页显示
             openModal('profile');
         }
 
         // ========== 领取功能 ==========
-        // 1. 公告一次性福利（1000币）
         function claimNotice() {
             playClickSound();
             if (gData.user.hasClaimedNotice) {
@@ -813,15 +818,14 @@
             saveData();
             updateUI();
             const btn = document.getElementById('claimNoticeBtn');
-            if (btn) { 
+            if (btn) {
                 btn.innerText = '✅ 已领取';
                 btn.disabled = true;
-                btn.classList.add('disabled'); 
+                btn.classList.add('disabled');
             }
             alert('🎉 恭喜领取 1000 广仙币！');
         }
 
-        // 2. 每日福利（100～250随机，每天可领）
         function claimDailyWelfare() {
             playClickSound();
             const today = new Date().toISOString().split('T')[0];
@@ -835,15 +839,14 @@
             saveData();
             updateUI();
             const btn = document.getElementById('claimDailyBtn');
-            if (btn) { 
+            if (btn) {
                 btn.innerText = '✅ 今日已签到';
                 btn.disabled = true;
-                btn.classList.add('disabled'); 
+                btn.classList.add('disabled');
             }
             alert(`🎉 恭喜获得 ${amount} 广仙币！`);
         }
 
-        // 3. 每日免费（250币，每天可领）
         function receiveFree() {
             playClickSound();
             const today = new Date().toISOString().split('T')[0];
@@ -875,7 +878,6 @@
             } else {
                 bgm.volume = parseInt(val) / 100;
             }
-            // 更新滑块旁边的百分比显示
             event.target.nextElementSibling.textContent = val + '%';
         }
 
@@ -883,7 +885,6 @@
             if (!gData.user.settings) gData.user.settings = {};
             gData.user.settings.sfxVolume = parseInt(val);
             saveData();
-            // 更新滑块旁边的百分比显示
             event.target.nextElementSibling.textContent = val + '%';
         }
 
@@ -927,19 +928,16 @@
             }
         }
 
-        // 播放点击音效
         function playClickSound() {
             let click = new Audio('https://xiaoye6661234.github.io/GuangXianWorld/click.mp3');
             click.volume = (gData.user.settings?.sfxVolume || 50) / 100;
             click.play().catch(e => {});
         }
 
-        // 点击背景关闭弹窗
         document.getElementById('modalOverlay').addEventListener('click', function(e) {
             if (e.target === this) closeModal();
         });
 
-        // ========== 冒险按钮跳转 ==========
         document.getElementById('adventureBtn').addEventListener('click', function() {
             playClickSound();
             window.location.href = 'Game.html';

@@ -2,14 +2,17 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>个人信息</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>完善个人信息 · 广仙世界</title>
     <style>
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
+            -webkit-touch-callout: none;
+            -webkit-user-select: none;
             user-select: none;
+            font-family: system-ui, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
         }
         body {
             margin: 0;
@@ -19,7 +22,6 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            font-family: system-ui, 'Segoe UI', 'PingFang SC', Roboto;
         }
         .container {
             width: 100vw;
@@ -29,27 +31,30 @@
             position: relative;
             background: #fff;
         }
-        /* 返回按钮：纯文字无背景 */
         .back {
             position: absolute;
             top: 3%;
             left: 4%;
-            font-size: 2.8vw;
+            font-size: 2.2vw;
             font-weight: bold;
             cursor: pointer;
             color: #000;
+            -webkit-tap-highlight-color: transparent;
         }
-        /* 标题 */
+        .back:active {
+            opacity: 0.6;
+        }
         .header {
-            font-size: 3vw;
+            font-size: 2.4vw;
             font-weight: bold;
             position: absolute;
             top: 3%;
             left: 50%;
             transform: translateX(-50%);
             color: #000;
+            white-space: nowrap;
+            letter-spacing: 0.02em;
         }
-        /* 四列布局：严格匹配设计图比例 */
         .grid-container {
             position: absolute;
             top: 22%;
@@ -64,11 +69,10 @@
             display: flex;
             flex-direction: column;
             align-items: flex-start;
-            font-size: 2.2vw;
+            font-size: 1.8vw;
             font-weight: 500;
             color: #000;
         }
-        /* 头像/背景图选择框 */
         .img-box {
             width: 100%;
             aspect-ratio: 1/1;
@@ -77,41 +81,62 @@
             justify-content: center;
             align-items: center;
             text-align: center;
-            font-size: 2vw;
+            font-size: 1.6vw;
             color: #666;
             cursor: pointer;
             border-radius: 12px;
             overflow: hidden;
             margin-top: 1vw;
+            position: relative;
         }
         .img-box img {
             width: 100%;
             height: 100%;
             object-fit: cover;
+            pointer-events: none;
+            -webkit-touch-callout: none;
+            -webkit-user-select: none;
+            user-select: none;
+            draggable: false;
         }
-        /* 输入框 */
+        .img-box .placeholder {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: #666;
+            font-size: 1.6vw;
+            line-height: 1.4;
+            text-align: center;
+        }
         .input-box {
             width: 100%;
             height: 3.8vw;
             background: #cccccc;
             border: none;
             padding: 0 1.5vw;
-            font-size: 1.8vw;
+            font-size: 1.5vw;
             border-radius: 12px;
             margin-top: 1vw;
             outline: none;
             font-family: inherit;
+            -webkit-user-select: text;
+            user-select: text;
         }
-        /* 提示文字 */
+        .input-box::placeholder {
+            color: #777;
+            font-weight: 400;
+            font-size: 1.3vw;
+        }
         .tip {
             position: absolute;
             bottom: 20%;
             width: 100%;
             text-align: center;
-            font-size: 1.4vw;
+            font-size: 1.2vw;
             color: #000;
+            letter-spacing: 0.02em;
         }
-        /* 确定按钮 */
         .btn-confirm {
             position: absolute;
             bottom: 8%;
@@ -119,13 +144,14 @@
             transform: translateX(-50%);
             background: #666666;
             color: white;
-            font-size: 2.6vw;
+            font-size: 2.0vw;
             padding: 1vw 7vw;
             border: none;
             border-radius: 12px;
             cursor: pointer;
             font-weight: bold;
             transition: 0.05s linear;
+            -webkit-tap-highlight-color: transparent;
         }
         .btn-confirm:active {
             transform: translateX(-50%) scale(0.97);
@@ -136,6 +162,58 @@
             cursor: not-allowed;
             transform: translateX(-50%) scale(1);
         }
+        .loading-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #fff;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 30;
+            gap: 2vw;
+        }
+        .loading-overlay .title-lg {
+            font-size: 3vw;
+            font-weight: bold;
+            color: #333;
+        }
+        .loading-overlay .sub {
+            font-size: 1.6vw;
+            color: #666;
+            margin-bottom: 1vw;
+        }
+        .loading-overlay .upload-btn {
+            background: #ffb300;
+            color: white;
+            font-size: 2.2vw;
+            padding: 0.8vw 3vw;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        .loading-overlay .or-text {
+            font-size: 1.4vw;
+            color: #999;
+            margin: 0.5vw 0;
+        }
+        .loading-overlay .new-btn {
+            background: #666;
+            color: white;
+            font-size: 2.2vw;
+            padding: 0.8vw 3vw;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        .hidden-input {
+            display: none;
+        }
         @media (orientation: portrait) {
             .container {
                 transform: rotate(-90deg) scale(0.8);
@@ -145,146 +223,246 @@
 </head>
 <body>
     <div class="container">
-        <div class="back" onclick="history.back()">←上一步</div>
+        <div class="loading-overlay" id="loadingOverlay">
+            <div class="title-lg">📂 加载个人数据</div>
+            <div class="sub">请上传您之前下载的 data.json 文件，或创建全新数据</div>
+            <input type="file" id="dataJsonInput" accept=".json" class="hidden-input" />
+            <button class="upload-btn" onclick="document.getElementById('dataJsonInput').click()">📤 选择 data.json</button>
+            <div class="or-text">— 或者 —</div>
+            <button class="new-btn" onclick="createNewData()">✨ 创建新数据</button>
+        </div>
+
+        <div class="back" id="backBtn" onclick="history.back()">← 上一步</div>
         <div class="header">请完善个人信息</div>
+
         <div class="grid-container">
             <div class="col">
-                <div>1.头像</div>
+                <div>1. 头像</div>
                 <div class="img-box" id="avatarBox">
-                    <div id="avatarPlaceholder">点击从相<br />册选择</div>
-                    <input type="file" id="avatarInput" accept="image/*" style="display:none" />
-                    <img id="avatarPreview" style="display:none;" />
+                    <div class="placeholder" id="avatarPlaceholder">点击从相册选择</div>
+                    <input type="file" id="avatarInput" accept="image/*" class="hidden-input" />
+                    <img id="avatarPreview" style="display:none;" draggable="false" oncontextmenu="return false" />
                 </div>
             </div>
             <div class="col">
-                <div>2.昵称</div>
-                <input type="text" class="input-box" id="nickname" placeholder="" />
+                <div>2. 昵称</div>
+                <input type="text" class="input-box" id="nickname" placeholder="请输入昵称" />
             </div>
             <div class="col">
-                <div>3.地区</div>
-                <input type="text" class="input-box" id="region" placeholder="" />
+                <div>3. 地区</div>
+                <input type="text" class="input-box" id="region" placeholder="请输入地区" />
             </div>
             <div class="col">
-                <div>4.主页背景图</div>
+                <div>4. 主页背景图</div>
                 <div class="img-box" id="bgBox">
-                    <div id="bgPlaceholder">点击从相<br />册选择</div>
-                    <input type="file" id="bgInput" accept="image/*" style="display:none" />
-                    <img id="bgPreview" style="display:none;" />
+                    <div class="placeholder" id="bgPlaceholder">点击从相册选择</div>
+                    <input type="file" id="bgInput" accept="image/*" class="hidden-input" />
+                    <img id="bgPreview" style="display:none;" draggable="false" oncontextmenu="return false" />
                 </div>
             </div>
         </div>
+
         <div class="tip">Tip：昵称和地区一旦保存将无法更改！</div>
         <button class="btn-confirm" id="confirmBtn">确定</button>
     </div>
+
     <script>
-        // ========== 核心功能完全保留 未做任何修改 ==========
-        (function checkData() {
-            const raw = localStorage.getItem('GuangXianData');
-            if (!raw) {
-                alert('请先登录！');
-                window.location.href = 'Signin.html';
-                return;
+        let userData = null;
+        let avatarBase64 = null;
+        let bgBase64 = null;
+
+        document.getElementById('dataJsonInput').addEventListener('change', function(e) {
+            if (this.files && this.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(ev) {
+                    try {
+                        const parsed = JSON.parse(ev.target.result);
+                        if (!parsed || !parsed.user) {
+                            alert('❌ data.json 格式无效：缺少 user 字段');
+                            return;
+                        }
+                        userData = parsed;
+                        fillForm(userData);
+                        document.getElementById('loadingOverlay').style.display = 'none';
+                        alert('✅ 数据加载成功！欢迎回来，' + (userData.user.nickname || '仙友'));
+                    } catch (err) {
+                        alert('❌ 文件解析失败：' + err.message);
+                    }
+                };
+                reader.readAsText(this.files[0]);
             }
-            try {
-                const parsed = JSON.parse(raw);
-                if (!parsed || !parsed.user) {
-                    alert('数据异常，请重新登录！');
-                    window.location.href = 'Signin.html';
-                    return;
+        });
+
+        function createNewData() {
+            const defaultData = {
+                user: {
+                    username: '',
+                    password: '',
+                    nickname: '云游仙友',
+                    avatar: 'https://xiaoye6661234.github.io/GuangXianWorld/Default avatar.jpg',
+                    region: '',
+                    bgImage: '',
+                    level: 1,
+                    coins: 1000,
+                    exp: 0,
+                    loginStreak: 0,
+                    lastLoginDate: new Date().toISOString().split('T')[0],
+                    joinedDate: new Date().toISOString().split('T')[0],
+                    role: '铭',
+                    signHistory: [],
+                    settings: { bgm: true, bgmVolume: 40, sfxVolume: 50 },
+                    hasClaimedNotice: false,
+                    lastDailyWelfare: '',
+                    lastFreeClaim: ''
                 }
-                // 如果已有昵称和地区，自动填入
-                if (parsed.user.nickname && parsed.user.nickname !== '云游仙友') {
-                    document.getElementById('nickname').value = parsed.user.nickname;
-                }
-                if (parsed.user.region) {
-                    document.getElementById('region').value = parsed.user.region;
-                }
-                if (parsed.user.avatar && parsed.user.avatar !== 'https://xiaoye6661234.github.io/GuangXianWorld/Default avatar.jpg') {
-                    document.getElementById('avatarPreview').src = parsed.user.avatar;
-                    document.getElementById('avatarPreview').style.display = 'block';
-                    document.getElementById('avatarPlaceholder').style.display = 'none';
-                }
-                if (parsed.user.bgImage) {
-                    document.getElementById('bgPreview').src = parsed.user.bgImage;
-                    document.getElementById('bgPreview').style.display = 'block';
-                    document.getElementById('bgPlaceholder').style.display = 'none';
-                }
-            } catch (e) {
-                alert('数据损坏，请重新登录！');
-                window.location.href = 'Signin.html';
+            };
+            userData = defaultData;
+            fillForm(userData);
+            document.getElementById('loadingOverlay').style.display = 'none';
+            alert('✅ 已创建新数据，请完善您的个人信息');
+        }
+
+        function fillForm(data) {
+            const u = data.user;
+            if (u.nickname && u.nickname !== '云游仙友') {
+                document.getElementById('nickname').value = u.nickname;
             }
-        })();
-        // 头像上传
-        document.getElementById('avatarBox').addEventListener('click', () => document.getElementById('avatarInput').click());
+            if (u.region) {
+                document.getElementById('region').value = u.region;
+            }
+            if (u.avatar && u.avatar !== 'https://xiaoye6661234.github.io/GuangXianWorld/Default avatar.jpg') {
+                avatarBase64 = u.avatar;
+                const img = document.getElementById('avatarPreview');
+                img.src = u.avatar;
+                img.style.display = 'block';
+                document.getElementById('avatarPlaceholder').style.display = 'none';
+            }
+            if (u.bgImage) {
+                bgBase64 = u.bgImage;
+                const img = document.getElementById('bgPreview');
+                img.src = u.bgImage;
+                img.style.display = 'block';
+                document.getElementById('bgPlaceholder').style.display = 'none';
+            }
+        }
+
+        document.getElementById('avatarBox').addEventListener('click', function() {
+            document.getElementById('avatarInput').click();
+        });
         document.getElementById('avatarInput').addEventListener('change', function(e) {
             if (this.files && this.files[0]) {
                 const reader = new FileReader();
                 reader.onload = function(ev) {
-                    document.getElementById('avatarPreview').src = ev.target.result;
-                    document.getElementById('avatarPreview').style.display = 'block';
+                    avatarBase64 = ev.target.result;
+                    const img = document.getElementById('avatarPreview');
+                    img.src = avatarBase64;
+                    img.style.display = 'block';
                     document.getElementById('avatarPlaceholder').style.display = 'none';
                 };
                 reader.readAsDataURL(this.files[0]);
             }
         });
-        // 背景图上传
-        document.getElementById('bgBox').addEventListener('click', () => document.getElementById('bgInput').click());
+
+        document.getElementById('bgBox').addEventListener('click', function() {
+            document.getElementById('bgInput').click();
+        });
         document.getElementById('bgInput').addEventListener('change', function(e) {
             if (this.files && this.files[0]) {
                 const reader = new FileReader();
                 reader.onload = function(ev) {
-                    document.getElementById('bgPreview').src = ev.target.result;
-                    document.getElementById('bgPreview').style.display = 'block';
+                    bgBase64 = ev.target.result;
+                    const img = document.getElementById('bgPreview');
+                    img.src = bgBase64;
+                    img.style.display = 'block';
                     document.getElementById('bgPlaceholder').style.display = 'none';
                 };
                 reader.readAsDataURL(this.files[0]);
             }
         });
+
         document.getElementById('confirmBtn').addEventListener('click', function() {
             let click = new Audio('https://xiaoye6661234.github.io/GuangXianWorld/click.mp3');
             click.volume = 0.5;
-            click.play().catch(e => {});
-            let raw = localStorage.getItem('GuangXianData');
-            if (!raw) {
-                alert('数据错误');
-                return;
-            }
-            let parsed = JSON.parse(raw);
-            // 获取昵称和地区（必填）
+            click.play().catch(() => {});
+
             const nickname = document.getElementById('nickname').value.trim();
             const region = document.getElementById('region').value.trim();
-            if (!nickname) {
-                alert('请输入昵称！');
-                return;
+
+            if (!nickname) { alert('请输入昵称！'); return; }
+            if (!region) { alert('请输入地区！'); return; }
+
+            if (!userData) {
+                userData = {
+                    user: {
+                        username: '',
+                        password: '',
+                        nickname: nickname,
+                        avatar: 'https://xiaoye6661234.github.io/GuangXianWorld/Default avatar.jpg',
+                        region: region,
+                        bgImage: '',
+                        level: 1,
+                        coins: 1000,
+                        exp: 0,
+                        loginStreak: 0,
+                        lastLoginDate: new Date().toISOString().split('T')[0],
+                        joinedDate: new Date().toISOString().split('T')[0],
+                        role: '铭',
+                        signHistory: [],
+                        settings: { bgm: true, bgmVolume: 40, sfxVolume: 50 },
+                        hasClaimedNotice: false,
+                        lastDailyWelfare: '',
+                        lastFreeClaim: ''
+                    }
+                };
             }
-            if (!region) {
-                alert('请输入地区！');
-                return;
+
+            userData.user.nickname = nickname;
+            userData.user.region = region;
+            if (avatarBase64) {
+                userData.user.avatar = avatarBase64;
+            } else if (!userData.user.avatar) {
+                userData.user.avatar = 'https://xiaoye6661234.github.io/GuangXianWorld/Default avatar.jpg';
             }
-            parsed.user.nickname = nickname;
-            parsed.user.region = region;
-            // 保存头像和背景图（base64）
-            const avatarImg = document.getElementById('avatarPreview');
-            if (avatarImg.src && avatarImg.src !== '' && !avatarImg.src.includes('Default avatar.jpg')) {
-                parsed.user.avatar = avatarImg.src;
+            if (bgBase64) {
+                userData.user.bgImage = bgBase64;
             }
-            const bgImg = document.getElementById('bgPreview');
-            if (bgImg.src && bgImg.src !== '') {
-                parsed.user.bgImage = bgImg.src;
+            if (!userData.user.role) {
+                userData.user.role = '铭';
             }
-            localStorage.setItem('GuangXianData', JSON.stringify(parsed));
-            // 询问是否下载 data.json
-            if (confirm('信息已保存！是否下载您的 data.json 数据文件？')) {
-                const blob = new Blob([JSON.stringify(parsed, null, 2)], { type: 'application/json' });
+
+            localStorage.setItem('GuangXianData', JSON.stringify(userData));
+
+            if (confirm('✅ 信息已保存！是否下载您的 data.json 数据文件？')) {
+                const jsonStr = JSON.stringify(userData, null, 2);
+                const blob = new Blob([jsonStr], { type: 'application/json' });
                 const url = URL.createObjectURL(blob);
                 const a = document.createElement('a');
                 a.href = url;
                 a.download = 'data.json';
+                document.body.appendChild(a);
                 a.click();
+                document.body.removeChild(a);
                 URL.revokeObjectURL(url);
             }
+
             window.location.href = 'Hall.html';
         });
+
+        (function init() {
+            const cached = localStorage.getItem('GuangXianData');
+            if (cached) {
+                try {
+                    const parsed = JSON.parse(cached);
+                    if (parsed && parsed.user && parsed.user.nickname && parsed.user.region) {
+                        userData = parsed;
+                        fillForm(userData);
+                        document.getElementById('loadingOverlay').style.display = 'none';
+                        return;
+                    }
+                } catch (e) {}
+            }
+            document.getElementById('loadingOverlay').style.display = 'flex';
+        })();
     </script>
 </body>
 </html>

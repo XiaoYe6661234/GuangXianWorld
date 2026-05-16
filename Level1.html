@@ -1,0 +1,1596 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>广仙世界 · Lv.1</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            user-select: none;
+            -webkit-touch-callout: none;
+            -webkit-user-select: none;
+            font-family: system-ui, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+            touch-action: none;
+        }
+        body {
+            background: #000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            width: 100vw;
+            overflow: hidden;
+        }
+        .game-container {
+            width: 100vw;
+            height: 56.25vw;
+            max-height: 100vh;
+            max-width: 177.78vh;
+            position: relative;
+            overflow: hidden;
+            background: #2d5a27;
+            transform: scale(0.92);
+            transform-origin: center center;
+        }
+        .game-map {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: grid;
+            grid-template-columns: repeat(25, 1fr);
+            grid-template-rows: repeat(25, 1fr);
+            background: #2d5a27;
+        }
+        .tile {
+            width: 100%;
+            height: 100%;
+            background-size: cover;
+            background-position: center;
+            image-rendering: pixelated;
+        }
+        .tile-grass {
+            background-image: url('https://xiaoye6661234.github.io/GuangXianWorld/Grass.jpg');
+        }
+        .tile-sand {
+            background-image: url('https://xiaoye6661234.github.io/GuangXianWorld/Sand.jpg');
+        }
+        .tile-water {
+            background-image: url('https://xiaoye6661234.github.io/GuangXianWorld/Water.jpg');
+        }
+
+        .back-btn {
+            position: absolute;
+            top: 1.2%;
+            right: 1.8%;
+            font-size: 1.4vw;
+            font-weight: 700;
+            color: #fff;
+            background: rgba(0, 0, 0, 0.7);
+            padding: 0.4vw 1.4vw;
+            border-radius: 6px;
+            cursor: pointer;
+            z-index: 100;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            transition: 0.12s;
+            letter-spacing: 0.02em;
+            backdrop-filter: blur(4px);
+        }
+        .back-btn:active {
+            transform: scale(0.94);
+        }
+
+        .player-info {
+            position: absolute;
+            top: 1.2%;
+            left: 1.8%;
+            display: flex;
+            align-items: center;
+            gap: 0.6vw;
+            z-index: 100;
+        }
+        .player-avatar {
+            width: 3.6vw;
+            height: 3.6vw;
+            border: 2px solid #fff;
+            border-radius: 6px;
+            object-fit: cover;
+            background: #888;
+        }
+        .player-details {
+            display: flex;
+            flex-direction: column;
+            gap: 0.2vw;
+        }
+        .player-nickname,
+        .player-level {
+            background: rgba(0, 0, 0, 0.7);
+            color: #fff;
+            font-size: 1.0vw;
+            font-weight: 700;
+            padding: 0.1vw 0.8vw;
+            border-radius: 4px;
+            line-height: 1.4;
+            white-space: nowrap;
+            backdrop-filter: blur(2px);
+        }
+        .player-level {
+            font-size: 0.9vw;
+        }
+
+        .health-bar-container {
+            position: absolute;
+            top: 1.2%;
+            left: 28%;
+            width: 38%;
+            height: 2.4vw;
+            background: #222;
+            border-radius: 8px;
+            padding: 0.2vw;
+            z-index: 100;
+            border: 1px solid #555;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+        }
+        .health-bar {
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, #cc2200, #ee4422);
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            font-size: 1.0vw;
+            font-weight: 700;
+            transition: width 0.18s ease;
+            text-shadow: 0 0 6px rgba(0, 0, 0, 0.6);
+        }
+
+        .mission-panel {
+            position: absolute;
+            top: 9%;
+            right: 1.8%;
+            width: 22%;
+            background: rgba(0, 0, 0, 0.75);
+            color: #fff;
+            padding: 0.8vw 1vw;
+            border-radius: 8px;
+            z-index: 100;
+            font-size: 0.95vw;
+            backdrop-filter: blur(4px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+        .mission-title {
+            font-weight: 700;
+            font-size: 1.1vw;
+            margin-bottom: 0.3vw;
+            color: #ffcc44;
+        }
+        .mission-text {
+            line-height: 1.3;
+        }
+        .mission-progress {
+            margin-top: 0.3vw;
+            color: #88ddff;
+            font-weight: 600;
+        }
+        .mission-reward {
+            margin-top: 0.2vw;
+            color: #ffaa66;
+            font-size: 0.9vw;
+        }
+
+        .controls {
+            position: absolute;
+            bottom: 3%;
+            right: 2.5%;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5vw;
+            z-index: 100;
+        }
+        .control-row {
+            display: flex;
+            gap: 0.5vw;
+            justify-content: flex-end;
+        }
+        .control-btn {
+            width: 4.4vw;
+            height: 4.4vw;
+            background: rgba(255, 255, 255, 0.7);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            border: 1.5px solid rgba(255, 255, 255, 0.8);
+            transition: 0.08s;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+        }
+        .control-btn:active {
+            transform: scale(0.92);
+        }
+        .control-btn img {
+            width: 2.6vw;
+            height: 2.6vw;
+            object-fit: contain;
+        }
+        .control-btn.attack {
+            width: 6.2vw;
+            height: 6.2vw;
+            background: rgba(255, 80, 40, 0.85);
+            border-color: #ff4422;
+            box-shadow: 0 0 20px rgba(255, 68, 34, 0.3);
+        }
+        .control-btn.attack img {
+            width: 3.6vw;
+            height: 3.6vw;
+        }
+
+        .dpad-container {
+            position: absolute;
+            bottom: 3%;
+            left: 3%;
+            width: 12vw;
+            height: 12vw;
+            z-index: 100;
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            grid-template-rows: 1fr 1fr 1fr;
+            gap: 0.3vw;
+        }
+        .dpad-btn {
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            border: 1.5px solid rgba(255, 255, 255, 0.25);
+            backdrop-filter: blur(3px);
+            font-size: 2.4vw;
+            color: #fff;
+            text-shadow: 0 0 8px rgba(0, 0, 0, 0.5);
+            font-weight: 700;
+            transition: 0.06s;
+        }
+        .dpad-btn:active {
+            transform: scale(0.88);
+            background: rgba(255, 255, 255, 0.35);
+        }
+        .dpad-btn.up {
+            grid-column: 2;
+            grid-row: 1;
+        }
+        .dpad-btn.down {
+            grid-column: 2;
+            grid-row: 3;
+        }
+        .dpad-btn.left {
+            grid-column: 1;
+            grid-row: 2;
+        }
+        .dpad-btn.right {
+            grid-column: 3;
+            grid-row: 2;
+        }
+        .dpad-center {
+            grid-column: 2;
+            grid-row: 2;
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 50%;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.0vw;
+            color: rgba(255, 255, 255, 0.3);
+        }
+
+        .character {
+            position: absolute;
+            width: 5.2vw;
+            height: 7.8vw;
+            z-index: 50;
+            transition: left 0.06s, top 0.06s;
+            pointer-events: none;
+        }
+        .character img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            image-rendering: auto;
+        }
+
+        .monster {
+            position: absolute;
+            width: 4.8vw;
+            height: 6.8vw;
+            z-index: 40;
+            pointer-events: none;
+            transition: left 0.1s, top 0.1s;
+        }
+        .monster img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            image-rendering: auto;
+        }
+        .monster-hp-bar {
+            position: absolute;
+            top: -1.2vw;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 4.6vw;
+            height: 0.6vw;
+            background: rgba(0, 0, 0, 0.7);
+            border-radius: 4px;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        .monster-hp-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #ff2200, #ff6644);
+            border-radius: 4px;
+            transition: width 0.15s ease;
+        }
+        .monster-level {
+            position: absolute;
+            top: -2.2vw;
+            left: 50%;
+            transform: translateX(-50%);
+            color: #fff;
+            font-size: 0.9vw;
+            font-weight: 700;
+            text-shadow: 0 0 10px rgba(0, 0, 0, 0.9);
+            background: rgba(0, 0, 0, 0.5);
+            padding: 0 0.5vw;
+            border-radius: 4px;
+            white-space: nowrap;
+        }
+
+        .attack-effect {
+            position: absolute;
+            width: 5.6vw;
+            height: 5.6vw;
+            z-index: 60;
+            pointer-events: none;
+            animation: attackAnim 0.3s ease-out forwards;
+        }
+        .attack-effect img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+        @keyframes attackAnim {
+            0% { opacity: 1; transform: scale(0.5) rotate(-10deg); }
+            100% { opacity: 0; transform: scale(1.2) rotate(10deg); }
+        }
+
+        .modal-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 200;
+            backdrop-filter: blur(6px);
+        }
+        .modal-content {
+            width: 100%;
+            height: 100%;
+            background-image: url('https://xiaoye6661234.github.io/GuangXianWorld/Setting background.jpg');
+            background-size: cover;
+            background-position: center;
+            position: relative;
+            padding: 2.5% 4%;
+            box-sizing: border-box;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+        }
+        .modal-close {
+            position: absolute;
+            top: 1.5%;
+            right: 2.5%;
+            font-size: 3.0vw;
+            font-weight: 700;
+            cursor: pointer;
+            color: #222;
+            line-height: 1;
+            background: rgba(255, 255, 255, 0.4);
+            width: 3.4vw;
+            height: 3.4vw;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: 0.15s;
+        }
+        .modal-close:active {
+            transform: scale(0.9);
+        }
+        .modal-title {
+            text-align: center;
+            font-size: 2.6vw;
+            font-weight: 700;
+            margin-bottom: 1.5vw;
+            color: #1a1a1a;
+            letter-spacing: 0.04em;
+            flex-shrink: 0;
+        }
+        .bag-items {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1.5vw;
+            padding: 1.5vw;
+            justify-content: center;
+            margin-top: 0.5vw;
+            flex: 1;
+            align-content: flex-start;
+        }
+        .bag-item {
+            width: 7vw;
+            height: 7vw;
+            background: rgba(0, 0, 0, 0.4);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: 0.15s;
+            border: 2px solid rgba(255, 255, 255, 0.12);
+            position: relative;
+        }
+        .bag-item:active {
+            transform: scale(0.92);
+        }
+        .bag-item img {
+            width: 5vw;
+            height: 5vw;
+            object-fit: contain;
+        }
+        .bag-item-wrapper {
+            position: relative;
+            display: inline-block;
+        }
+        .bag-item .count-badge {
+            position: absolute;
+            bottom: -0.2vw;
+            right: -0.2vw;
+            background: #ff4400;
+            color: #fff;
+            font-size: 0.9vw;
+            font-weight: 700;
+            padding: 0 0.5vw;
+            border-radius: 50%;
+            min-width: 1.6vw;
+            height: 1.6vw;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid #fff;
+            z-index: 2;
+        }
+
+        .item-detail-modal {
+            width: 50%;
+            height: 38%;
+            background: rgba(30, 30, 30, 0.95);
+            border-radius: 12px;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            padding: 2%;
+            display: none;
+            z-index: 250;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(8px);
+        }
+        .item-detail-close {
+            position: absolute;
+            top: 2.5%;
+            right: 3%;
+            font-size: 2.2vw;
+            cursor: pointer;
+            color: #fff;
+            background: rgba(255, 255, 255, 0.15);
+            width: 2.8vw;
+            height: 2.8vw;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: 0.15s;
+        }
+        .item-detail-close:active {
+            transform: scale(0.9);
+        }
+        .item-detail-content {
+            display: flex;
+            align-items: center;
+            gap: 2vw;
+            height: 100%;
+            justify-content: center;
+            padding: 0 2%;
+        }
+        .item-detail-img {
+            width: 9vw;
+            height: 9vw;
+            object-fit: contain;
+        }
+        .item-detail-info {
+            color: #fff;
+            font-size: 1.4vw;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5vw;
+        }
+        .item-detail-name {
+            font-weight: 700;
+            font-size: 1.8vw;
+            color: #ffcc44;
+        }
+        .item-use-btn {
+            background: #ff8800;
+            color: #fff;
+            border: none;
+            border-radius: 6px;
+            padding: 0.5vw 2vw;
+            font-size: 1.3vw;
+            cursor: pointer;
+            font-weight: 700;
+            transition: 0.1s;
+            margin-top: 0.4vw;
+            align-self: flex-start;
+        }
+        .item-use-btn:active {
+            transform: scale(0.95);
+        }
+
+        .result-modal {
+            width: 46%;
+            height: 34%;
+            background: rgba(20, 20, 20, 0.96);
+            border-radius: 12px;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            padding: 2.5%;
+            display: none;
+            z-index: 300;
+            text-align: center;
+            color: #fff;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(8px);
+        }
+        .result-title {
+            font-size: 2.2vw;
+            font-weight: 700;
+            margin-bottom: 0.8vw;
+            color: #ffcc44;
+        }
+        .result-info {
+            font-size: 1.2vw;
+            margin-bottom: 1.5vw;
+            line-height: 1.5;
+            color: #ddd;
+        }
+        .result-info .highlight {
+            color: #ffcc44;
+            font-weight: 700;
+        }
+        .result-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 1.5vw;
+            flex-wrap: wrap;
+        }
+        .result-btn {
+            background: #ff8800;
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            padding: 0.5vw 2.2vw;
+            font-size: 1.2vw;
+            cursor: pointer;
+            font-weight: 700;
+            transition: 0.1s;
+            min-width: 7vw;
+        }
+        .result-btn:active {
+            transform: scale(0.95);
+        }
+        .result-btn.gray {
+            background: #555;
+        }
+        .result-btn.gray:active {
+            background: #444;
+        }
+        .result-btn:disabled {
+            background: #777;
+            cursor: not-allowed;
+            opacity: 0.6;
+        }
+        .result-btn.green {
+            background: #22aa44;
+        }
+        .result-btn.green:active {
+            background: #1a8833;
+        }
+
+        .hidden-input {
+            display: none;
+        }
+
+        @media (orientation: portrait) {
+            .game-container {
+                transform: rotate(-90deg) scale(0.72);
+                transform-origin: center center;
+            }
+        }
+
+        ::-webkit-scrollbar {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="game-container" id="gameContainer">
+        <div class="game-map" id="gameMap"></div>
+
+        <div class="back-btn" onclick="returnToHall()">← 返回大厅</div>
+
+        <div class="player-info">
+            <img id="playerAvatar" class="player-avatar" src="https://xiaoye6661234.github.io/GuangXianWorld/Default avatar.jpg" alt="头像" />
+            <div class="player-details">
+                <div class="player-nickname" id="playerNickname">昵称</div>
+                <div class="player-level" id="playerLevel">Lv.1</div>
+            </div>
+        </div>
+
+        <div class="health-bar-container">
+            <div class="health-bar" id="healthBar">100%</div>
+        </div>
+
+        <div class="mission-panel">
+            <div class="mission-title">📜 任务</div>
+            <div class="mission-text" id="missionText">击败 1 只怪物</div>
+            <div class="mission-reward" id="missionReward">🎁 奖励: 100经验 + 1披萨 + 50广仙币</div>
+            <div class="mission-progress" id="missionProgress">⚔️ 进度: 0 / 1</div>
+        </div>
+
+        <div class="controls">
+            <div class="control-row">
+                <div class="control-btn" onclick="openBag()">
+                    <img src="https://xiaoye6661234.github.io/GuangXianWorld/Bag.png" alt="背包" />
+                </div>
+            </div>
+            <div class="control-row">
+                <div class="control-btn" onclick="useHeal()">
+                    <img src="https://xiaoye6661234.github.io/GuangXianWorld/Restore%20HP.png" alt="回血" />
+                </div>
+                <div class="control-btn" onclick="sprint()">
+                    <img src="https://xiaoye6661234.github.io/GuangXianWorld/Sprint.png" alt="冲刺" />
+                </div>
+            </div>
+            <div class="control-row">
+                <div class="control-btn attack" onclick="attack()">
+                    <img src="https://xiaoye6661234.github.io/GuangXianWorld/Sword.png" alt="攻击" />
+                </div>
+            </div>
+        </div>
+
+        <div class="dpad-container" id="dpadContainer">
+            <div class="dpad-btn up" data-dir="up">▲</div>
+            <div class="dpad-btn down" data-dir="down">▼</div>
+            <div class="dpad-btn left" data-dir="left">◀</div>
+            <div class="dpad-btn right" data-dir="right">▶</div>
+            <div class="dpad-center"></div>
+        </div>
+
+        <div class="character" id="playerCharacter"></div>
+
+        <div class="monster" id="monster">
+            <div class="monster-level">Lv.1</div>
+            <div class="monster-hp-bar">
+                <div class="monster-hp-fill" id="monsterHpFill"></div>
+            </div>
+        </div>
+
+        <div class="modal-overlay" id="bagModal">
+            <div class="modal-content">
+                <div class="modal-close" onclick="closeBag()">✕</div>
+                <div class="modal-title">🎒 背包</div>
+                <div class="bag-items" id="bagItems"></div>
+            </div>
+        </div>
+
+        <div class="item-detail-modal" id="itemDetailModal">
+            <div class="item-detail-close" onclick="closeItemDetail()">✕</div>
+            <div class="item-detail-content">
+                <img id="itemDetailImg" class="item-detail-img" />
+                <div class="item-detail-info">
+                    <div class="item-detail-name" id="itemDetailName">物品</div>
+                    <div id="itemDetailDesc">描述</div>
+                    <button class="item-use-btn" id="itemUseBtn" onclick="useItem()">使用</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="result-modal" id="resultModal">
+            <div class="result-title" id="resultTitle">⚔️ 战斗结束</div>
+            <div class="result-info" id="resultInfo"></div>
+            <div class="result-buttons">
+                <button class="result-btn" id="reviveBtn" onclick="revive()">💀 复活 (75💰)</button>
+                <button class="result-btn gray" onclick="returnToHall()">🏠 返回大厅</button>
+            </div>
+        </div>
+
+        <audio id="bgmPlayer" loop>
+            <source src="https://xiaoye6661234.github.io/GuangXianWorld/BGM1.mp3" type="audio/mpeg" />
+        </audio>
+
+        <a id="downloadDataLink" style="display:none;"></a>
+    </div>
+
+    <script>
+        // ================================================================
+        //  全局数据
+        // ================================================================
+        let gData = {};
+        let gameData = {
+            playerHP: 100,
+            maxHP: 100,
+            baseAttack: 10,
+            attackBonus: 0,
+            monsterHP: 75,
+            monsterMaxHP: 75,
+            monsterAttack: 10,
+            playerX: 12,
+            playerY: 12,
+            monsterX: 18,
+            monsterY: 12,
+            kills: 0,
+            isGameOver: false,
+            isSwordEquipped: false,
+            isPlayerDead: false,
+            bag: { noodle: 1, pizza: 2, sword: 1 },
+            moveDir: null,
+            isMoving: false,
+            tileSize: 0,
+            lastAttackTime: 0,
+            lastMonsterAttack: 0,
+            isVictory: false,
+            missionMilestone: 1,
+            rewardExp: 0,
+            rewardCoins: 0,
+            rewardItems: 0,
+            victorySaved: false,
+            moveInterval: null
+        };
+
+        let bgmAudio = null;
+        let monsterAITimer = null;
+
+        // ================================================================
+        //  数据加载
+        // ================================================================
+        function loadData() {
+            const raw = localStorage.getItem('GuangXianData');
+            if (!raw) {
+                alert('⚠️ 请先登录！即将跳转至登录页...');
+                window.location.href = 'Signin.html';
+                return false;
+            }
+            try {
+                gData = JSON.parse(raw);
+                if (!gData.user) {
+                    alert('数据异常，请重新登录！');
+                    window.location.href = 'Signin.html';
+                    return false;
+                }
+                if (!gData.user.role) {
+                    window.location.href = 'ChooseRole.html';
+                    return false;
+                }
+                if (!gData.user.nickname || gData.user.nickname === '云游仙友' || !gData.user.region) {
+                    window.location.href = 'PersonalInformation.html';
+                    return false;
+                }
+                return true;
+            } catch (e) {
+                alert('数据损坏，请重新登录！');
+                window.location.href = 'Signin.html';
+                return false;
+            }
+        }
+
+        // ================================================================
+        //  地图生成（自然地形：水、沙滩、草地）
+        // ================================================================
+        function generateMap() {
+            const map = document.getElementById('gameMap');
+            map.innerHTML = '';
+            const cw = document.getElementById('gameContainer').offsetWidth;
+            gameData.tileSize = cw / 25;
+
+            const lowRes = [];
+            const seed = Math.random() * 1000;
+            for (let i = 0; i < 6; i++) {
+                lowRes[i] = [];
+                for (let j = 0; j < 6; j++) {
+                    const hash = Math.sin(i * 12.9898 + j * 78.233 + seed) * 43758.5453;
+                    lowRes[i][j] = (hash - Math.floor(hash));
+                }
+            }
+
+            const terrain = [];
+            for (let y = 0; y < 25; y++) {
+                terrain[y] = [];
+                for (let x = 0; x < 25; x++) {
+                    const gx = (x / 24) * 5;
+                    const gy = (y / 24) * 5;
+                    const ix = Math.floor(gx);
+                    const iy = Math.floor(gy);
+                    const fx = gx - ix;
+                    const fy = gy - iy;
+                    const ix1 = Math.min(ix + 1, 5);
+                    const iy1 = Math.min(iy + 1, 5);
+
+                    const v1 = lowRes[iy][ix] * (1 - fx) + lowRes[iy][ix1] * fx;
+                    const v2 = lowRes[iy1][ix] * (1 - fx) + lowRes[iy1][ix1] * fx;
+                    let val = v1 * (1 - fy) + v2 * fy;
+
+                    val += (Math.random() - 0.5) * 0.06;
+                    val = Math.max(0, Math.min(1, val));
+
+                    if (x >= 9 && x <= 15 && y >= 9 && y <= 15) {
+                        val = 0.7 + Math.random() * 0.2;
+                    }
+
+                    terrain[y][x] = val;
+                }
+            }
+
+            for (let y = 0; y < 25; y++) {
+                for (let x = 0; x < 25; x++) {
+                    const t = document.createElement('div');
+                    t.className = 'tile';
+                    const val = terrain[y][x];
+                    if (val < 0.25) {
+                        t.classList.add('tile-water');
+                    } else if (val < 0.48) {
+                        t.classList.add('tile-sand');
+                    } else {
+                        t.classList.add('tile-grass');
+                    }
+                    map.appendChild(t);
+                }
+            }
+        }
+
+        // ================================================================
+        //  UI 更新
+        // ================================================================
+        function updateUI() {
+            document.getElementById('playerAvatar').src = gData.user.avatar || 'https://xiaoye6661234.github.io/GuangXianWorld/Default avatar.jpg';
+            document.getElementById('playerNickname').textContent = gData.user.nickname || '仙友';
+            document.getElementById('playerLevel').textContent = 'Lv.' + (gData.user.level || 1);
+
+            const hpPercent = Math.round((gameData.playerHP / gameData.maxHP) * 100);
+            document.getElementById('healthBar').style.width = Math.max(0, hpPercent) + '%';
+            document.getElementById('healthBar').textContent = Math.max(0, hpPercent) + '%';
+
+            const monsterPercent = Math.round((gameData.monsterHP / gameData.monsterMaxHP) * 100);
+            document.getElementById('monsterHpFill').style.width = Math.max(0, monsterPercent) + '%';
+
+            updateMission();
+        }
+
+        function updateMission() {
+            const k = gameData.kills;
+            let txt, rew, prog;
+
+            if (k >= 10) {
+                txt = '🎯 击败 10 只怪物 (三倍奖励!)';
+                rew = '🎁 奖励: 300经验 + 3披萨 + 150广仙币';
+                prog = '⚔️ 进度: ' + k + ' / 10 ✅';
+                gameData.missionMilestone = 10;
+            } else if (k >= 5) {
+                txt = '🎯 击败 5 只怪物 (双倍奖励!)';
+                rew = '🎁 奖励: 200经验 + 2披萨 + 100广仙币';
+                prog = '⚔️ 进度: ' + k + ' / 5';
+                gameData.missionMilestone = 5;
+            } else {
+                txt = '🎯 击败 1 只怪物 (基础奖励)';
+                rew = '🎁 奖励: 100经验 + 1披萨 + 50广仙币';
+                prog = '⚔️ 进度: ' + k + ' / 1';
+                gameData.missionMilestone = 1;
+            }
+
+            document.getElementById('missionText').textContent = txt;
+            document.getElementById('missionReward').textContent = rew;
+            document.getElementById('missionProgress').textContent = prog;
+        }
+
+        // ================================================================
+        //  位置更新
+        // ================================================================
+        function updatePlayerPos() {
+            const p = document.getElementById('playerCharacter');
+            if (gameData.playerX < 4) gameData.playerX = 4;
+            if (gameData.playerX > 20) gameData.playerX = 20;
+            if (gameData.playerY < 4) gameData.playerY = 4;
+            if (gameData.playerY > 20) gameData.playerY = 20;
+
+            const ts = gameData.tileSize;
+            p.style.left = (gameData.playerX * ts) - (ts * 1.3) + 'px';
+            p.style.top = (gameData.playerY * ts) - (ts * 2.8) + 'px';
+        }
+
+        function updateMonsterPos() {
+            const m = document.getElementById('monster');
+            const ts = gameData.tileSize;
+            m.style.left = (gameData.monsterX * ts) - (ts * 1.1) + 'px';
+            m.style.top = (gameData.monsterY * ts) - (ts * 2.4) + 'px';
+        }
+
+        function spawnPlayer() {
+            const p = document.getElementById('playerCharacter');
+            const role = gData.user.role === '清' ? 'Qing' : 'Ming';
+            p.innerHTML = `<img src="https://xiaoye6661234.github.io/GuangXianWorld/${role}.png" alt="玩家" />`;
+            updatePlayerPos();
+        }
+
+        function spawnMonster() {
+            const m = document.getElementById('monster');
+            m.innerHTML = `<img src="https://xiaoye6661234.github.io/GuangXianWorld/Monster.png" alt="怪物" />`;
+            gameData.monsterX = 4 + Math.random() * 16;
+            gameData.monsterY = 4 + Math.random() * 16;
+            gameData.monsterHP = gameData.monsterMaxHP;
+            updateMonsterPos();
+            updateMonsterHP();
+        }
+
+        function updateMonsterHP() {
+            const p = Math.round((gameData.monsterHP / gameData.monsterMaxHP) * 100);
+            document.getElementById('monsterHpFill').style.width = Math.max(0, p) + '%';
+        }
+
+        // ================================================================
+        //  怪物 AI
+        // ================================================================
+        function monsterAI() {
+            if (gameData.isGameOver) return;
+            if (gameData.monsterHP <= 0) return;
+
+            const dx = gameData.playerX - gameData.monsterX;
+            const dy = gameData.playerY - gameData.monsterY;
+            const dist = Math.hypot(dx, dy);
+
+            if (dist < 2.8) {
+                const now = Date.now();
+                if (!gameData.lastMonsterAttack || now - gameData.lastMonsterAttack > 2000) {
+                    gameData.playerHP -= gameData.monsterAttack;
+                    gameData.lastMonsterAttack = now;
+                    updateUI();
+                    if (gameData.playerHP <= 0) {
+                        gameData.playerHP = 0;
+                        updateUI();
+                        gameOver(false);
+                    }
+                }
+            } else if (dist < 12) {
+                const speed = 0.055;
+                gameData.monsterX += (dx / dist) * speed;
+                gameData.monsterY += (dy / dist) * speed;
+                if (gameData.monsterX < 4) gameData.monsterX = 4;
+                if (gameData.monsterX > 20) gameData.monsterX = 20;
+                if (gameData.monsterY < 4) gameData.monsterY = 4;
+                if (gameData.monsterY > 20) gameData.monsterY = 20;
+                updateMonsterPos();
+            }
+        }
+
+        // ================================================================
+        //  攻击系统
+        // ================================================================
+        function attack() {
+            if (gameData.isGameOver) return;
+            if (gameData.monsterHP <= 0) return;
+            playSound('https://xiaoye6661234.github.io/GuangXianWorld/click.mp3');
+
+            const now = Date.now();
+            if (now - gameData.lastAttackTime < 400) return;
+            gameData.lastAttackTime = now;
+
+            const dx = gameData.playerX - gameData.monsterX;
+            const dy = gameData.playerY - gameData.monsterY;
+            const dist = Math.hypot(dx, dy);
+
+            if (dist < 5) {
+                let dmg = gameData.baseAttack + gameData.attackBonus;
+                dmg += Math.floor(Math.random() * 5) - 2;
+                dmg = Math.max(1, dmg);
+
+                gameData.monsterHP -= dmg;
+                if (gameData.monsterHP < 0) gameData.monsterHP = 0;
+                updateMonsterHP();
+                updateUI();
+
+                const r = Math.floor(Math.random() * 7) + 1;
+                playSound('https://xiaoye6661234.github.io/GuangXianWorld/HitSound' + r + '.mp3');
+                showEffect(r);
+
+                if (gameData.monsterHP <= 0) {
+                    gameData.kills++;
+                    updateMission();
+                    gameData.monsterHP = gameData.monsterMaxHP;
+                    updateMonsterHP();
+                    gameData.monsterX = 4 + Math.random() * 16;
+                    gameData.monsterY = 4 + Math.random() * 16;
+                    updateMonsterPos();
+                    if (gameData.kills >= 10) {
+                        gameOver(true);
+                    }
+                }
+            }
+        }
+
+        function showEffect(n) {
+            const container = document.getElementById('gameContainer');
+            const e = document.createElement('div');
+            e.className = 'attack-effect';
+            e.innerHTML = `<img src="https://xiaoye6661234.github.io/GuangXianWorld/HitSound${n}.png" alt="特效" />`;
+            const ts = gameData.tileSize;
+            e.style.left = (gameData.monsterX * ts) - (ts * 1.1) + 'px';
+            e.style.top = (gameData.monsterY * ts) - (ts * 1.6) + 'px';
+            container.appendChild(e);
+            setTimeout(() => e.remove(), 320);
+        }
+
+        // ================================================================
+        //  方向按钮控制（完全重写，保证移动）
+        // ================================================================
+        function initDpad() {
+            const dpadBtns = document.querySelectorAll('.dpad-btn');
+            let moveInterval = null;
+            let currentDir = null;
+
+            function startMove(dir) {
+                if (gameData.isGameOver) return;
+                if (moveInterval) return;
+                currentDir = dir;
+                const dirMap = {
+                    'up': { x: 0, y: -1 },
+                    'down': { x: 0, y: 1 },
+                    'left': { x: -1, y: 0 },
+                    'right': { x: 1, y: 0 }
+                };
+                gameData.moveDir = dirMap[dir];
+                playSound('https://xiaoye6661234.github.io/GuangXianWorld/click.mp3');
+
+                moveInterval = setInterval(() => {
+                    if (!gameData.moveDir || gameData.isGameOver) {
+                        return;
+                    }
+                    const speed = 0.10;
+                    gameData.playerX += gameData.moveDir.x * speed;
+                    gameData.playerY += gameData.moveDir.y * speed;
+                    updatePlayerPos();
+                    monsterAI();
+                }, 30);
+            }
+
+            function stopMove() {
+                if (moveInterval) {
+                    clearInterval(moveInterval);
+                    moveInterval = null;
+                }
+                gameData.moveDir = null;
+                currentDir = null;
+            }
+
+            // 为每个按钮绑定事件
+            dpadBtns.forEach(btn => {
+                const dir = btn.dataset.dir;
+
+                // 触摸事件
+                btn.addEventListener('touchstart', function(e) {
+                    e.preventDefault();
+                    startMove(dir);
+                }, { passive: false });
+
+                btn.addEventListener('touchend', function(e) {
+                    e.preventDefault();
+                    stopMove();
+                }, { passive: false });
+
+                btn.addEventListener('touchcancel', function(e) {
+                    e.preventDefault();
+                    stopMove();
+                }, { passive: false });
+
+                // 鼠标事件
+                btn.addEventListener('mousedown', function(e) {
+                    e.preventDefault();
+                    startMove(dir);
+                });
+
+                btn.addEventListener('mouseup', function(e) {
+                    e.preventDefault();
+                    stopMove();
+                });
+
+                btn.addEventListener('mouseleave', function(e) {
+                    if (currentDir === dir) {
+                        stopMove();
+                    }
+                });
+            });
+
+            // 全局鼠标释放
+            document.addEventListener('mouseup', function() {
+                if (moveInterval) {
+                    stopMove();
+                }
+            });
+
+            console.log('✅ 方向按钮已就绪');
+        }
+
+        // ================================================================
+        //  键盘控制 (WASD)
+        // ================================================================
+        function initKeyboard() {
+            const keys = { w: false, a: false, s: false, d: false };
+            let kbInterval = null;
+
+            function updateKBMove() {
+                let dx = 0,
+                    dy = 0;
+                if (keys.w) dy = -1;
+                if (keys.s) dy = 1;
+                if (keys.a) dx = -1;
+                if (keys.d) dx = 1;
+
+                if (dx === 0 && dy === 0) {
+                    gameData.moveDir = null;
+                    return;
+                }
+                const len = Math.hypot(dx, dy);
+                gameData.moveDir = { x: dx / len, y: dy / len };
+            }
+
+            function startKBInterval() {
+                if (kbInterval) return;
+                kbInterval = setInterval(() => {
+                    if (gameData.isGameOver) return;
+                    if (gameData.moveDir) {
+                        const speed = 0.10;
+                        gameData.playerX += gameData.moveDir.x * speed;
+                        gameData.playerY += gameData.moveDir.y * speed;
+                        updatePlayerPos();
+                        monsterAI();
+                    }
+                }, 30);
+            }
+
+            document.addEventListener('keydown', function(e) {
+                const key = e.key.toLowerCase();
+                if (key === 'w' || key === 'a' || key === 's' || key === 'd') {
+                    e.preventDefault();
+                    if (!keys[key]) {
+                        keys[key] = true;
+                        updateKBMove();
+                        startKBInterval();
+                    }
+                }
+            });
+
+            document.addEventListener('keyup', function(e) {
+                const key = e.key.toLowerCase();
+                if (key === 'w' || key === 'a' || key === 's' || key === 'd') {
+                    e.preventDefault();
+                    keys[key] = false;
+                    updateKBMove();
+                    if (!keys.w && !keys.a && !keys.s && !keys.d) {
+                        gameData.moveDir = null;
+                        if (kbInterval) {
+                            clearInterval(kbInterval);
+                            kbInterval = null;
+                        }
+                    }
+                }
+            });
+
+            document.addEventListener('blur', function() {
+                keys.w = keys.a = keys.s = keys.d = false;
+                gameData.moveDir = null;
+                if (kbInterval) {
+                    clearInterval(kbInterval);
+                    kbInterval = null;
+                }
+            });
+
+            console.log('✅ 键盘 WASD 已启用');
+        }
+
+        // ================================================================
+        //  冲刺
+        // ================================================================
+        function sprint() {
+            if (gameData.isGameOver) return;
+            if (!gameData.moveDir) return;
+            playSound('https://xiaoye6661234.github.io/GuangXianWorld/click.mp3');
+            const speed = 0.7;
+            gameData.playerX += gameData.moveDir.x * speed;
+            gameData.playerY += gameData.moveDir.y * speed;
+            updatePlayerPos();
+            monsterAI();
+        }
+
+        // ================================================================
+        //  回血
+        // ================================================================
+        function useHeal() {
+            if (gameData.isGameOver) return;
+            if (gameData.playerHP >= gameData.maxHP) return;
+            playSound('https://xiaoye6661234.github.io/GuangXianWorld/click.mp3');
+
+            if (gameData.bag.pizza > 0) {
+                const heal = Math.round(gameData.maxHP * 0.5);
+                gameData.playerHP = Math.min(gameData.playerHP + heal, gameData.maxHP);
+                gameData.bag.pizza--;
+                updateUI();
+                return;
+            }
+            if (gameData.bag.noodle > 0) {
+                gameData.playerHP = Math.min(gameData.playerHP + 25, gameData.maxHP);
+                gameData.bag.noodle--;
+                updateUI();
+                return;
+            }
+        }
+
+        // ================================================================
+        //  背包
+        // ================================================================
+        function openBag() {
+            document.getElementById('bagModal').style.display = 'flex';
+            renderBag();
+            playSound('https://xiaoye6661234.github.io/GuangXianWorld/click.mp3');
+        }
+
+        function closeBag() {
+            document.getElementById('bagModal').style.display = 'none';
+        }
+
+        function renderBag() {
+            const container = document.getElementById('bagItems');
+            container.innerHTML = '';
+            const bag = gameData.bag;
+
+            const items = [
+                { id: 'noodle', name: '面条', desc: '恢复 25 HP', img: 'https://xiaoye6661234.github.io/GuangXianWorld/Noodle.png', count: bag.noodle },
+                { id: 'pizza', name: '披萨', desc: '恢复 50% HP', img: 'https://xiaoye6661234.github.io/GuangXianWorld/Pizza.png', count: bag.pizza },
+                { id: 'sword', name: '铁剑', desc: '攻击力 +10 (永久)', img: 'https://xiaoye6661234.github.io/GuangXianWorld/Sword.png', count: bag.sword }
+            ];
+
+            for (const item of items) {
+                if (item.count <= 0) continue;
+                if (item.id === 'sword' && gameData.isSwordEquipped) continue;
+
+                const wrapper = document.createElement('div');
+                wrapper.className = 'bag-item-wrapper';
+
+                const div = document.createElement('div');
+                div.className = 'bag-item';
+                div.innerHTML = `<img src="${item.img}" alt="${item.name}" />`;
+                div.dataset.id = item.id;
+                div.dataset.name = item.name;
+                div.dataset.desc = item.desc;
+                div.dataset.img = item.img;
+
+                if (item.count > 1) {
+                    const badge = document.createElement('div');
+                    badge.className = 'count-badge';
+                    badge.textContent = item.count;
+                    div.appendChild(badge);
+                }
+
+                div.onclick = () => {
+                    document.getElementById('itemDetailImg').src = item.img;
+                    document.getElementById('itemDetailName').textContent = item.name;
+                    document.getElementById('itemDetailDesc').textContent = item.desc;
+                    document.getElementById('itemUseBtn').dataset.id = item.id;
+                    document.getElementById('itemDetailModal').style.display = 'block';
+                };
+
+                wrapper.appendChild(div);
+                container.appendChild(wrapper);
+            }
+
+            if (container.children.length === 0) {
+                container.innerHTML = '<div style="color:#666;font-size:1.4vw;padding:3vw;">🎒 背包空空如也</div>';
+            }
+        }
+
+        function closeItemDetail() {
+            document.getElementById('itemDetailModal').style.display = 'none';
+        }
+
+        function useItem() {
+            const id = document.getElementById('itemUseBtn').dataset.id;
+            playSound('https://xiaoye6661234.github.io/GuangXianWorld/click.mp3');
+
+            if (id === 'noodle') {
+                if (gameData.playerHP >= gameData.maxHP) return;
+                gameData.playerHP = Math.min(gameData.playerHP + 25, gameData.maxHP);
+                gameData.bag.noodle--;
+                updateUI();
+                closeItemDetail();
+                renderBag();
+            } else if (id === 'pizza') {
+                if (gameData.playerHP >= gameData.maxHP) return;
+                const heal = Math.round(gameData.maxHP * 0.5);
+                gameData.playerHP = Math.min(gameData.playerHP + heal, gameData.maxHP);
+                gameData.bag.pizza--;
+                updateUI();
+                closeItemDetail();
+                renderBag();
+            } else if (id === 'sword') {
+                if (gameData.isSwordEquipped) return;
+                gameData.attackBonus += 10;
+                gameData.bag.sword--;
+                gameData.isSwordEquipped = true;
+                updateUI();
+                closeItemDetail();
+                renderBag();
+            }
+        }
+
+        // ================================================================
+        //  游戏结束 & 结算
+        // ================================================================
+        function gameOver(win) {
+            if (gameData.isGameOver) return;
+            gameData.isGameOver = true;
+            gameData.isVictory = win;
+
+            const modal = document.getElementById('resultModal');
+            const title = document.getElementById('resultTitle');
+            const info = document.getElementById('resultInfo');
+
+            if (win) {
+                title.textContent = '🎉 通关成功！';
+                let expReward = 100;
+                let coinReward = 50;
+                let pizzaReward = 1;
+
+                if (gameData.kills >= 10) {
+                    expReward = 300;
+                    coinReward = 150;
+                    pizzaReward = 3;
+                } else if (gameData.kills >= 5) {
+                    expReward = 200;
+                    coinReward = 100;
+                    pizzaReward = 2;
+                }
+
+                gameData.rewardExp = expReward;
+                gameData.rewardCoins = coinReward;
+                gameData.rewardItems = pizzaReward;
+
+                info.innerHTML = `
+                    🗡️ 击杀: <span class="highlight">${gameData.kills}</span> 只<br />
+                    ⭐ 经验: <span class="highlight">+${expReward}</span><br />
+                    🪙 广仙币: <span class="highlight">+${coinReward}</span><br />
+                    🍕 披萨: <span class="highlight">+${pizzaReward}</span>
+                `;
+
+                if (!gameData.victorySaved) {
+                    saveVictoryReward();
+                    gameData.victorySaved = true;
+                }
+
+                const btns = document.querySelector('.result-buttons');
+                btns.innerHTML = `
+                    <button class="result-btn green" onclick="goToLV2()">⚔️ 进入 LV2</button>
+                    <button class="result-btn gray" onclick="returnToHall()">🏠 返回大厅</button>
+                `;
+
+            } else {
+                title.textContent = '💀 你已阵亡';
+                const cost = 75;
+                const hasCoins = (gData.user.coins || 0) >= cost;
+                info.innerHTML = `需要 <span class="highlight">${cost} 广仙币</span> 复活<br />当前余额: <span class="highlight">${gData.user.coins || 0}</span>`;
+
+                const btns = document.querySelector('.result-buttons');
+                btns.innerHTML = `
+                    <button class="result-btn" id="reviveBtn" onclick="revive()">💀 复活 (75💰)</button>
+                    <button class="result-btn gray" onclick="returnToHall()">🏠 返回大厅</button>
+                `;
+                if (!hasCoins) {
+                    document.getElementById('reviveBtn').disabled = true;
+                }
+            }
+
+            modal.style.display = 'block';
+        }
+
+        // ================================================================
+        //  保存胜利奖励
+        // ================================================================
+        function saveVictoryReward() {
+            gData.user.level = (gData.user.level || 1) + 1;
+            gData.user.exp = (gData.user.exp || 0) + gameData.rewardExp;
+            gData.user.coins = (gData.user.coins || 0) + gameData.rewardCoins;
+            if (!gData.user.inventory) gData.user.inventory = {};
+            gData.user.inventory.pizza = (gData.user.inventory.pizza || 0) + gameData.rewardItems;
+            localStorage.setItem('GuangXianData', JSON.stringify(gData));
+            updateUI();
+            console.log('✅ 数据已保存至 localStorage');
+        }
+
+        // ================================================================
+        //  下载 data.json
+        // ================================================================
+        function downloadDataJson() {
+            const jsonStr = JSON.stringify(gData, null, 2);
+            const blob = new Blob([jsonStr], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'data.json';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            playSound('https://xiaoye6661234.github.io/GuangXianWorld/click.mp3');
+        }
+
+        // ================================================================
+        //  前往 LV2
+        // ================================================================
+        function goToLV2() {
+            playSound('https://xiaoye6661234.github.io/GuangXianWorld/click.mp3');
+            if (!gameData.victorySaved) {
+                saveVictoryReward();
+                gameData.victorySaved = true;
+            }
+            if (confirm('✅ 数据已保存！是否下载 data.json 文件以便备份？')) {
+                downloadDataJson();
+            }
+            window.location.href = 'LV2.html';
+        }
+
+        // ================================================================
+        //  复活
+        // ================================================================
+        function revive() {
+            const cost = 75;
+            if ((gData.user.coins || 0) < cost) {
+                playSound('https://xiaoye6661234.github.io/GuangXianWorld/click.mp3');
+                return;
+            }
+            gData.user.coins -= cost;
+            localStorage.setItem('GuangXianData', JSON.stringify(gData));
+
+            gameData.playerHP = gameData.maxHP;
+            gameData.isGameOver = false;
+            gameData.isPlayerDead = false;
+
+            document.getElementById('resultModal').style.display = 'none';
+            updateUI();
+            playSound('https://xiaoye6661234.github.io/GuangXianWorld/click.mp3');
+        }
+
+        // ================================================================
+        //  返回大厅
+        // ================================================================
+        function returnToHall() {
+            if (!gameData.isGameOver && gameData.playerHP > 0) {
+                if (!confirm('⚠️ 返回大厅将丢失本局进度，确定吗？')) {
+                    return;
+                }
+            }
+            playSound('https://xiaoye6661234.github.io/GuangXianWorld/click.mp3');
+            window.location.href = 'Hall.html';
+        }
+
+        // ================================================================
+        //  音效系统
+        // ================================================================
+        function playSound(url) {
+            try {
+                const a = new Audio(url);
+                const vol = (gData.user.settings?.sfxVolume || 50) / 100;
+                a.volume = vol;
+                a.play().catch(() => {});
+            } catch (e) {}
+        }
+
+        function initBGM() {
+            try {
+                bgmAudio = document.getElementById('bgmPlayer');
+                if (!bgmAudio) return;
+                const vol = (gData.user.settings?.bgmVolume || 50) / 100;
+                bgmAudio.volume = vol;
+                bgmAudio.play().catch(() => {});
+                console.log('✅ BGM 已启动');
+            } catch (e) {
+                console.warn('BGM 启动失败:', e);
+            }
+        }
+
+        // ================================================================
+        //  初始化
+        // ================================================================
+        function initGame() {
+            if (!loadData()) return;
+
+            generateMap();
+            spawnPlayer();
+            spawnMonster();
+            updateUI();
+
+            // 初始化方向按钮
+            setTimeout(() => {
+                initDpad();
+            }, 100);
+
+            // 初始化键盘
+            initKeyboard();
+
+            initBGM();
+
+            // 怪物AI循环
+            if (monsterAITimer) clearInterval(monsterAITimer);
+            monsterAITimer = setInterval(() => {
+                if (!gameData.isGameOver && gameData.monsterHP > 0) {
+                    monsterAI();
+                }
+            }, 100);
+
+            window.addEventListener('resize', () => {
+                const cw = document.getElementById('gameContainer').offsetWidth;
+                gameData.tileSize = cw / 25;
+                updatePlayerPos();
+                updateMonsterPos();
+            });
+
+            console.log('✅ 广仙世界 Lv.1 启动成功！');
+            console.log('  攻击力:', gameData.baseAttack + gameData.attackBonus);
+            console.log('  怪物血量:', gameData.monsterHP);
+            console.log('  当前等级:', gData.user.level);
+        }
+
+        window.addEventListener('load', initGame);
+
+        window.addEventListener('beforeunload', () => {
+            if (gameData.isVictory && !gameData.victorySaved) {
+                saveVictoryReward();
+                gameData.victorySaved = true;
+            }
+        });
+    </script>
+
+</body>
+</html>
