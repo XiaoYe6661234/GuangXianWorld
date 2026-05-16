@@ -2,266 +2,419 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
     <title>登录 · 广仙世界</title>
     <style>
+        /* ===== 全局重置 ===== */
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
             user-select: none;
+            -webkit-touch-callout: none;
+            -webkit-user-select: none;
         }
+
         body {
-            background: #fff;
+            background: #ffffff;
             display: flex;
             justify-content: center;
             align-items: center;
             height: 100vh;
             width: 100vw;
             overflow: hidden;
-            font-family: system-ui, 'Segoe UI', 'PingFang SC', Roboto;
+            font-family: system-ui, 'Segoe UI', 'PingFang SC', Roboto, 'Helvetica Neue', sans-serif;
+            touch-action: none;
+            -webkit-tap-highlight-color: transparent;
         }
+
+        /* ===== 容器：固定宽高比，居中 ===== */
         .container {
             width: 100vw;
             height: 56.25vw;
             max-height: 100vh;
             max-width: 177.78vh;
             position: relative;
-            background: #fff;
+            background: #ffffff;
+            overflow: hidden;
+            touch-action: none;
         }
-        /* 返回按钮：纯文字无背景，跳转index.html */
+
+        /* ===== 返回按钮：纯文字，左上角 ===== */
         .back-btn {
             position: absolute;
-            top: 3%;
+            top: 3.2%;
             left: 4%;
-            font-size: 2.2vw;
-            font-weight: bold;
+            font-size: 2.4vw;
+            font-weight: 700;
+            color: #000000;
             cursor: pointer;
-            color: #000;
             background: transparent;
+            border: none;
             padding: 0;
-            border-radius: 0;
-            backdrop-filter: none;
+            z-index: 10;
+            letter-spacing: 0.02em;
+            line-height: 1.2;
+            touch-action: manipulation;
         }
-        /* 顶部标题：登录/注册 */
+
+        /* ===== 顶部标题 ===== */
         .title {
             position: absolute;
-            top: 3%;
+            top: 3.2%;
             left: 50%;
             transform: translateX(-50%);
-            font-size: 2.6vw;
-            font-weight: bold;
-            color: #000;
-            text-shadow: none;
+            font-size: 2.8vw;
+            font-weight: 700;
+            color: #000000;
+            letter-spacing: 0.06em;
+            white-space: nowrap;
         }
-        /* 广仙世界logo */
+
+        /* ===== 广仙世界 LOGO（书法字体图片） ===== */
         .logo-mini {
             position: absolute;
-            top: 14%;
+            top: 15%;
             left: 50%;
             transform: translateX(-50%);
-            width: 32%;
-            max-width: 220px;
+            width: 44%;
+            max-width: 320px;
+            height: auto;
+            display: block;
+            /* 防下载 */
+            -webkit-touch-callout: none;
+            -webkit-user-select: none;
+            user-select: none;
+            pointer-events: none;
+            touch-action: none;
         }
-        /* 表单区域：纯白无背景无阴影 */
+
+        /* ===== 表单区域 ===== */
         .form-area {
             position: absolute;
-            top: 42%;
+            top: 46%;
             left: 50%;
             transform: translateX(-50%);
-            width: 65%;
+            width: 70%;
+            max-width: 480px;
             background: transparent;
-            border-radius: 0;
             padding: 0;
-            backdrop-filter: none;
-            box-shadow: none;
         }
+
         .row {
             display: flex;
             align-items: center;
-            margin-bottom: 1.8vw;
-            gap: 2%;
+            margin-bottom: 2.2vw;
+            gap: 2.5%;
         }
+
         .row label {
-            width: 22%;
-            font-size: 1.8vw;
+            width: 24%;
+            font-size: 2vw;
             font-weight: 600;
-            color: #000;
+            color: #000000;
+            white-space: nowrap;
+            letter-spacing: 0.04em;
         }
-        /* 输入框：浅灰色背景，统一圆角8px */
+
+        /* 输入框：浅灰色背景，统一圆角 8px */
         .row input {
             flex: 1;
             background: #d1d1d1;
             border: none;
             border-radius: 8px;
-            padding: 1vw 1.8vw;
-            font-size: 1.6vw;
+            padding: 1.2vw 2vw;
+            font-size: 1.8vw;
+            font-weight: 400;
             outline: none;
             font-family: inherit;
-            color: #000;
+            color: #000000;
+            touch-action: manipulation;
+            -webkit-appearance: none;
+            appearance: none;
         }
-        /* 确定按钮：深灰色背景，统一圆角8px */
+
+        .row input::placeholder {
+            color: #777777;
+            font-weight: 400;
+            font-size: 1.6vw;
+        }
+
+        .row input:disabled {
+            background: #d1d1d1;
+            opacity: 0.7;
+            cursor: not-allowed;
+        }
+
+        /* ===== 确定按钮：深灰色背景，圆角 8px ===== */
         .btn-confirm {
             position: absolute;
             bottom: 18%;
             left: 50%;
             transform: translateX(-50%);
             background: #666666;
-            color: white;
-            font-size: 2.1vw;
-            padding: 0.9vw 5vw;
+            color: #ffffff;
+            font-size: 2.4vw;
+            font-weight: 700;
+            padding: 1vw 6vw;
             border: none;
             border-radius: 8px;
-            font-weight: bold;
             cursor: pointer;
+            letter-spacing: 0.06em;
+            touch-action: manipulation;
+            transition: background 0.08s ease, transform 0.08s ease;
             box-shadow: none;
-            transition: 0.05s linear;
+            -webkit-tap-highlight-color: transparent;
         }
+
         .btn-confirm:active {
-            transform: translateX(-50%) scale(0.97);
+            transform: translateX(-50%) scale(0.96);
             background: #555555;
         }
+
         .btn-confirm:disabled {
-            background: #aaa;
+            background: #aaaaaa;
             cursor: not-allowed;
             transform: translateX(-50%) scale(1);
         }
+
+        /* ===== 竖屏适配：旋转保持横屏效果 ===== */
         @media (orientation: portrait) {
             .container {
                 transform: rotate(-90deg) scale(0.8);
+            }
+        }
+
+        /* ===== 针对小屏的微调 ===== */
+        @media (max-width: 600px) {
+            .form-area {
+                width: 78%;
+            }
+            .row label {
+                font-size: 2.6vw;
+            }
+            .row input {
+                font-size: 2.2vw;
+                padding: 1.6vw 2.4vw;
+            }
+            .btn-confirm {
+                font-size: 3vw;
+                padding: 1.4vw 7vw;
+            }
+            .title {
+                font-size: 3.2vw;
+            }
+            .back-btn {
+                font-size: 2.8vw;
+            }
+        }
+
+        @media (max-width: 400px) {
+            .form-area {
+                width: 84%;
+            }
+            .row label {
+                font-size: 3vw;
+                width: 26%;
+            }
+            .row input {
+                font-size: 2.6vw;
+                padding: 2vw 2.8vw;
+            }
+            .btn-confirm {
+                font-size: 3.6vw;
+                padding: 1.8vw 8vw;
             }
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <!-- 修正返回按钮跳转至index.html -->
+
+        <!-- 返回按钮：跳转 index.html -->
         <div class="back-btn" onclick="window.location.href='index.html'">← 返回</div>
+
+        <!-- 顶部标题 -->
         <div class="title">登录/注册</div>
-        <img src="https://xiaoye6661234.github.io/GuangXianWorld/logo.png" class="logo-mini" />
+
+        <!-- 广仙世界 LOGO（图片） -->
+        <img src="https://xiaoye6661234.github.io/GuangXianWorld/logo.png"
+        class="logo-mini"
+        alt="广仙世界"
+        draggable="false"
+        oncontextmenu="return false"
+        onmousedown="return false"
+        ontouchstart="return false"
+        />
+
+        <!-- 表单区域 -->
         <div class="form-area">
-            <div class="row"><label>账号：</label><input type="text" id="username" placeholder="手机号/邮箱" /></div>
-            <div class="row"><label>密码：</label><input type="password" id="password" placeholder="******" /></div>
-            <div class="row" id="confirmRow"><label>确认密码：</label><input type="password" id="confirmPass" placeholder="再次输入" /></div>
+            <div class="row">
+                <label>账号：</label>
+                <input type="text" id="username" placeholder="手机号/邮箱" autocomplete="off" />
+            </div>
+            <div class="row">
+                <label>密码：</label>
+                <input type="password" id="password" placeholder="******" autocomplete="off" />
+            </div>
+            <div class="row" id="confirmRow">
+                <label>确认密码：</label>
+                <input type="password" id="confirmPass" placeholder="再次输入" autocomplete="off" />
+            </div>
         </div>
+
+        <!-- 确定按钮 -->
         <button class="btn-confirm" id="confirmBtn">确定</button>
+
     </div>
+
     <script>
-        // ========== 核心功能100%保留 未做任何修改 ==========
-        const confirmBtn = document.getElementById('confirmBtn');
-        const usernameInput = document.getElementById('username');
-        const passwordInput = document.getElementById('password');
-        const confirmInput = document.getElementById('confirmPass');
-        const confirmRow = document.getElementById('confirmRow');
-        // 检查是否已有数据，决定显示登录还是注册
-        (function checkMode() {
-            const existing = localStorage.getItem('GuangXianData');
-            if (existing) {
-                try {
-                    const data = JSON.parse(existing);
-                    if (data && data.user && data.user.username) {
-                        // 已有账号 → 登录模式
-                        usernameInput.value = data.user.username;
-                        usernameInput.disabled = true;
-                        confirmRow.style.display = 'none';
-                        document.querySelector('.title').textContent = '欢迎回来';
+        // ========== 核心功能 100% 保留（仅跳转目标统一改为 PersonalInformation.html） ==========
+        (function() {
+            const confirmBtn = document.getElementById('confirmBtn');
+            const usernameInput = document.getElementById('username');
+            const passwordInput = document.getElementById('password');
+            const confirmInput = document.getElementById('confirmPass');
+            const confirmRow = document.getElementById('confirmRow');
+
+            // ----- 检查模式：登录 或 注册 -----
+            (function checkMode() {
+                const existing = localStorage.getItem('GuangXianData');
+                if (existing) {
+                    try {
+                        const data = JSON.parse(existing);
+                        if (data && data.user && data.user.username) {
+                            // 已有账号 → 登录模式
+                            usernameInput.value = data.user.username;
+                            usernameInput.disabled = true;
+                            confirmRow.style.display = 'none';
+                            document.querySelector('.title').textContent = '欢迎回来';
+                            return;
+                        }
+                    } catch (e) { /* 数据损坏，按注册处理 */ }
+                }
+                // 无数据 → 注册模式
+                usernameInput.disabled = false;
+                confirmRow.style.display = 'flex';
+                document.querySelector('.title').textContent = '登录/注册';
+            })();
+
+            // ----- 确定按钮点击 -----
+            confirmBtn.addEventListener('click', function() {
+                // 音效
+                let clickAudio = new Audio('https://xiaoye6661234.github.io/GuangXianWorld/click.mp3');
+                clickAudio.volume = 0.5;
+                clickAudio.play().catch(function(e) { /* 静默失败 */ });
+
+                const username = usernameInput.value.trim();
+                const password = passwordInput.value;
+                const confirm = confirmInput.value;
+
+                if (!username || !password) {
+                    alert('账号/密码不可为空');
+                    return;
+                }
+
+                // 检查是否已有数据
+                const existing = localStorage.getItem('GuangXianData');
+                let parsedExisting = null;
+                if (existing) {
+                    try {
+                        parsedExisting = JSON.parse(existing);
+                    } catch (e) { /* 忽略 */ }
+                }
+
+                // ===== 登录模式（已有账号且用户名匹配） =====
+                if (parsedExisting && parsedExisting.user && parsedExisting.user.username === username) {
+                    // 验证密码
+                    if (parsedExisting.user.password !== password) {
+                        alert('密码错误！');
                         return;
                     }
-                } catch (e) { /* 数据损坏，按注册处理 */ }
-            }
-            // 无数据 → 注册模式
-            usernameInput.disabled = false;
-            confirmRow.style.display = 'flex';
-            document.querySelector('.title').textContent = '登录/注册';
-        })();
-        confirmBtn.addEventListener('click', () => {
-            let clickAudio = new Audio('https://xiaoye6661234.github.io/GuangXianWorld/click.mp3');
-            clickAudio.volume = 0.5;
-            clickAudio.play().catch(e => {});
-            const username = usernameInput.value.trim();
-            const password = passwordInput.value;
-            const confirm = confirmInput.value;
-            if (!username || !password) {
-                alert('账号/密码不可为空');
-                return;
-            }
-            // 检查是否已有数据
-            const existing = localStorage.getItem('GuangXianData');
-            let parsedExisting = null;
-            if (existing) {
-                try {
-                    parsedExisting = JSON.parse(existing);
-                } catch (e) { /* 忽略 */ }
-            }
-            // ===== 登录模式（已有账号且用户名匹配） =====
-            if (parsedExisting && parsedExisting.user && parsedExisting.user.username === username) {
-                // 验证密码
-                if (parsedExisting.user.password !== password) {
-                    alert('密码错误！');
-                    return;
-                }
-                // 登录成功
-                localStorage.setItem('GuangXianData', JSON.stringify(parsedExisting));
-                // 检查数据完整性，决定跳转
-                const user = parsedExisting.user;
-                if (!user.role) {
-                    window.location.href = 'ChooseRole.html';
-                    return;
-                }
-                if (!user.nickname || user.nickname === '云游仙友' || !user.region) {
+                    // 登录成功
+                    localStorage.setItem('GuangXianData', JSON.stringify(parsedExisting));
+                    // ★ 统一跳转到 PersonalInformation.html
                     window.location.href = 'PersonalInformation.html';
                     return;
                 }
-                // 完整 → 进入大厅
-                window.location.href = 'Hall.html';
-                return;
-            }
-            // ===== 注册模式（新账号 或 用户名不匹配） =====
-            if (parsedExisting && parsedExisting.user && parsedExisting.user.username !== username) {
-                // 用户名不匹配：询问是否覆盖
-                if (!confirm(`当前已有账号 "${parsedExisting.user.username}"，是否创建新账号 "${username}"？\n（原有数据将被覆盖）`)) {
+
+                // ===== 注册模式（新账号 或 用户名不匹配） =====
+                if (parsedExisting && parsedExisting.user && parsedExisting.user.username !== username) {
+                    // 用户名不匹配：询问是否覆盖
+                    if (!confirm('当前已有账号 "' + parsedExisting.user.username + '"，是否创建新账号 "' + username +
+                            '"？\n（原有数据将被覆盖）')) {
+                        return;
+                    }
+                }
+
+                // 验证密码一致性（注册模式）
+                if (password !== confirm) {
+                    alert('两次密码不一致');
                     return;
                 }
-            }
-            // 验证密码一致性（注册模式）
-            if (password !== confirm) {
-                alert('两次密码不一致');
-                return;
-            }
-            // 创建新账号
-            const newData = {
-                user: {
-                    username: username,
-                    password: password,
-                    nickname: '云游仙友',
-                    avatar: 'https://xiaoye6661234.github.io/GuangXianWorld/Default avatar.jpg',
-                    region: '',
-                    bgImage: '',
-                    level: 1,
-                    coins: 1000,
-                    exp: 0,
-                    loginStreak: 0,
-                    lastLoginDate: new Date().toISOString().split('T')[0],
-                    joinedDate: new Date().toISOString().split('T')[0],
-                    role: '',
-                    signHistory: [],
-                    settings: { bgm: true, bgmVolume: 40, sfxVolume: 50 }
+
+                // 创建新账号
+                var newData = {
+                    user: {
+                        username: username,
+                        password: password,
+                        nickname: '云游仙友',
+                        avatar: 'https://xiaoye6661234.github.io/GuangXianWorld/Default avatar.jpg',
+                        region: '',
+                        bgImage: '',
+                        level: 1,
+                        coins: 1000,
+                        exp: 0,
+                        loginStreak: 0,
+                        lastLoginDate: new Date().toISOString().split('T')[0],
+                        joinedDate: new Date().toISOString().split('T')[0],
+                        role: '',
+                        signHistory: [],
+                        settings: { bgm: true, bgmVolume: 40, sfxVolume: 50 }
+                    }
+                };
+                localStorage.setItem('GuangXianData', JSON.stringify(newData));
+
+                // 询问是否下载 data.json
+                if (confirm('注册成功！是否现在下载您的 data.json 数据文件？')) {
+                    var blob = new Blob([JSON.stringify(newData, null, 2)], { type: 'application/json' });
+                    var url = URL.createObjectURL(blob);
+                    var a = document.createElement('a');
+                    a.href = url;
+                    a.download = 'data.json';
+                    a.click();
+                    URL.revokeObjectURL(url);
                 }
-            };
-            localStorage.setItem('GuangXianData', JSON.stringify(newData));
-            // 询问是否下载 data.json
-            if (confirm('注册成功！是否现在下载您的 data.json 数据文件？')) {
-                const blob = new Blob([JSON.stringify(newData, null, 2)], { type: 'application/json' });
-                const url = URL.createObjectURL(blob);
-                const a = document.createElement('a');
-                a.href = url;
-                a.download = 'data.json';
-                a.click();
-                URL.revokeObjectURL(url);
-            }
-            // 跳转到选角色
-            window.location.href = 'ChooseRole.html';
-        });
+
+                // ★ 统一跳转到 PersonalInformation.html
+                window.location.href = 'PersonalInformation.html';
+            });
+
+        })();
+    </script>
+
+    <!-- 额外防长按 / 防选中 -->
+    <script>
+        (function() {
+            // 阻止全局长按菜单
+            document.addEventListener('contextmenu', function(e) {
+                e.preventDefault();
+            });
+            // 阻止图片上的拖拽和长按
+            document.querySelectorAll('img').forEach(function(img) {
+                img.setAttribute('draggable', 'false');
+                img.addEventListener('contextmenu', function(e) { e.preventDefault(); });
+                img.addEventListener('dragstart', function(e) { e.preventDefault(); });
+            });
+            // 阻止整个页面的选择
+            document.addEventListener('selectstart', function(e) { e.preventDefault(); });
+            // 阻止触摸长按菜单（iOS）
+            document.addEventListener('touchstart', function(e) {
+                if (e.target.tagName === 'IMG') {
+                    e.preventDefault();
+                }
+            }, { passive: false });
+        })();
     </script>
 </body>
 </html>
