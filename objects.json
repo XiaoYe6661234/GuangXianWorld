@@ -1,0 +1,152 @@
+{
+  "gameConfig": {
+    "resurrectionCost": 75,
+    "drowningTime": 30,
+    "swimImageMing": "Ming-swim.png",
+    "swimImageQing": "Qing-swim.png",
+    "mapBoundaryMultiplier": 20
+  },
+  "monsters": [
+    {
+      "name": "恶魔小兵",
+      "Lv": 1,
+      "imc": "https://xiaoye6661234.github.io/GuangXianWorld/Monster.png",
+      "HP": 100,
+      "Beat": 5,
+      "Def": 0,
+      "exp": 75,
+      "money": 50
+    },
+    {
+      "name": "暗影刺客",
+      "Lv": 2,
+      "imc": "https://xiaoye6661234.github.io/GuangXianWorld/Monster2.png",
+      "HP": 280,
+      "Beat": 22,
+      "Def": 5,
+      "exp": 120,
+      "money": 80
+    },
+    {
+      "name": "熔岩巨兽",
+      "Lv": 3,
+      "imc": "https://xiaoye6661234.github.io/GuangXianWorld/Monster3.png",
+      "HP": 400,
+      "Beat": 30,
+      "Def": 10,
+      "exp": 200,
+      "money": 150
+    },
+    {
+      "name": "冰霜女巫",
+      "Lv": 4,
+      "imc": "https://xiaoye6661234.github.io/GuangXianWorld/Monster4.png",
+      "HP": 550,
+      "Beat": 40,
+      "Def": 15,
+      "exp": 300,
+      "money": 220
+    },
+    {
+      "name": "地狱犬",
+      "Lv": 5,
+      "imc": "https://xiaoye6661234.github.io/GuangXianWorld/Monster5.png",
+      "HP": 750,
+      "Beat": 55,
+      "Def": 20,
+      "exp": 450,
+      "money": 350
+    }
+  ],
+  "foods": [
+    {
+      "name": "披萨",
+      "HP": 50,
+      "imc": "https://xiaoye6661234.github.io/GuangXianWorld/Pizza.png"
+    },
+    {
+      "name": "面条",
+      "HP": 30,
+      "imc": "https://xiaoye6661234.github.io/GuangXianWorld/Noodle.png"
+    },
+    {
+      "name": "烤鸡",
+      "HP": 80,
+      "imc": "https://xiaoye6661234.github.io/GuangXianWorld/Chicken.png"
+    },
+    {
+      "name": "仙酒",
+      "HP": 100,
+      "imc": "https://xiaoye6661234.github.io/GuangXianWorld/Wine.png"
+    }
+  ],
+  "weapons": [
+    {
+      "name": "木剑",
+      "hit": 5,
+      "imc": "https://xiaoye6661234.github.io/GuangXianWorld/WoodSword.png",
+      "Lv": 1
+    },
+    {
+      "name": "铁剑",
+      "hit": 10,
+      "imc": "https://xiaoye6661234.github.io/GuangXianWorld/IronSword.png",
+      "Lv": 2
+    },
+    {
+      "name": "冰霜剑",
+      "hit": 18,
+      "imc": "https://xiaoye6661234.github.io/GuangXianWorld/IceSword.png",
+      "Lv": 3
+    },
+    {
+      "name": "烈焰刀",
+      "hit": 28,
+      "imc": "https://xiaoye6661234.github.io/GuangXianWorld/FireSword.png",
+      "Lv": 4
+    },
+    {
+      "name": "雷霆枪",
+      "hit": 40,
+      "imc": "https://xiaoye6661234.github.io/GuangXianWorld/ThunderSpear.png",
+      "Lv": 5
+    }
+  ],
+  "tasks": [
+    {
+      "word": "击败 1 只怪物",
+      "given": {
+        "name": "披萨",
+        "num": 1
+      }
+    },
+    {
+      "word": "击败 2 只怪物",
+      "given": {
+        "name": "面条",
+        "num": 2
+      }
+    },
+    {
+      "word": "击败 3 只怪物",
+      "given": {
+        "name": "烤鸡",
+        "num": 1
+      }
+    },
+    {
+      "word": "击败 5 只怪物",
+      "given": {
+        "name": "仙酒",
+        "num": 1
+      }
+    },
+    {
+      "word": "击败 1 只Lv.2怪物",
+      "given": {
+        "name": "铁剑",
+        "num": 1
+      }
+    }
+  ]
+}

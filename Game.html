@@ -12,7 +12,6 @@
             user-select: none;
             -webkit-tap-highlight-color: transparent;
         }
-
         body {
             background: #111;
             display: flex;
@@ -21,9 +20,8 @@
             height: 100vh;
             width: 100vw;
             overflow: hidden;
-            font-family: 'Microsoft YaHei', sans-serif;
+            font-family: system-ui, 'Segoe UI', 'PingFang SC', Roboto;
         }
-
         #gameContainer {
             position: relative;
             width: 100vw;
@@ -33,7 +31,6 @@
             background: #2d5e2b;
             overflow: hidden;
         }
-
         canvas {
             position: absolute;
             top: 0;
@@ -44,7 +41,6 @@
             display: block;
             background: #87ceeb;
         }
-
         .ui-layer {
             position: absolute;
             top: 0;
@@ -65,19 +61,15 @@
             left: 2%;
             display: flex;
             align-items: center;
-            background: rgba(0, 0, 0, 0.65);
-            padding: 0.6vw 1.2vw;
-            border-radius: 0.8vw;
-            gap: 1vw;
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            gap: 0.8vw;
         }
         #avatarBox {
-            width: 6vw;
-            height: 6vw;
+            width: 7vw;
+            height: 7vw;
             border: 2px solid white;
-            border-radius: 0.5vw;
+            border-radius: 4px;
             overflow: hidden;
-            background: #222;
+            background: #ccc;
         }
         #avatarBox img {
             width: 100%;
@@ -87,134 +79,68 @@
         .info-text {
             display: flex;
             flex-direction: column;
-            gap: 0.1vw;
+            gap: 0.4vw;
         }
         .info-text .nickname {
+            background: rgba(0, 0, 0, 0.7);
             color: #fff;
             font-size: 1.6vw;
             font-weight: bold;
-            text-shadow: 1px 1px 2px black;
+            padding: 0.2vw 1.2vw;
+            border-radius: 4px;
         }
         .info-text .lvl {
-            color: #ffd700;
-            font-size: 1.6vw;
+            background: rgba(0, 0, 0, 0.7);
+            color: #fff;
+            font-size: 2vw;
             font-weight: bold;
-        }
-        #coinDisplay {
-            color: #ffd700;
-            font-size: 1.4vw;
-            background: rgba(0, 0, 0, 0.5);
-            padding: 0.1vw 0.8vw;
-            border-radius: 0.4vw;
-            border: 1px solid #ffd700;
-            margin-left: 0.3vw;
+            padding: 0.2vw 1.2vw;
+            border-radius: 4px;
         }
 
         /* 血条 */
         #hpBarContainer {
             position: absolute;
-            top: 2.5%;
+            top: 3%;
             left: 30%;
             width: 40%;
-            height: 3.5vw;
-            background: #222;
-            border: 0.3vw solid #cc5500;
-            border-radius: 0.5vw;
+            height: 3.6vw;
+            background: #cc0000;
+            border: 0.3vw solid #ff9900;
+            border-radius: 6px;
             overflow: hidden;
-            box-shadow: 0 0 10px rgba(255, 0, 0, 0.3);
         }
         #hpBarInner {
             width: 100%;
             height: 100%;
             background: linear-gradient(90deg, #d61a1a, #ff4444);
-            transition: width 0.1s;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 1.8vw;
+            font-size: 2vw;
             font-weight: bold;
             color: white;
-            text-shadow: 1px 1px 2px black;
-        }
-
-        /* 经验条 */
-        #expBar {
-            position: absolute;
-            top: 1%;
-            left: 30%;
-            width: 40%;
-            height: 1.2vw;
-            background: #333;
-            border-radius: 0.5vw;
-            overflow: hidden;
-            box-shadow: 0 0 5px rgba(255, 200, 0, 0.5);
-        }
-        #expInner {
-            height: 100%;
-            width: 0%;
-            background: linear-gradient(90deg, #ffaa00, #ffdd44);
-            transition: width 0.2s;
-            border-radius: 0.5vw;
-        }
-        #expText {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 0.9vw;
-            color: white;
-            text-shadow: 1px 1px 2px black;
-        }
-
-        /* 溺水计时显示 */
-        #drowningDisplay {
-            position: absolute;
-            top: 6.5%;
-            left: 30%;
-            width: 40%;
-            height: 1.8vw;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.4vw;
-            color: #ff6666;
-            text-shadow: 1px 1px 4px black;
-            background: rgba(0, 0, 0, 0.5);
-            border-radius: 0.5vw;
-            border: 1px solid rgba(255, 100, 100, 0.3);
-            padding: 0.2vw 0.5vw;
-            display: none;
-        }
-        #drowningDisplay.active {
-            display: flex;
+            text-shadow: 1px 1px 3px black;
         }
 
         /* 任务面板 */
         #taskContainer {
             position: absolute;
-            top: 3%;
+            top: 14%;
             right: 2%;
-            background: rgba(0, 0, 0, 0.8);
-            padding: 0.8vw 1.5vw;
-            border-radius: 0.8vw;
+            background: rgba(0, 0, 0, 0.7);
+            padding: 0.8vw 1.2vw;
+            border-radius: 6px;
             color: white;
             font-size: 1.2vw;
-            line-height: 1.5;
+            line-height: 1.4;
             min-width: 18vw;
-            max-width: 26vw;
-            backdrop-filter: blur(2px);
-            border: 1px solid rgba(255, 255, 255, 0.08);
         }
         #taskContainer .task-title {
-            font-size: 1.6vw;
+            font-size: 1.4vw;
             font-weight: bold;
-            border-bottom: 1px solid #555;
             margin-bottom: 0.3vw;
-            color: #ffd700;
+            color: #fff;
         }
         #taskContainer .task-reward {
             margin-top: 0.2vw;
@@ -227,63 +153,51 @@
             font-weight: bold;
             border: none;
             padding: 0.2vw 1.2vw;
-            border-radius: 0.4vw;
+            border-radius: 4px;
             cursor: pointer;
-            font-size: 1.2vw;
+            font-size: 1.1vw;
             margin-top: 0.4vw;
             display: none;
-            transition: 0.2s;
-            box-shadow: 0 0 12px rgba(255, 170, 0, 0.3);
-        }
-        #claimTaskBtn:hover {
-            background: #ffcc44;
-            transform: scale(1.05);
         }
 
         /* 右侧控制按钮 */
         #controls {
             position: absolute;
-            bottom: 3%;
+            bottom: 4%;
             right: 3%;
             display: flex;
             flex-direction: column;
             align-items: flex-end;
-            gap: 0.6vw;
+            gap: 0.8vw;
         }
         .ctrl-row {
             display: flex;
-            gap: 0.6vw;
+            gap: 0.8vw;
             align-items: center;
         }
         .ctrl-btn {
-            width: 7vw;
-            height: 7vw;
+            width: 8vw;
+            height: 8vw;
             border-radius: 50%;
             background: rgba(255, 255, 255, 0.2);
-            border: 2px solid rgba(255, 255, 255, 0.5);
+            border: 2px solid rgba(255, 255, 255, 0.4);
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 3vw;
-            color: white;
             cursor: pointer;
-            box-shadow: 0 0 15px rgba(0, 0, 0, 0.3);
             transition: 0.1s;
-            backdrop-filter: blur(4px);
         }
         .ctrl-btn:active {
             transform: scale(0.9);
         }
         .ctrl-btn.small {
-            width: 5vw;
-            height: 5vw;
-            font-size: 2vw;
+            width: 6vw;
+            height: 6vw;
         }
         .ctrl-btn img {
-            width: 65%;
-            height: 65%;
+            width: 55%;
+            height: 55%;
             object-fit: contain;
-            filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
         }
         .ctrl-label {
             color: white;
@@ -291,35 +205,52 @@
             text-shadow: 1px 1px 3px black;
             background: rgba(0, 0, 0, 0.6);
             padding: 0.1vw 0.6vw;
-            border-radius: 0.3vw;
+            border-radius: 3px;
             font-weight: bold;
-            border: 1px solid rgba(255, 255, 255, 0.1);
         }
 
         /* 摇杆 */
         #joystickZone {
             position: absolute;
-            bottom: 5%;
-            left: 5%;
+            bottom: 4%;
+            left: 4%;
             width: 14vw;
             height: 14vw;
             border-radius: 50%;
-            background: rgba(255, 255, 255, 0.08);
-            border: 0.3vw solid rgba(255, 255, 255, 0.3);
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid rgba(255, 255, 255, 0.3);
             display: flex;
             align-items: center;
             justify-content: center;
-            box-shadow: 0 0 30px rgba(0, 0, 0, 0.2);
         }
         #joystickKnob {
             width: 5vw;
             height: 5vw;
             border-radius: 50%;
-            background: rgba(255, 255, 255, 0.5);
+            background: rgba(0, 0, 0, 0.5);
             position: relative;
             transition: 0.05s;
-            box-shadow: 0 0 15px rgba(0, 0, 0, 0.3);
-            border: 2px solid rgba(255, 255, 255, 0.7);
+        }
+
+        /* 返回大厅按钮 */
+        #backToHallBtn {
+            position: absolute;
+            top: 2%;
+            right: 2%;
+            background: rgba(0, 0, 0, 0.7);
+            color: #fff;
+            border: 2px solid #ffaa00;
+            border-radius: 6px;
+            padding: 0.3vw 1.2vw;
+            font-size: 1.2vw;
+            font-weight: bold;
+            cursor: pointer;
+            z-index: 12;
+            pointer-events: auto;
+            transition: 0.2s;
+        }
+        #backToHallBtn:hover {
+            background: rgba(255, 170, 0, 0.3);
         }
 
         /* 背包弹窗 */
@@ -334,115 +265,68 @@
             display: none;
             align-items: center;
             justify-content: center;
-            backdrop-filter: blur(3px);
         }
         #inventoryPanel {
-            width: 82%;
-            height: 82%;
+            width: 80%;
+            height: 80%;
             background-image: url('https://xiaoye6661234.github.io/GuangXianWorld/settingbackground.jpg');
             background-size: cover;
-            border-radius: 1.5vw;
-            padding: 2vw;
+            border-radius: 10px;
+            padding: 2.5vw;
             position: relative;
-            overflow-y: auto;
-            display: flex;
-            flex-direction: column;
-            box-shadow: 0 0 50px rgba(0, 0, 0, 0.8);
-            border: 2px solid rgba(255, 255, 255, 0.1);
         }
         #invHeader {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            font-size: 2.8vw;
+            font-size: 3.2vw;
             font-weight: bold;
-            margin-bottom: 1vw;
-            padding: 0 1vw;
-            color: #fff;
-            text-shadow: 2px 2px 4px black;
+            margin-bottom: 2vw;
+            color: #000;
         }
         #invClose {
-            font-size: 3.5vw;
+            font-size: 4vw;
             cursor: pointer;
-            background: rgba(0, 0, 0, 0.5);
-            border: none;
-            color: white;
-            width: 3.5vw;
-            height: 3.5vw;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: 0.2s;
-        }
-        #invClose:hover {
-            background: rgba(255, 0, 0, 0.5);
-            transform: rotate(90deg);
+            color: #000;
+            line-height: 1;
         }
         #invGrid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(10vw, 1fr));
-            gap: 1.2vw;
-            flex: 1;
-            padding: 0.5vw;
+            gap: 1.5vw;
         }
         .inv-item {
-            background: rgba(40, 40, 40, 0.85);
-            border-radius: 1vw;
+            background: rgba(0, 0, 0, 0.6);
+            border-radius: 6px;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            padding: 1vw 0.5vw;
+            padding: 1.2vw 0.8vw;
             cursor: pointer;
             transition: 0.2s;
             border: 2px solid transparent;
-            backdrop-filter: blur(2px);
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
-            position: relative;
         }
         .inv-item:hover {
             border-color: #ffaa00;
-            background: rgba(70, 70, 70, 0.9);
-            transform: translateY(-3px);
+            transform: translateY(-2px);
         }
         .inv-item img {
-            width: 75%;
+            width: 65%;
             height: auto;
             object-fit: contain;
-            border-radius: 0.5vw;
+            border-radius: 4px;
         }
         .inv-item .item-name {
             color: white;
-            font-size: 1.1vw;
+            font-size: 1.2vw;
             margin-top: 0.4vw;
             font-weight: bold;
-            text-shadow: 1px 1px 2px black;
         }
         .inv-item .item-qty {
             color: #ffaa00;
-            font-size: 0.9vw;
+            font-size: 1vw;
             margin-top: 0.1vw;
-        }
-        .inv-item .item-detail-tip {
-            display: none;
-            position: absolute;
-            bottom: 100%;
-            left: 50%;
-            transform: translateX(-50%);
-            background: rgba(0, 0, 0, 0.9);
-            color: white;
-            padding: 0.5vw 1vw;
-            border-radius: 0.5vw;
-            font-size: 0.9vw;
-            white-space: nowrap;
-            z-index: 100;
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            pointer-events: none;
-        }
-        .inv-item:hover .item-detail-tip,
-        .inv-item.show-detail .item-detail-tip {
-            display: block;
         }
 
         /* 物品详情弹窗 */
@@ -453,88 +337,62 @@
             width: 100%;
             height: 100%;
             z-index: 30;
-            background: rgba(0, 0, 0, 0.75);
+            background: rgba(0, 0, 0, 0.8);
             display: none;
             align-items: center;
             justify-content: center;
-            backdrop-filter: blur(4px);
         }
         #detailPanel {
-            width: 50%;
-            max-width: 35vw;
-            height: 55%;
-            max-height: 28vw;
-            background: linear-gradient(145deg, #2a2a2a, #1a1a1a);
-            border-radius: 1.5vw;
+            width: 55%;
+            max-width: 40vw;
+            background: rgba(0, 0, 0, 0.85);
+            border-radius: 10px;
             padding: 2.5vw;
             position: relative;
             color: white;
             display: flex;
             flex-direction: column;
             align-items: center;
-            box-shadow: 0 0 60px rgba(0, 0, 0, 0.9);
-            border: 1px solid rgba(255, 255, 255, 0.08);
         }
         #detailClose {
             position: absolute;
-            top: 1vw;
-            right: 1.8vw;
-            font-size: 3vw;
+            top: 1.5vw;
+            right: 2.5vw;
+            font-size: 3.5vw;
             cursor: pointer;
-            background: rgba(255, 255, 255, 0.1);
-            width: 3.5vw;
-            height: 3.5vw;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: 0.2s;
-        }
-        #detailClose:hover {
-            background: rgba(255, 0, 0, 0.5);
-            transform: rotate(90deg);
+            color: #fff;
+            line-height: 1;
         }
         #detailTitle {
             font-size: 2.8vw;
             font-weight: bold;
-            margin-bottom: 0.8vw;
-            color: #ffd700;
-            text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.5);
+            margin-bottom: 1.5vw;
+            color: #fff;
         }
         #detailImg {
             width: 12vw;
             height: 12vw;
             object-fit: contain;
-            margin-bottom: 0.8vw;
-            background: rgba(0, 0, 0, 0.4);
-            border-radius: 1vw;
-            padding: 0.5vw;
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            margin-bottom: 1.5vw;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 6px;
+            padding: 0.8vw;
         }
         #detailDesc {
-            font-size: 1.4vw;
-            margin-bottom: 1.2vw;
+            font-size: 1.6vw;
+            margin-bottom: 2.5vw;
             text-align: center;
             color: #ccc;
-            background: rgba(0, 0, 0, 0.3);
-            padding: 0.5vw 1.5vw;
-            border-radius: 0.5vw;
-            width: 80%;
         }
         #detailUseBtn {
-            background: linear-gradient(145deg, #ffaa00, #e89400);
-            color: black;
+            background: #ff8800;
+            color: white;
             font-size: 1.8vw;
-            padding: 0.5vw 4vw;
+            padding: 0.8vw 4vw;
             border: none;
-            border-radius: 0.8vw;
+            border-radius: 6px;
             cursor: pointer;
             font-weight: bold;
-            transition: 0.2s;
-            box-shadow: 0 4px 20px rgba(255, 170, 0, 0.3);
-        }
-        #detailUseBtn:hover {
-            transform: scale(1.05);
         }
 
         /* 复活提示 */
@@ -543,28 +401,26 @@
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            background: rgba(0, 0, 0, 0.85);
-            padding: 2vw 3vw;
-            border-radius: 1.2vw;
+            background: rgba(0, 0, 0, 0.9);
+            padding: 2.5vw 3.5vw;
+            border-radius: 10px;
             color: white;
             font-size: 2vw;
             text-align: center;
             border: 2px solid #ffd700;
-            box-shadow: 0 0 40px rgba(255, 215, 0, 0.3);
             display: none;
             z-index: 40;
-            pointer-events: auto;
             min-width: 30vw;
         }
         #resurrectionNotice .notice-title {
             color: #ffd700;
-            font-size: 2.6vw;
+            font-size: 2.5vw;
             font-weight: bold;
             margin-bottom: 0.8vw;
         }
         #resurrectionNotice .notice-desc {
-            font-size: 1.4vw;
-            margin-bottom: 1.2vw;
+            font-size: 1.5vw;
+            margin-bottom: 1.5vw;
             color: #ccc;
         }
         #resurrectionNotice .notice-btns {
@@ -573,33 +429,20 @@
             justify-content: center;
         }
         #resurrectionNotice .notice-btns button {
-            padding: 0.6vw 2.5vw;
+            padding: 0.8vw 2.5vw;
             border: none;
-            border-radius: 0.6vw;
-            font-size: 1.4vw;
+            border-radius: 5px;
+            font-size: 1.5vw;
             font-weight: bold;
             cursor: pointer;
-            transition: 0.2s;
         }
         #resurrectionNotice .btn-resurrect {
             background: #ffd700;
             color: black;
         }
-        #resurrectionNotice .btn-resurrect:hover {
-            transform: scale(1.05);
-        }
-        #resurrectionNotice .btn-resurrect:disabled {
-            background: #666;
-            color: #aaa;
-            cursor: not-allowed;
-            transform: none;
-        }
         #resurrectionNotice .btn-forfeit {
             background: #cc3333;
             color: white;
-        }
-        #resurrectionNotice .btn-forfeit:hover {
-            transform: scale(1.05);
         }
 
         @media (orientation: portrait) {
@@ -611,76 +454,64 @@
     </style>
 </head>
 <body>
-
     <div id="gameContainer">
         <canvas id="gameCanvas"></canvas>
-
         <div id="uiLayer" class="ui-layer">
+            <!-- 返回大厅按钮 -->
+            <div id="backToHallBtn">🏠 返回大厅</div>
 
             <!-- 玩家信息 -->
             <div id="playerInfo">
                 <div id="avatarBox"><img id="avatarImg" src="https://xiaoye6661234.github.io/GuangXianWorld/Default avatar.jpg" /></div>
                 <div class="info-text">
-                    <div class="nickname" id="nickDisplay">广仙道友</div>
+                    <div class="nickname" id="nickDisplay">昵称</div>
                     <div class="lvl" id="lvlDisplay">Lv.1</div>
                 </div>
-                <div id="coinDisplay">💰 0</div>
             </div>
-
-            <!-- 经验条 -->
-            <div id="expBar">
-                <div id="expInner" style="width:0%"></div>
-                <div id="expText">0 / 100</div>
-            </div>
-
             <!-- 血条 -->
             <div id="hpBarContainer">
                 <div id="hpBarInner" style="width:100%">100%</div>
             </div>
-
-            <!-- 溺水计时显示 -->
-            <div id="drowningDisplay">🌊 溺水倒计时: <span id="drowningTimerText">30</span>s</div>
-
             <!-- 任务面板 -->
             <div id="taskContainer">
-                <div class="task-title">📜 任务</div>
-                <div id="taskDesc">击败 1 只怪物</div>
-                <div class="task-reward" id="taskReward">🎁 奖励：100经验 + 1披萨 + 50广仙币</div>
-                <button id="claimTaskBtn">领取奖励 (F)</button>
+                <div class="task-title">任务:</div>
+                <div id="taskDesc">打败1只怪物</div>
+                <div class="task-reward" id="taskReward">奖励: 100经验+1披萨+50广仙币</div>
+                <button id="claimTaskBtn">领取奖励</button>
             </div>
-
             <!-- 摇杆 -->
             <div id="joystickZone">
                 <div id="joystickKnob"></div>
             </div>
-
             <!-- 控制按钮 -->
             <div id="controls">
                 <div class="ctrl-row">
                     <span class="ctrl-label">B:背包</span>
                     <div class="ctrl-btn small" id="invBtn"><img src="https://xiaoye6661234.github.io/GuangXianWorld/Bag.png" alt="背包" /></div>
+                </div>
+                <div class="ctrl-row">
                     <span class="ctrl-label">R:恢复</span>
                     <div class="ctrl-btn small" id="healBtn"><img src="https://xiaoye6661234.github.io/GuangXianWorld/Restore HP.png" alt="恢复" /></div>
+                </div>
+                <div class="ctrl-row">
                     <span class="ctrl-label">Q:疾跑</span>
                     <div class="ctrl-btn small" id="sprintBtn"><img src="https://xiaoye6661234.github.io/GuangXianWorld/Sprint.png" alt="疾跑" /></div>
                 </div>
                 <div class="ctrl-row">
                     <span class="ctrl-label">H:攻击</span>
-                    <div class="ctrl-btn" id="attackBtn"><img src="https://xiaoye6661234.github.io/GuangXianWorld/Sword.png" alt="攻击" /></div>
+                    <div class="ctrl-btn" id="attackBtn"><img src="https://xiaoye6661234.github.io/GuangXianWorld/Beat.png" alt="攻击" /></div>
                 </div>
             </div>
-
             <!-- 背包弹窗 -->
             <div id="inventoryModal">
                 <div id="inventoryPanel">
                     <div id="invHeader">
-                        <span>🎒 背包</span>
-                        <button id="invClose">✕</button>
+                        <span>背包</span>
+                        <div id="invClose">✕</div>
                     </div>
                     <div id="invGrid"></div>
                 </div>
             </div>
-
             <!-- 物品详情弹窗 -->
             <div id="itemDetailModal">
                 <div id="detailPanel">
@@ -691,7 +522,6 @@
                     <button id="detailUseBtn">使用</button>
                 </div>
             </div>
-
             <!-- 复活提示 -->
             <div id="resurrectionNotice">
                 <div class="notice-title">💀 你被击败了！</div>
@@ -701,17 +531,14 @@
                     <button class="btn-forfeit" id="btnForfeit">放弃</button>
                 </div>
             </div>
-
         </div>
     </div>
-
     <script>
         // ============================================================
         // 1. 全局配置与数据
         // ============================================================
         const canvas = document.getElementById('gameCanvas');
         const ctx = canvas.getContext('2d');
-
         let W = 0,
             H = 0;
 
@@ -724,18 +551,12 @@
         resizeCanvas();
         window.addEventListener('resize', resizeCanvas);
 
-        // 数据存储
+        // 数据存储（从JSON加载）
         let monsterDB = {};
         let foodDB = {};
         let weaponDB = {};
         let taskDB = [];
-        let gameConfig = {
-            resurrectionCost: 75,
-            drowningTime: 30,
-            swimImageMing: 'Ming-swim.png',
-            swimImageQing: 'Qing-swim.png',
-            mapBoundaryMultiplier: 20
-        };
+        let gameConfig = {};
 
         // 游戏状态
         let gameData = {
@@ -748,8 +569,7 @@
             lastTime: 0,
             deltaTime: 0,
             terrainSeed: Math.random() * 10000,
-            isDead: false,
-            pendingDeath: false
+            isDead: false
         };
 
         // 玩家对象
@@ -762,61 +582,55 @@
 
         // 长按检测
         let longPressTimer = null;
-        let longPressItem = null;
         let isLongPress = false;
 
         // ============================================================
-        // 2. 数据加载（objects.json）
+        // 2. 核心：从objects.json加载所有游戏数据
         // ============================================================
         async function loadGameData() {
             try {
                 const res = await fetch('objects.json');
                 if (!res.ok) throw new Error('HTTP ' + res.status);
-                const raw = await res.text();
-                const data = JSON.parse(raw);
+                const data = await res.json();
 
-                // 加载游戏配置
-                if (data.gameConfig) {
-                    gameConfig = { ...gameConfig, ...data.gameConfig };
-                }
+                gameConfig = {
+                    resurrectionCost: 75,
+                    drowningTime: 30,
+                    swimImageMing: 'Ming-swim.png',
+                    swimImageQing: 'Qing-swim.png',
+                    mapBoundaryMultiplier: 20,
+                    ...data.gameConfig
+                };
 
                 monsterDB = {};
-                if (data.monsters) {
+                if (data.monsters && Array.isArray(data.monsters)) {
                     data.monsters.forEach(m => {
                         monsterDB[m.Lv] = m;
                         monsterDB[m.name] = m;
                     });
                 }
+
                 foodDB = {};
-                if (data.foods) {
+                if (data.foods && Array.isArray(data.foods)) {
                     data.foods.forEach(f => { foodDB[f.name] = f; });
                 }
+
                 weaponDB = {};
-                if (data.weapons) {
+                if (data.weapons && Array.isArray(data.weapons)) {
                     data.weapons.forEach(w => { weaponDB[w.name] = w; });
                 }
+
                 taskDB = data.tasks || [];
-                console.log('✅ 数据加载成功，任务数:', taskDB.length, '怪物数:', Object.keys(monsterDB).length / 2);
-                console.log('📋 游戏配置:', gameConfig);
+
+                console.log('✅ JSON数据加载成功！');
+                console.log('📊 怪物数量:', Object.keys(monsterDB).length / 2);
+                console.log('🍕 食物数量:', Object.keys(foodDB).length);
+                console.log('⚔️ 武器数量:', Object.keys(weaponDB).length);
+                console.log('📜 任务数量:', taskDB.length);
+
                 return true;
             } catch (e) {
-                console.warn('⚠️ 无法加载 objects.json，使用默认数据', e);
-                // 默认保底
-                monsterDB[1] = { name: '恶魔小兵', Lv: 1, imc: 'https://xiaoye6661234.github.io/GuangXianWorld/Monster.png',
-                    HP: 200, Beat: 15, Def: 0, exp: 75, money: 50 };
-                monsterDB[2] = { name: '暗影刺客', Lv: 2, imc: 'https://xiaoye6661234.github.io/GuangXianWorld/Monster.png',
-                    HP: 280, Beat: 22, Def: 5, exp: 120, money: 80 };
-                monsterDB[3] = { name: '熔岩巨兽', Lv: 3, imc: 'https://xiaoye6661234.github.io/GuangXianWorld/Monster.png',
-                    HP: 400, Beat: 30, Def: 10, exp: 200, money: 150 };
-                foodDB['披萨'] = { name: '披萨', HP: 50, imc: 'https://xiaoye6661234.github.io/GuangXianWorld/Pizza.png' };
-                foodDB['面条'] = { name: '面条', HP: 30, imc: 'https://xiaoye6661234.github.io/GuangXianWorld/Noodle.png' };
-                weaponDB['冰霜剑'] = { name: '冰霜剑', hit: 10, imc: 'https://xiaoye6661234.github.io/GuangXianWorld/Sword.png',
-                    Lv: 1 };
-                taskDB = [
-                    { word: '击败 1 只怪物', given: { name: '披萨', num: 1 } },
-                    { word: '击败 2 只怪物', given: { name: '面条', num: 2 } },
-                    { word: '击败 3 只怪物', given: { name: '披萨', num: 3 } }
-                ];
+                console.warn('⚠️ 无法加载objects.json，使用默认数据', e);
                 gameConfig = {
                     resurrectionCost: 75,
                     drowningTime: 30,
@@ -824,38 +638,67 @@
                     swimImageQing: 'Qing-swim.png',
                     mapBoundaryMultiplier: 20
                 };
+                monsterDB[1] = {
+                    name: '恶魔小兵',
+                    Lv: 1,
+                    imc: 'https://xiaoye6661234.github.io/GuangXianWorld/Monster.png',
+                    HP: 200,
+                    Beat: 15,
+                    Def: 0,
+                    exp: 75,
+                    money: 50
+                };
+                foodDB['披萨'] = {
+                    name: '披萨',
+                    HP: 50,
+                    imc: 'https://xiaoye6661234.github.io/GuangXianWorld/Pizza.png'
+                };
+                weaponDB['木剑'] = {
+                    name: '木剑',
+                    hit: 5,
+                    imc: 'https://xiaoye6661234.github.io/GuangXianWorld/WoodSword.png',
+                    Lv: 1
+                };
+                taskDB = [
+                    { word: '击败 1 只怪物', given: { name: '披萨', num: 1 } }
+                ];
                 return false;
             }
         }
 
         // ============================================================
-        // 3. 玩家系统（从 GuangXianData 读取）
+        // 3. 玩家系统（严格按照升级公式）
         // ============================================================
         function createPlayer() {
-            let raw = localStorage.getItem('GuangXianData');
-            let userData = { nickname: '广仙道友', avatar: 'https://xiaoye6661234.github.io/GuangXianWorld/Default avatar.jpg',
-                level: 1, coins: 0 };
+            let raw = localStorage.getItem('data.json');
+            let userData = {
+                nickname: '广仙道友',
+                avatar: 'https://xiaoye6661234.github.io/GuangXianWorld/Default avatar.jpg',
+                level: 1,
+                coins: 0
+            };
             if (raw) {
                 try {
                     const parsed = JSON.parse(raw);
                     if (parsed.user) userData = parsed.user;
                 } catch (e) {}
             }
-
-            const baseMaxHP = 100;
             const level = parseInt(userData.level) || 1;
             const hpBonus = Math.floor((level - 1) / 3) * 10;
-            const maxHP = baseMaxHP + hpBonus;
+            const maxHP = 100 + hpBonus;
+            const nextExp = 900 + level * 100;
 
-            // 判断角色
             let role = 'Ming';
             try {
-                const raw2 = localStorage.getItem('GuangXianData');
+                const raw2 = localStorage.getItem('data.json');
                 if (raw2) {
                     const parsed = JSON.parse(raw2);
                     if (parsed.user && parsed.user.role === '清') role = 'Qing';
                 }
             } catch (e) {}
+
+            // 初始攻击力10，每升一级+5
+            const baseAttack = 10 + (level - 1) * 5;
 
             return {
                 x: W / 2,
@@ -863,18 +706,17 @@
                 speed: 350,
                 hp: maxHP,
                 maxHP: maxHP,
-                attack: 15,
+                attack: baseAttack,
                 defense: 0,
                 level: level,
                 exp: 0,
-                nextExp: 900 + level * 100,
+                nextExp: nextExp,
                 coins: userData.coins || 0,
                 nickname: userData.nickname || '广仙道友',
                 avatar: userData.avatar || 'https://xiaoye6661234.github.io/GuangXianWorld/Default avatar.jpg',
                 inventory: [
                     { type: 'food', key: '披萨', qty: 1 },
-                    { type: 'food', key: '面条', qty: 1 },
-                    { type: 'weapon', key: '冰霜剑', qty: 1 }
+                    { type: 'weapon', key: '木剑', qty: 1 }
                 ],
                 equippedWeapon: null,
                 attackCooldown: 0,
@@ -886,11 +728,9 @@
                 sprintCooldown: 0,
                 invincible: 0,
                 facing: 'down',
-                // 游泳相关
                 inWater: false,
                 waterTimer: 0,
                 role: role,
-                // 死亡状态
                 isDead: false
             };
         }
@@ -898,62 +738,34 @@
         player = createPlayer();
 
         // ============================================================
-        // 4. 地形系统 - 有规律生成
+        // 4. 地形系统（有规律生成水和沙漠）
         // ============================================================
         function getTerrainType(c, r, seed) {
             const x = c * 0.08 + seed * 0.001;
             const y = r * 0.08 + seed * 0.001;
-
             const n1 = Math.sin(x * 1.7 + y * 2.3) * 0.5 + Math.cos(x * 2.1 - y * 1.9) * 0.5;
             const n2 = Math.sin(x * 3.7 + y * 4.1) * 0.3 + Math.cos(x * 4.3 - y * 3.5) * 0.3;
             const n3 = Math.sin(x * 7.1 + y * 8.3) * 0.15 + Math.cos(x * 9.7 - y * 6.5) * 0.15;
-
             const value = n1 + n2 + n3;
-
             if (value < -0.5) return 'water';
             if (value < -0.05) return 'sand';
             return 'grass';
         }
 
         // ============================================================
-        // 5. 怪物系统
+        // 5. 怪物系统（从JSON动态生成）
         // ============================================================
         function spawnMonster(forceLv) {
             const lv = forceLv || Math.max(1, Math.floor(player.level / 2) + Math.floor(Math.random() * 2));
             const template = monsterDB[lv];
             if (!template) {
-                const keys = Object.keys(monsterDB).filter(k => !isNaN(k)).map(Number).sort((a, b) => a - b);
-                let best = keys[0];
-                for (let k of keys) {
-                    if (Math.abs(k - lv) < Math.abs(best - lv)) best = k;
+                const levels = Object.keys(monsterDB).filter(k => !isNaN(k)).map(Number).sort((a, b) => a - b);
+                if (levels.length === 0) return null;
+                let bestLv = levels[0];
+                for (let l of levels) {
+                    if (Math.abs(l - lv) < Math.abs(bestLv - lv)) bestLv = l;
                 }
-                const t = monsterDB[best];
-                if (!t) return null;
-                const angle = Math.random() * Math.PI * 2;
-                const dist = 350 + Math.random() * 450;
-                const x = player.x + Math.cos(angle) * dist;
-                const y = player.y + Math.sin(angle) * dist;
-                const m = {
-                    id: gameData.monsterIdCounter++,
-                    x: x,
-                    y: y,
-                    name: t.name,
-                    Lv: t.Lv,
-                    imc: t.imc,
-                    maxHP: t.HP,
-                    hp: t.HP,
-                    attack: t.Beat,
-                    defense: t.Def || 0,
-                    exp: t.exp,
-                    money: t.money,
-                    alive: true,
-                    attackCooldown: 0,
-                    hitFlash: 0,
-                    moveTimer: 0,
-                    moveAngle: Math.random() * Math.PI * 2
-                };
-                gameData.monsters.push(m);
-                return m;
+                return spawnMonster(bestLv);
             }
             const angle = Math.random() * Math.PI * 2;
             const dist = 350 + Math.random() * 450;
@@ -963,15 +775,7 @@
                 id: gameData.monsterIdCounter++,
                 x: x,
                 y: y,
-                name: template.name,
-                Lv: template.Lv,
-                imc: template.imc,
-                maxHP: template.HP,
-                hp: template.HP,
-                attack: template.Beat,
-                defense: template.Def || 0,
-                exp: template.exp,
-                money: template.money,
+                ...template,
                 alive: true,
                 attackCooldown: 0,
                 hitFlash: 0,
@@ -981,12 +785,10 @@
             gameData.monsters.push(m);
             return m;
         }
-
-        // 初始生成
-        for (let i = 0; i < 6; i++) spawnMonster(1);
+        for (let i = 0; i < 5; i++) spawnMonster(1);
 
         // ============================================================
-        // 6. 任务系统
+        // 6. 任务系统（从JSON动态加载）
         // ============================================================
         let currentTask = null;
 
@@ -1005,8 +807,7 @@
                 const match = t.word.match(/击败\s*(\d+)/);
                 if (match) target = parseInt(match[1]);
                 currentTask = {
-                    word: t.word,
-                    given: t.given,
+                    ...t,
                     target: target,
                     type: 'kill'
                 };
@@ -1021,55 +822,53 @@
             const desc = document.getElementById('taskDesc');
             const reward = document.getElementById('taskReward');
             const btn = document.getElementById('claimTaskBtn');
-
             if (currentTask) {
                 desc.innerText = `${currentTask.word} (${gameData.taskProgress}/${currentTask.target})`;
                 const g = currentTask.given;
-                const foodName = g.name || '披萨';
-                const num = g.num || 1;
                 const expReward = 100 + player.level * 20;
                 const coinReward = 50 + player.level * 10;
-                reward.innerText = `🎁 奖励：${expReward}经验 + ${num}${foodName} + ${coinReward}广仙币`;
-
+                reward.innerText = `奖励: ${expReward}经验+${g.num}${g.name}+${coinReward}广仙币`;
                 if (gameData.taskProgress >= currentTask.target && !gameData.taskClaimed) {
                     btn.style.display = 'block';
                 } else {
                     btn.style.display = 'none';
                 }
-            } else {
-                desc.innerText = '无任务';
-                reward.innerText = '';
-                btn.style.display = 'none';
             }
         }
 
         function claimTaskReward() {
-            if (!currentTask) return;
-            if (gameData.taskProgress < currentTask.target || gameData.taskClaimed) return;
-
+            if (!currentTask || gameData.taskProgress < currentTask.target || gameData.taskClaimed) return;
             gameData.taskClaimed = true;
             const expReward = 100 + player.level * 20;
             const coinReward = 50 + player.level * 10;
             const g = currentTask.given;
-            const foodName = g.name || '披萨';
-            const num = g.num || 1;
-
             player.exp += expReward;
             player.coins += coinReward;
-
             let found = false;
             for (let item of player.inventory) {
-                if (item.type === 'food' && item.key === foodName) {
-                    item.qty += num;
+                if (item.key === g.name) {
+                    item.qty += g.num;
                     found = true;
                     break;
                 }
             }
             if (!found) {
-                player.inventory.push({ type: 'food', key: foodName, qty: num });
+                let type = 'food';
+                if (weaponDB[g.name]) type = 'weapon';
+                player.inventory.push({ type: type, key: g.name, qty: g.num });
             }
+            checkLevelUp();
+            saveGame();
+            loadNextTask();
+            updateUI();
+            updateInventoryGrid();
+            alert('✅ 任务奖励领取成功！');
+        }
 
-            // 升级检查
+        // ============================================================
+        // 7. 升级系统（严格按照公式）
+        // ============================================================
+        function checkLevelUp() {
             while (player.exp >= player.nextExp) {
                 player.exp -= player.nextExp;
                 player.level++;
@@ -1077,20 +876,15 @@
                 if ((player.level - 1) % 3 === 0) {
                     player.maxHP += 10;
                 }
+                // 每升一级攻击力+5
+                player.attack += 5;
                 player.hp = player.maxHP;
-                alert(`🎉 升级！当前等级 ${player.level}`);
+                alert(`🎉 升级！当前等级 ${player.level}，攻击力 +5`);
             }
-
-            saveGame();
-            loadNextTask();
-            updateUI();
-            updateInventoryGrid();
-            document.getElementById('claimTaskBtn').style.display = 'none';
-            alert('✅ 任务奖励领取成功！');
         }
 
         // ============================================================
-        // 7. 背包与物品
+        // 8. 背包与物品系统（从JSON动态识别）
         // ============================================================
         function useFoodItem(foodKey) {
             const food = foodDB[foodKey];
@@ -1099,9 +893,7 @@
                 alert('❤️ 生命值已满！');
                 return false;
             }
-            const healAmt = food.HP;
-            player.hp = Math.min(player.hp + healAmt, player.maxHP);
-
+            player.hp = Math.min(player.hp + food.HP, player.maxHP);
             const idx = player.inventory.findIndex(item => item.type === 'food' && item.key === foodKey);
             if (idx !== -1) {
                 player.inventory[idx].qty -= 1;
@@ -1119,7 +911,9 @@
             const w = weaponDB[weaponKey];
             if (!w) return;
             player.equippedWeapon = w;
-            player.attack = 15 + w.hit;
+            // 攻击力 = 基础攻击 + 武器加成
+            const baseAttack = 10 + (player.level - 1) * 5;
+            player.attack = baseAttack + w.hit;
             alert(`⚔️ 装备了 ${w.name}，攻击力 +${w.hit}`);
             updateUI();
             saveGame();
@@ -1135,11 +929,11 @@
         }
 
         // ============================================================
-        // 8. 存档
+        // 9. 存档系统（使用data.json）
         // ============================================================
         function saveGame() {
             try {
-                let raw = localStorage.getItem('GuangXianData');
+                let raw = localStorage.getItem('data.json');
                 let userData = {};
                 if (raw) {
                     try {
@@ -1152,7 +946,6 @@
                 userData.nickname = player.nickname;
                 userData.avatar = player.avatar;
                 userData.role = player.role;
-
                 const data = {
                     user: userData,
                     inventory: player.inventory,
@@ -1161,13 +954,13 @@
                     taskIndex: gameData.taskIndex,
                     taskClaimed: gameData.taskClaimed
                 };
-                localStorage.setItem('GuangXianData', JSON.stringify(data));
+                localStorage.setItem('data.json', JSON.stringify(data));
             } catch (e) {}
         }
 
         function loadSave() {
             try {
-                const raw = localStorage.getItem('GuangXianData');
+                const raw = localStorage.getItem('data.json');
                 if (!raw) return;
                 const data = JSON.parse(raw);
                 if (data.user) {
@@ -1180,13 +973,16 @@
                     player.maxHP = 100 + hpBonus;
                     player.hp = player.maxHP;
                     player.nextExp = 900 + player.level * 100;
+                    // 攻击力 = 10 + (等级-1)*5
+                    player.attack = 10 + (player.level - 1) * 5;
                 }
                 if (data.inventory) {
                     player.inventory = data.inventory;
                 }
                 if (data.equippedWeapon && weaponDB[data.equippedWeapon]) {
                     player.equippedWeapon = weaponDB[data.equippedWeapon];
-                    player.attack = 15 + player.equippedWeapon.hit;
+                    const baseAttack = 10 + (player.level - 1) * 5;
+                    player.attack = baseAttack + player.equippedWeapon.hit;
                 }
                 if (data.taskProgress !== undefined) gameData.taskProgress = data.taskProgress;
                 if (data.taskIndex !== undefined) gameData.taskIndex = data.taskIndex;
@@ -1195,17 +991,13 @@
         }
 
         // ============================================================
-        // 9. 战斗系统
+        // 10. 战斗系统（随机攻击特效+音效+掉落）
         // ============================================================
         function performAttack() {
-            if (player.attackCooldown > 0) return;
-            if (player.isAttacking) return;
-            if (player.isDead) return;
-
+            if (player.attackCooldown > 0 || player.isAttacking || player.isDead) return;
             player.attackCooldown = player.attackCooldownMax;
             player.isAttacking = true;
             player.attackTimer = 0.3;
-
             let target = null;
             let minDist = 220;
             for (let m of gameData.monsters) {
@@ -1218,64 +1010,76 @@
                     target = m;
                 }
             }
-
             if (target) {
                 const atk = player.attack + (player.equippedWeapon ? player.equippedWeapon.hit : 0);
-                const dmg = Math.max(1, atk - target.defense);
+                const dmg = Math.max(1, atk - (target.Def || 0));
                 target.hp -= dmg;
                 target.hitFlash = 0.2;
-
                 const hitNum = Math.floor(Math.random() * 7) + 1;
-                const img = new Image();
-                img.src = `https://xiaoye6661234.github.io/GuangXianWorld/HitSound${hitNum}.png`;
+                const effectImg = new Image();
+                effectImg.src = `https://xiaoye6661234.github.io/GuangXianWorld/HitSound${hitNum}.png`;
                 gameData.effects.push({
-                    img: img,
+                    img: effectImg,
                     x: target.x,
                     y: target.y,
                     life: 0.4,
                     timer: 0
                 });
-
                 try {
                     const audio = new Audio('https://xiaoye6661234.github.io/GuangXianWorld/Beat.mp3');
-                    audio.volume = 0.25;
+                    audio.volume = 0.3;
                     audio.play().catch(() => {});
                 } catch (e) {}
-
                 if (target.hp <= 0) {
                     target.alive = false;
-                    player.exp += target.exp;
-                    player.coins += target.money;
-
+                    player.exp += target.exp || 75;
+                    player.coins += target.money || 50;
+                    // ===== 怪物掉落系统：从objects.json随机获取奖励 =====
+                    const dropChance = 0.35; // 35%概率掉落
+                    if (Math.random() < dropChance) {
+                        // 从食物和武器中随机选择一个
+                        let allItems = [];
+                        for (let key in foodDB) {
+                            allItems.push({ type: 'food', key: key, name: key });
+                        }
+                        for (let key in weaponDB) {
+                            allItems.push({ type: 'weapon', key: key, name: key });
+                        }
+                        if (allItems.length > 0) {
+                            const chosen = allItems[Math.floor(Math.random() * allItems.length)];
+                            let found = false;
+                            for (let item of player.inventory) {
+                                if (item.key === chosen.key) {
+                                    item.qty += 1;
+                                    found = true;
+                                    break;
+                                }
+                            }
+                            if (!found) {
+                                player.inventory.push({ type: chosen.type, key: chosen.key, qty: 1 });
+                            }
+                            alert(`🎁 怪物掉落了 ${chosen.name}！已放入背包。`);
+                            updateInventoryGrid();
+                        }
+                    }
+                    // ===== 任务进度更新 =====
                     if (currentTask && currentTask.type === 'kill' && gameData.taskProgress < currentTask.target) {
                         gameData.taskProgress++;
                         updateTaskUI();
                     }
-
-                    while (player.exp >= player.nextExp) {
-                        player.exp -= player.nextExp;
-                        player.level++;
-                        player.nextExp = 900 + player.level * 100;
-                        if ((player.level - 1) % 3 === 0) {
-                            player.maxHP += 10;
-                        }
-                        player.hp = player.maxHP;
-                        alert(`🎉 升级！当前等级 ${player.level}`);
-                    }
+                    checkLevelUp();
                     saveGame();
                     updateUI();
                 }
             }
-
             setTimeout(() => { player.isAttacking = false; }, 400);
         }
 
         // ============================================================
-        // 10. 疾跑系统
+        // 11. 疾跑系统
         // ============================================================
         function activateSprint() {
-            if (player.isSprinting || player.sprintCooldown > 0) return;
-            if (player.isDead) return;
+            if (player.isSprinting || player.sprintCooldown > 0 || player.isDead) return;
             player.isSprinting = true;
             player.sprintTimer = 1.2;
             player.speed = 600;
@@ -1287,19 +1091,16 @@
         }
 
         // ============================================================
-        // 11. 死亡与复活系统
+        // 12. 死亡与复活系统
         // ============================================================
         function handleDeath() {
             if (gameData.isDead) return;
             gameData.isDead = true;
             player.isDead = true;
-
             const notice = document.getElementById('resurrectionNotice');
             const desc = document.getElementById('resurrectionDesc');
             const btnResurrect = document.getElementById('btnResurrect');
-
             const cost = gameConfig.resurrectionCost || 75;
-
             if (player.coins >= cost) {
                 desc.innerText = `消耗 ${cost} 广仙币复活？ (当前: ${player.coins} 广仙币)`;
                 btnResurrect.disabled = false;
@@ -1309,7 +1110,6 @@
                 btnResurrect.disabled = true;
                 btnResurrect.innerText = `💰 广仙币不足`;
             }
-
             notice.style.display = 'block';
         }
 
@@ -1319,7 +1119,6 @@
                 alert('广仙币不足，无法复活！');
                 return;
             }
-
             player.coins -= cost;
             player.hp = player.maxHP;
             player.x = W / 2;
@@ -1328,17 +1127,13 @@
             gameData.isDead = false;
             player.inWater = false;
             player.waterTimer = 0;
-
             document.getElementById('resurrectionNotice').style.display = 'none';
-            document.getElementById('drowningDisplay').classList.remove('active');
-
             updateUI();
             saveGame();
             alert('💪 复活成功！消耗 ' + cost + ' 广仙币。');
         }
 
         function forfeitResurrection() {
-            // 放弃复活：重置到初始状态
             player.hp = player.maxHP;
             player.x = W / 2;
             player.y = H / 2;
@@ -1346,27 +1141,21 @@
             gameData.isDead = false;
             player.inWater = false;
             player.waterTimer = 0;
-            // 不扣除金币，但给予一个惩罚：减少部分经验
             if (player.exp > 100) {
                 player.exp -= 100;
             } else {
                 player.exp = 0;
             }
-
             document.getElementById('resurrectionNotice').style.display = 'none';
-            document.getElementById('drowningDisplay').classList.remove('active');
-
             updateUI();
             saveGame();
-            alert('😔 你放弃了复活，损失了部分经验。');
+            alert('😔 你放弃了复活，损失了100经验。');
         }
-
-        // 绑定复活按钮
         document.getElementById('btnResurrect').addEventListener('click', resurrectPlayer);
         document.getElementById('btnForfeit').addEventListener('click', forfeitResurrection);
 
         // ============================================================
-        // 12. 输入控制
+        // 13. 输入控制（电脑端快捷键完整支持）
         // ============================================================
         document.addEventListener('keydown', (e) => {
             const k = e.key.toLowerCase();
@@ -1392,11 +1181,10 @@
             }
         });
 
-        // 摇杆
+        // 摇杆控制
         const joystickZone = document.getElementById('joystickZone');
         const joystickKnob = document.getElementById('joystickKnob');
         let touchId = null;
-
         joystickZone.addEventListener('touchstart', (e) => {
             const t = e.changedTouches[0];
             touchId = t.identifier;
@@ -1412,7 +1200,7 @@
                 if (t.identifier === touchId) {
                     joyX = 0;
                     joyY = 0;
-                    joystickKnob.style.transform = 'translate(-50%, -50%)';
+                    joystickKnob.style.transform = 'translate(0, 0)';
                     touchId = null;
                 }
             }
@@ -1426,12 +1214,12 @@
             const dy = touch.clientY - cy;
             const maxR = rect.width / 2 - 15;
             const dist = Math.sqrt(dx * dx + dy * dy);
-            let ratio = Math.min(1, dist / maxR);
+            const ratio = Math.min(1, dist / maxR);
             joyX = (dx / maxR) * ratio;
             joyY = (dy / maxR) * ratio;
             const kx = joyX * maxR;
             const ky = joyY * maxR;
-            joystickKnob.style.transform = `translate(${-50 + kx/rect.width*100}%, ${-50 + ky/rect.height*100}%)`;
+            joystickKnob.style.transform = `translate(${kx}px, ${ky}px)`;
         }
 
         // 按钮绑定
@@ -1445,7 +1233,28 @@
         document.getElementById('detailUseBtn').addEventListener('click', useDetailItem);
 
         // ============================================================
-        // 13. 背包UI - 支持长按查看详情
+        // 14. 返回大厅功能
+        // ============================================================
+        document.getElementById('backToHallBtn').addEventListener('click', function() {
+            saveGame();
+            // 保存额外数据以便大厅读取
+            const hallData = {
+                user: {
+                    nickname: player.nickname,
+                    avatar: player.avatar,
+                    level: player.level,
+                    coins: player.coins,
+                    role: player.role
+                },
+                inventory: player.inventory,
+                equippedWeapon: player.equippedWeapon ? player.equippedWeapon.name : null
+            };
+            localStorage.setItem('data.json', JSON.stringify(hallData));
+            window.location.href = 'Hall.html';
+        });
+
+        // ============================================================
+        // 15. 背包UI（单击使用/长按查看详情）
         // ============================================================
         function toggleInventory() {
             const modal = document.getElementById('inventoryModal');
@@ -1462,14 +1271,13 @@
             grid.innerHTML = '';
             if (player.inventory.length === 0) {
                 grid.innerHTML =
-                    '<div style="color:white;text-align:center;font-size:1.8vw;grid-column:1/-1;padding:3vw;">背包空空如也...</div>';
+                    '<div style="color:white;text-align:center;font-size:1.6vw;grid-column:1/-1;padding:4vw;">背包空空如也...</div>';
                 return;
             }
             player.inventory.forEach((item, idx) => {
                 const div = document.createElement('div');
                 div.className = 'inv-item';
                 let imgSrc = '';
-                let label = item.key;
                 let detailText = '';
                 if (item.type === 'food' && foodDB[item.key]) {
                     imgSrc = foodDB[item.key].imc;
@@ -1483,31 +1291,21 @@
                 }
                 div.innerHTML = `
                     <img src="${imgSrc}" onerror="this.src='https://xiaoye6661234.github.io/GuangXianWorld/Default avatar.jpg'" />
-                    <div class="item-name">${label}</div>
+                    <div class="item-name">${item.key}</div>
                     <div class="item-qty">×${item.qty}</div>
-                    <div class="item-detail-tip">${detailText}</div>
                 `;
-                // 点击：使用/装备
                 div.addEventListener('click', (e) => {
                     if (isLongPress) {
                         isLongPress = false;
                         return;
                     }
                     if (item.type === 'food') {
-                        if (useFoodItem(item.key)) {
-                            updateInventoryGrid();
-                            updateUI();
-                        }
+                        useFoodItem(item.key);
                     } else if (item.type === 'weapon') {
                         equipWeapon(item.key);
-                        updateInventoryGrid();
-                        updateUI();
-                    } else {
-                        showDetail(item, idx);
                     }
                     e.stopPropagation();
                 });
-                // 长按：查看详情
                 div.addEventListener('touchstart', (e) => {
                     longPressTimer = setTimeout(() => {
                         isLongPress = true;
@@ -1516,16 +1314,7 @@
                     }, 600);
                 });
                 div.addEventListener('touchend', () => {
-                    if (longPressTimer) {
-                        clearTimeout(longPressTimer);
-                        longPressTimer = null;
-                    }
-                });
-                div.addEventListener('touchmove', () => {
-                    if (longPressTimer) {
-                        clearTimeout(longPressTimer);
-                        longPressTimer = null;
-                    }
+                    if (longPressTimer) clearTimeout(longPressTimer);
                 });
                 div.addEventListener('mousedown', (e) => {
                     longPressTimer = setTimeout(() => {
@@ -1535,18 +1324,11 @@
                     }, 600);
                 });
                 div.addEventListener('mouseup', () => {
-                    if (longPressTimer) {
-                        clearTimeout(longPressTimer);
-                        longPressTimer = null;
-                    }
+                    if (longPressTimer) clearTimeout(longPressTimer);
                 });
                 div.addEventListener('mouseleave', () => {
-                    if (longPressTimer) {
-                        clearTimeout(longPressTimer);
-                        longPressTimer = null;
-                    }
+                    if (longPressTimer) clearTimeout(longPressTimer);
                 });
-
                 grid.appendChild(div);
             });
         }
@@ -1560,13 +1342,10 @@
             const img = document.getElementById('detailImg');
             const desc = document.getElementById('detailDesc');
             const btn = document.getElementById('detailUseBtn');
-
             title.innerText = item.key;
-
             let imgSrc = '';
             let description = '';
             let btnText = '使用';
-
             if (item.type === 'food' && foodDB[item.key]) {
                 const food = foodDB[item.key];
                 imgSrc = food.imc;
@@ -1582,7 +1361,6 @@
                 description = '📦 未知物品';
                 btnText = '关闭';
             }
-
             img.src = imgSrc;
             desc.innerText = description;
             btn.innerText = btnText;
@@ -1598,7 +1376,6 @@
             if (currentDetailIdx === -1) return;
             const item = player.inventory[currentDetailIdx];
             if (!item) return;
-
             if (item.type === 'food') {
                 if (useFoodItem(item.key)) {
                     closeDetail();
@@ -1612,43 +1389,23 @@
         }
 
         // ============================================================
-        // 14. UI更新
+        // 16. UI更新
         // ============================================================
         function updateUI() {
             document.getElementById('lvlDisplay').innerText = `Lv.${player.level}`;
             document.getElementById('nickDisplay').innerText = player.nickname;
             document.getElementById('avatarImg').src = player.avatar;
-            document.getElementById('coinDisplay').innerText = `💰 ${player.coins}`;
-
             const hpPercent = Math.max(0, (player.hp / player.maxHP) * 100);
             document.getElementById('hpBarInner').style.width = hpPercent + '%';
             document.getElementById('hpBarInner').innerText = Math.round(hpPercent) + '%';
-
-            const expPercent = (player.exp / player.nextExp) * 100;
-            document.getElementById('expInner').style.width = Math.min(expPercent, 100) + '%';
-            document.getElementById('expText').innerText = `${Math.floor(player.exp)} / ${player.nextExp}`;
-
             updateTaskUI();
-
-            // 溺水显示
-            const drowningDisplay = document.getElementById('drowningDisplay');
-            const drowningTimerText = document.getElementById('drowningTimerText');
-            if (player.inWater && !player.isDead) {
-                drowningDisplay.classList.add('active');
-                const remaining = Math.max(0, gameConfig.drowningTime - player.waterTimer);
-                drowningTimerText.innerText = Math.ceil(remaining);
-            } else {
-                drowningDisplay.classList.remove('active');
-            }
         }
 
         // ============================================================
-        // 15. 游戏更新循环
+        // 17. 游戏更新循环
         // ============================================================
         function update(dt) {
             if (player.isDead) return;
-
-            // 玩家移动
             let dx = 0,
                 dy = 0;
             if (keys.w) dy = -1;
@@ -1663,7 +1420,6 @@
             if (len > 0) {
                 dx /= len;
                 dy /= len;
-                // 在水中速度减半
                 const speedMod = player.inWater ? 0.5 : 1;
                 player.x += dx * player.speed * speedMod * dt;
                 player.y += dy * player.speed * speedMod * dt;
@@ -1673,8 +1429,6 @@
                     player.facing = dy > 0 ? 'down' : 'up';
                 }
             }
-
-            // 扩大地图边界 (使用配置中的倍数)
             const boundaryMultiplier = gameConfig.mapBoundaryMultiplier || 20;
             const margin = 100;
             const maxX = W * boundaryMultiplier;
@@ -1682,22 +1436,17 @@
             player.x = Math.max(margin, Math.min(maxX, player.x));
             player.y = Math.max(margin, Math.min(maxY, player.y));
 
-            // 检测玩家是否在水中
             const tileSize = 80;
             const c = Math.floor(player.x / tileSize);
             const r = Math.floor(player.y / tileSize);
             const terrainType = getTerrainType(c, r, gameData.terrainSeed);
-            const wasInWater = player.inWater;
-
             if (terrainType === 'water') {
                 if (!player.inWater) {
                     player.inWater = true;
                     player.waterTimer = 0;
                 }
                 player.waterTimer += dt;
-                // 溺水死亡检测
                 if (player.waterTimer >= gameConfig.drowningTime) {
-                    // 溺水身亡
                     player.hp = 0;
                     handleDeath();
                     return;
@@ -1708,14 +1457,10 @@
                     player.waterTimer = 0;
                 }
             }
-
-            // 冷却
             if (player.attackCooldown > 0) player.attackCooldown -= dt;
             if (player.attackTimer > 0) player.attackTimer -= dt;
             if (player.invincible > 0) player.invincible -= dt;
             if (player.sprintCooldown > 0) player.sprintCooldown -= dt;
-
-            // 疾跑
             if (player.isSprinting) {
                 player.sprintTimer -= dt;
                 if (player.sprintTimer <= 0) {
@@ -1723,17 +1468,13 @@
                     player.speed = 350;
                 }
             }
-
-            // 怪物更新
             for (let m of gameData.monsters) {
                 if (!m.alive) continue;
                 if (m.hitFlash > 0) m.hitFlash -= dt;
                 m.attackCooldown = Math.max(0, m.attackCooldown - dt);
-
                 const dx2 = player.x - m.x;
                 const dy2 = player.y - m.y;
                 const dist = Math.sqrt(dx2 * dx2 + dy2 * dy2);
-
                 if (dist < 400) {
                     const speed = 50 + m.Lv * 12 + (player.isSprinting ? 20 : 0);
                     if (dist > 30) {
@@ -1749,10 +1490,8 @@
                         m.y += Math.sin(m.moveAngle) * 30 * dt;
                     }
                 }
-
-                // 怪物攻击玩家
                 if (dist < 70 && m.attackCooldown <= 0 && player.invincible <= 0) {
-                    const dmg = Math.max(1, m.attack - player.defense);
+                    const dmg = Math.max(1, (m.Beat || 15) - player.defense);
                     player.hp -= dmg;
                     player.invincible = 0.5;
                     m.attackCooldown = 1.0;
@@ -1764,16 +1503,12 @@
                     updateUI();
                 }
             }
-
-            // 清理死亡怪物，生成新怪物
             gameData.monsters = gameData.monsters.filter(m => m.alive);
             const targetCount = 4 + Math.floor(player.level / 2);
             while (gameData.monsters.length < targetCount) {
                 const lv = Math.max(1, Math.floor(player.level / 2) + Math.floor(Math.random() * 2));
                 spawnMonster(lv);
             }
-
-            // 特效更新
             for (let i = gameData.effects.length - 1; i >= 0; i--) {
                 const ef = gameData.effects[i];
                 ef.timer += dt;
@@ -1781,26 +1516,21 @@
                     gameData.effects.splice(i, 1);
                 }
             }
-
             updateUI();
         }
 
         // ============================================================
-        // 16. 渲染
+        // 18. 渲染
         // ============================================================
         function render() {
             ctx.clearRect(0, 0, W, H);
-
             const offsetX = player.x - W / 2;
             const offsetY = player.y - H / 2;
-
-            // ---- 地形 ----
             const tileSize = 80;
             const viewCols = Math.ceil(W / tileSize) + 3;
             const viewRows = Math.ceil(H / tileSize) + 3;
             const startCol = Math.floor((player.x - W / 2) / tileSize) - 2;
             const startRow = Math.floor((player.y - H / 2) / tileSize) - 2;
-
             const terrainImages = {
                 grass: new Image(),
                 sand: new Image(),
@@ -1809,7 +1539,6 @@
             terrainImages.grass.src = 'https://xiaoye6661234.github.io/GuangXianWorld/Grass.jpg';
             terrainImages.sand.src = 'https://xiaoye6661234.github.io/GuangXianWorld/Sand.jpg';
             terrainImages.water.src = 'https://xiaoye6661234.github.io/GuangXianWorld/Water.jpg';
-
             for (let r = startRow; r < startRow + viewRows; r++) {
                 for (let c = startCol; c < startCol + viewCols; c++) {
                     const type = getTerrainType(c, r, gameData.terrainSeed);
@@ -1823,19 +1552,14 @@
                         else if (type === 'sand') ctx.fillStyle = '#f4e4b6';
                         else ctx.fillStyle = '#2196F3';
                         ctx.fillRect(x, y, tileSize, tileSize);
-                        ctx.strokeStyle = 'rgba(255,255,255,0.04)';
-                        ctx.strokeRect(x, y, tileSize, tileSize);
                     }
                 }
             }
-
-            // ---- 怪物 ----
             for (let m of gameData.monsters) {
                 if (!m.alive) continue;
                 const x = m.x - offsetX;
                 const y = m.y - offsetY;
                 const size = 55 + m.Lv * 3;
-
                 const img = new Image();
                 img.src = m.imc;
                 if (img.complete && img.naturalWidth > 0) {
@@ -1846,45 +1570,30 @@
                     ctx.arc(x, y, size / 2, 0, Math.PI * 2);
                     ctx.fill();
                 }
-
                 ctx.fillStyle = 'white';
-                ctx.font = `${1.3 + m.Lv * 0.1}vw Arial`;
+                ctx.font = `${1.1 + m.Lv * 0.1}vw Arial`;
                 ctx.textAlign = 'center';
                 ctx.shadowColor = 'black';
-                ctx.shadowBlur = 8;
-                ctx.fillText(`Lv.${m.Lv} ${m.name}`, x, y - size / 2 - 12);
+                ctx.shadowBlur = 6;
+                ctx.fillText(`Lv.${m.Lv} ${m.name}`, x, y - size / 2 - 10);
                 ctx.shadowBlur = 0;
-
-                const hpW = 50;
-                const hpH = 4;
+                const hpW = 45;
+                const hpH = 3.5;
                 ctx.fillStyle = 'rgba(0,0,0,0.7)';
-                ctx.fillRect(x - hpW / 2, y - size / 2 - 22, hpW, hpH);
+                ctx.fillRect(x - hpW / 2, y - size / 2 - 20, hpW, hpH);
                 ctx.fillStyle = '#ff3333';
-                ctx.fillRect(x - hpW / 2, y - size / 2 - 22, hpW * (m.hp / m.maxHP), hpH);
-
+                ctx.fillRect(x - hpW / 2, y - size / 2 - 20, hpW * (m.hp / m.maxHP), hpH);
                 if (m.hitFlash > 0) {
                     ctx.fillStyle = 'rgba(255,255,255,0.35)';
                     ctx.beginPath();
-                    ctx.arc(x, y, size / 2 + 8, 0, Math.PI * 2);
+                    ctx.arc(x, y, size / 2 + 6, 0, Math.PI * 2);
                     ctx.fill();
                 }
             }
-
-            // ---- 玩家 ----
             const px = player.x - offsetX;
             const py = player.y - offsetY;
-            const pSize = 60;
-
-            // 选择玩家图片 (普通或游泳)
-            let playerImgName;
-            if (player.inWater && !player.isDead) {
-                // 使用游泳图片
-                const swimName = player.role === 'Qing' ? gameConfig.swimImageQing : gameConfig.swimImageMing;
-                playerImgName = swimName;
-            } else {
-                playerImgName = player.role === 'Qing' ? 'Qing.png' : 'Ming.png';
-            }
-
+            const pSize = 55;
+            let playerImgName = player.role === 'Qing' ? 'Qing.png' : 'Ming.png';
             const playerImg = new Image();
             playerImg.src = `https://xiaoye6661234.github.io/GuangXianWorld/${playerImgName}`;
             if (playerImg.complete && playerImg.naturalWidth > 0) {
@@ -1894,133 +1603,79 @@
                 ctx.beginPath();
                 ctx.arc(px, py, pSize / 2, 0, Math.PI * 2);
                 ctx.fill();
-                // 如果图片未加载，显示角色标识
-                ctx.fillStyle = 'white';
-                ctx.font = '2vw Arial';
-                ctx.textAlign = 'center';
-                ctx.fillText(player.role === 'Qing' ? '清' : '明', px, py + 0.8vw);
             }
-
             if (player.invincible > 0) {
                 ctx.fillStyle = 'rgba(255,255,255,0.2)';
                 ctx.beginPath();
-                ctx.arc(px, py, pSize / 2 + 6, 0, Math.PI * 2);
+                ctx.arc(px, py, pSize / 2 + 5, 0, Math.PI * 2);
                 ctx.fill();
             }
-
-            // 如果玩家在水中，绘制水纹效果
             if (player.inWater && !player.isDead) {
                 ctx.fillStyle = 'rgba(100, 200, 255, 0.15)';
                 ctx.beginPath();
-                ctx.arc(px, py, pSize / 2 + 10, 0, Math.PI * 2);
+                ctx.arc(px, py, pSize / 2 + 8, 0, Math.PI * 2);
                 ctx.fill();
-                ctx.strokeStyle = 'rgba(100, 200, 255, 0.3)';
-                ctx.lineWidth = 2;
-                ctx.beginPath();
-                ctx.arc(px, py, pSize / 2 + 14, 0, Math.PI * 2);
-                ctx.stroke();
             }
-
-            // ---- 攻击特效 ----
             for (let ef of gameData.effects) {
                 const ex = ef.x - offsetX;
                 const ey = ef.y - offsetY;
-                const size = 120 * (W / 1000);
+                const size = 100 * (W / 1000);
                 if (ef.img.complete && ef.img.naturalWidth > 0) {
                     ctx.drawImage(ef.img, ex - size / 2, ey - size / 2, size, size);
                 }
             }
-
-            // ---- 攻击动作特效 ----
             if (player.isAttacking) {
-                const angle = player.facing === 'right' ? 0 : player.facing === 'left' ? Math.PI : player.facing === 'up' ? -
-                    Math.PI / 2 : Math.PI / 2;
-                const len = 40;
+                const angle = player.facing === 'right' ? 0 : player.facing === 'left' ? Math.PI : player.facing === 'up' ? -Math
+                    .PI / 2 : Math.PI / 2;
+                const len = 35;
                 const ex = px + Math.cos(angle) * len;
                 const ey = py + Math.sin(angle) * len;
                 ctx.strokeStyle = 'rgba(255,255,200,0.8)';
-                ctx.lineWidth = 6;
+                ctx.lineWidth = 5;
                 ctx.shadowColor = 'rgba(255,255,100,0.6)';
-                ctx.shadowBlur = 20;
+                ctx.shadowBlur = 18;
                 ctx.beginPath();
                 ctx.moveTo(px, py);
                 ctx.lineTo(ex, ey);
                 ctx.stroke();
                 ctx.shadowBlur = 0;
-
-                ctx.strokeStyle = 'rgba(200,255,200,0.3)';
-                ctx.lineWidth = 3;
-                ctx.beginPath();
-                ctx.arc(px, py, len, angle - 0.6, angle + 0.6);
-                ctx.stroke();
             }
         }
 
         // ============================================================
-        // 17. 游戏循环
+        // 19. 游戏循环
         // ============================================================
         function loop(timestamp) {
             const dt = Math.min((timestamp - gameData.lastTime) / 1000, 0.05);
             gameData.lastTime = timestamp;
-
             update(dt);
             render();
             requestAnimationFrame(loop);
         }
 
         // ============================================================
-        // 18. 初始化启动
+        // 20. 初始化启动
         // ============================================================
         async function init() {
             await loadGameData();
             loadSave();
             if (player.equippedWeapon) {
-                player.attack = 15 + player.equippedWeapon.hit;
+                const baseAttack = 10 + (player.level - 1) * 5;
+                player.attack = baseAttack + player.equippedWeapon.hit;
             }
-            if (taskDB.length > 0) {
-                const savedIdx = gameData.taskIndex % taskDB.length;
-                const t = taskDB[savedIdx];
-                let target = 1;
-                const match = t.word.match(/击败\s*(\d+)/);
-                if (match) target = parseInt(match[1]);
-                currentTask = {
-                    word: t.word,
-                    given: t.given,
-                    target: target,
-                    type: 'kill'
-                };
-                if (gameData.taskProgress >= target) {
-                    gameData.taskProgress = target;
-                }
-            } else {
-                currentTask = {
-                    word: '击败 1 只怪物',
-                    given: { name: '披萨', num: 1 },
-                    target: 1,
-                    type: 'kill'
-                };
-            }
+            loadNextTask();
             updateUI();
             updateInventoryGrid();
-            updateTaskUI();
-            while (gameData.monsters.length < 5) {
-                spawnMonster(1);
-            }
             gameData.lastTime = performance.now();
             requestAnimationFrame(loop);
         }
 
         init();
-
         window.addEventListener('resize', () => { resizeCanvas(); });
         document.addEventListener('contextmenu', e => e.preventDefault());
 
         console.log('🎮 广仙世界已启动！');
         console.log('📖 快捷键: W/A/S/D 移动 | H 攻击 | Q 疾跑 | R 恢复 | B 背包 | F 领任务');
-        console.log('💀 死亡复活费用:', gameConfig.resurrectionCost, '广仙币');
-        console.log('🌊 溺水时间:', gameConfig.drowningTime, '秒');
-        console.log('🗺️ 地图边界倍数:', gameConfig.mapBoundaryMultiplier);
     </script>
-
 </body>
 </html>

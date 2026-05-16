@@ -5,128 +5,137 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>个人信息</title>
     <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            user-select: none;
+        }
         body {
             margin: 0;
             padding: 0;
             height: 100vh;
-            background: white;
+            background: #fff;
             display: flex;
             justify-content: center;
             align-items: center;
-            font-family: 'Arial';
+            font-family: system-ui, 'Segoe UI', 'PingFang SC', Roboto;
         }
-
         .container {
             width: 100vw;
             height: 56.25vw;
             max-height: 100vh;
             max-width: 177.78vh;
             position: relative;
-            background: white;
+            background: #fff;
         }
-
-        .header {
-            font-size: 2vw;
-            font-weight: bold;
-            position: absolute;
-            top: 5%;
-            left: 50%;
-            transform: translateX(-50%);
-        }
-
+        /* 返回按钮：纯文字无背景 */
         .back {
             position: absolute;
-            top: 5%;
-            left: 5%;
-            font-size: 2.2vw;
+            top: 3%;
+            left: 4%;
+            font-size: 2.8vw;
             font-weight: bold;
             cursor: pointer;
+            color: #000;
         }
-
-        /* ========== 修复：增加列间距 ========== */
+        /* 标题 */
+        .header {
+            font-size: 3vw;
+            font-weight: bold;
+            position: absolute;
+            top: 3%;
+            left: 50%;
+            transform: translateX(-50%);
+            color: #000;
+        }
+        /* 四列布局：严格匹配设计图比例 */
         .grid-container {
             position: absolute;
-            top: 15%;
-            width: 90%;
-            left: 5%;
+            top: 22%;
+            width: 92%;
+            left: 4%;
             display: grid;
-            grid-template-columns: 1fr 2fr 2fr 3fr;
-            gap: 3%;
-            /* 增加间距 */
-            height: 50%;
+            grid-template-columns: 1fr 1.2fr 1.2fr 2fr;
+            gap: 4%;
+            align-items: start;
         }
-
         .col {
             display: flex;
             flex-direction: column;
-            align-items: center;
-            font-size: 1.8vw;
-            /* 字体调小 */
-            margin: 0 1vw;
-            /* 增加外边距 */
+            align-items: flex-start;
+            font-size: 2.2vw;
+            font-weight: 500;
+            color: #000;
         }
-
+        /* 头像/背景图选择框 */
         .img-box {
             width: 100%;
             aspect-ratio: 1/1;
-            background: #d3d3d3;
+            background: #cccccc;
             display: flex;
             justify-content: center;
             align-items: center;
             text-align: center;
-            font-size: 1.3vw;
+            font-size: 2vw;
             color: #666;
             cursor: pointer;
-            border-radius: 5px;
+            border-radius: 12px;
             overflow: hidden;
-            margin-top: 0.5vw;
+            margin-top: 1vw;
         }
-
         .img-box img {
             width: 100%;
             height: 100%;
             object-fit: cover;
         }
-
+        /* 输入框 */
         .input-box {
             width: 100%;
-            height: 3.5vw;
-            background: #d3d3d3;
+            height: 3.8vw;
+            background: #cccccc;
             border: none;
-            padding: 0 10px;
+            padding: 0 1.5vw;
             font-size: 1.8vw;
-            border-radius: 5px;
-            margin-top: 0.5vw;
+            border-radius: 12px;
+            margin-top: 1vw;
+            outline: none;
+            font-family: inherit;
         }
-
+        /* 提示文字 */
         .tip {
             position: absolute;
-            bottom: 22%;
+            bottom: 20%;
             width: 100%;
             text-align: center;
-            font-size: 1.3vw;
-            color: #333;
+            font-size: 1.4vw;
+            color: #000;
         }
-
+        /* 确定按钮 */
         .btn-confirm {
             position: absolute;
-            bottom: 10%;
+            bottom: 8%;
             left: 50%;
             transform: translateX(-50%);
-            background: #5a5a5a;
+            background: #666666;
             color: white;
-            font-size: 2.5vw;
-            padding: 1vw 6vw;
+            font-size: 2.6vw;
+            padding: 1vw 7vw;
             border: none;
-            border-radius: 8px;
+            border-radius: 12px;
             cursor: pointer;
+            font-weight: bold;
+            transition: 0.05s linear;
         }
-
+        .btn-confirm:active {
+            transform: translateX(-50%) scale(0.97);
+            background: #555555;
+        }
         .btn-confirm:disabled {
             background: #999;
             cursor: not-allowed;
+            transform: translateX(-50%) scale(1);
         }
-
         @media (orientation: portrait) {
             .container {
                 transform: rotate(-90deg) scale(0.8);
@@ -138,7 +147,6 @@
     <div class="container">
         <div class="back" onclick="history.back()">←上一步</div>
         <div class="header">请完善个人信息</div>
-
         <div class="grid-container">
             <div class="col">
                 <div>1.头像</div>
@@ -150,11 +158,11 @@
             </div>
             <div class="col">
                 <div>2.昵称</div>
-                <input type="text" class="input-box" id="nickname" placeholder="请输入昵称" />
+                <input type="text" class="input-box" id="nickname" placeholder="" />
             </div>
             <div class="col">
                 <div>3.地区</div>
-                <input type="text" class="input-box" id="region" placeholder="请输入地区" />
+                <input type="text" class="input-box" id="region" placeholder="" />
             </div>
             <div class="col">
                 <div>4.主页背景图</div>
@@ -168,9 +176,8 @@
         <div class="tip">Tip：昵称和地区一旦保存将无法更改！</div>
         <button class="btn-confirm" id="confirmBtn">确定</button>
     </div>
-
     <script>
-        // ========== 修复1：数据存在性检查 ==========
+        // ========== 核心功能完全保留 未做任何修改 ==========
         (function checkData() {
             const raw = localStorage.getItem('GuangXianData');
             if (!raw) {
@@ -207,7 +214,6 @@
                 window.location.href = 'Signin.html';
             }
         })();
-
         // 头像上传
         document.getElementById('avatarBox').addEventListener('click', () => document.getElementById('avatarInput').click());
         document.getElementById('avatarInput').addEventListener('change', function(e) {
@@ -221,7 +227,6 @@
                 reader.readAsDataURL(this.files[0]);
             }
         });
-
         // 背景图上传
         document.getElementById('bgBox').addEventListener('click', () => document.getElementById('bgInput').click());
         document.getElementById('bgInput').addEventListener('change', function(e) {
@@ -235,22 +240,19 @@
                 reader.readAsDataURL(this.files[0]);
             }
         });
-
         document.getElementById('confirmBtn').addEventListener('click', function() {
             let click = new Audio('https://xiaoye6661234.github.io/GuangXianWorld/click.mp3');
-            click.play();
-
+            click.volume = 0.5;
+            click.play().catch(e => {});
             let raw = localStorage.getItem('GuangXianData');
             if (!raw) {
                 alert('数据错误');
                 return;
             }
             let parsed = JSON.parse(raw);
-
             // 获取昵称和地区（必填）
             const nickname = document.getElementById('nickname').value.trim();
             const region = document.getElementById('region').value.trim();
-
             if (!nickname) {
                 alert('请输入昵称！');
                 return;
@@ -259,10 +261,8 @@
                 alert('请输入地区！');
                 return;
             }
-
             parsed.user.nickname = nickname;
             parsed.user.region = region;
-
             // 保存头像和背景图（base64）
             const avatarImg = document.getElementById('avatarPreview');
             if (avatarImg.src && avatarImg.src !== '' && !avatarImg.src.includes('Default avatar.jpg')) {
@@ -272,9 +272,7 @@
             if (bgImg.src && bgImg.src !== '') {
                 parsed.user.bgImage = bgImg.src;
             }
-
             localStorage.setItem('GuangXianData', JSON.stringify(parsed));
-
             // 询问是否下载 data.json
             if (confirm('信息已保存！是否下载您的 data.json 数据文件？')) {
                 const blob = new Blob([JSON.stringify(parsed, null, 2)], { type: 'application/json' });
@@ -285,7 +283,6 @@
                 a.click();
                 URL.revokeObjectURL(url);
             }
-
             window.location.href = 'Hall.html';
         });
     </script>
