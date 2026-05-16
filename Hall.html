@@ -440,22 +440,37 @@
 
     <script>
         // ================================================================
-        //  统一 data.json 操作函数
+        //  统一 data.json 操作函数（优化版）
         // ================================================================
 
+        // 缓存数据，避免频繁解析
+        var dataCache = null;
+
         function loadData() {
+            // 如果缓存有效，直接返回
+            if (dataCache) return dataCache;
             var raw = localStorage.getItem('data.json');
             if (!raw) return null;
             try {
-                return JSON.parse(raw);
+                dataCache = JSON.parse(raw);
+                return dataCache;
             } catch (e) {
                 return null;
             }
         }
 
         function saveData(data) {
-            localStorage.setItem('data.json', JSON.stringify(data));
-            localStorage.setItem('GuangXianData', JSON.stringify(data));
+            try {
+                // 更新缓存
+                dataCache = data;
+                localStorage.setItem('data.json', JSON.stringify(data));
+                // 兼容旧数据
+                localStorage.setItem('GuangXianData', JSON.stringify(data));
+                return true;
+            } catch (e) {
+                console.warn('保存数据失败:', e);
+                return false;
+            }
         }
 
         function createDefaultData() {
@@ -544,30 +559,7 @@
             }
         }
 
-        // 保存数据，并自动导出 data.json（静默下载）
-        function saveAndExport(data) {
-            saveData(data);
-            autoExportData(data);
-        }
-
-        function autoExportData(data) {
-            try {
-                var jsonStr = JSON.stringify(data, null, 2);
-                var blob = new Blob([jsonStr], { type: 'application/json' });
-                var url = URL.createObjectURL(blob);
-                var a = document.createElement('a');
-                a.href = url;
-                a.download = 'data.json';
-                document.body.appendChild(a);
-                a.click();
-                document.body.removeChild(a);
-                URL.revokeObjectURL(url);
-            } catch (e) {
-                console.warn('自动导出 data.json 失败:', e);
-            }
-        }
-
-        // 手动导出（供设置按钮调用）
+        // 手动导出 data.json（仅当用户主动点击时）
         function manualExportData() {
             playClickSound();
             var data = loadData();
@@ -762,7 +754,7 @@
         }
 
         // ================================================================
-        //  领取功能
+        //  领取功能（优化：不再自动导出，只保存数据）
         // ================================================================
 
         function claimNotice() {
@@ -775,15 +767,18 @@
             }
             data.user.coins = (data.user.coins || 0) + 1000;
             data.user.hasClaimedNotice = true;
-            saveAndExport(data);
-            updateUI(data);
-            var btn = document.getElementById('claimNoticeBtn');
-            if (btn) {
-                btn.innerText = '✅ 已领取';
-                btn.disabled = true;
-                btn.classList.add('disabled');
+            if (saveData(data)) {
+                updateUI(data);
+                var btn = document.getElementById('claimNoticeBtn');
+                if (btn) {
+                    btn.innerText = '✅ 已领取';
+                    btn.disabled = true;
+                    btn.classList.add('disabled');
+                }
+                alert('🎉 恭喜领取 1000 广仙币！');
+            } else {
+                alert('❌ 保存失败，请重试！');
             }
-            alert('🎉 恭喜领取 1000 广仙币！');
         }
 
         function claimDailyWelfare() {
@@ -798,15 +793,18 @@
             var amount = Math.floor(Math.random() * 151) + 100;
             data.user.coins = (data.user.coins || 0) + amount;
             data.user.lastDailyWelfare = today;
-            saveAndExport(data);
-            updateUI(data);
-            var btn = document.getElementById('claimDailyBtn');
-            if (btn) {
-                btn.innerText = '✅ 今日已签到';
-                btn.disabled = true;
-                btn.classList.add('disabled');
+            if (saveData(data)) {
+                updateUI(data);
+                var btn = document.getElementById('claimDailyBtn');
+                if (btn) {
+                    btn.innerText = '✅ 今日已签到';
+                    btn.disabled = true;
+                    btn.classList.add('disabled');
+                }
+                alert('🎉 恭喜获得 ' + amount + ' 广仙币！');
+            } else {
+                alert('❌ 保存失败，请重试！');
             }
-            alert('🎉 恭喜获得 ' + amount + ' 广仙币！');
         }
 
         function receiveFree() {
@@ -817,10 +815,13 @@
             if (!data.user.lastFreeClaim || data.user.lastFreeClaim !== today) {
                 data.user.coins = (data.user.coins || 0) + 250;
                 data.user.lastFreeClaim = today;
-                saveAndExport(data);
-                updateUI(data);
-                alert('🎉 领取成功！获得 250 广仙币');
-                closeModal();
+                if (saveData(data)) {
+                    updateUI(data);
+                    alert('🎉 领取成功！获得 250 广仙币');
+                    closeModal();
+                } else {
+                    alert('❌ 保存失败，请重试！');
+                }
             } else {
                 alert('今日已领取！');
             }
@@ -897,21 +898,23 @@
             data.user.nickname = tempNickname;
             data.user.avatar = tempAvatar;
             data.user.bgImage = tempBgImage;
-            saveAndExport(data);
-            updateUI(data);
-
-            if (confirm('信息已保存！是否下载更新后的 data.json 数据文件？')) {
-                var blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
-                var url = URL.createObjectURL(blob);
-                var a = document.createElement('a');
-                a.href = url;
-                a.download = 'data.json';
-                a.click();
-                URL.revokeObjectURL(url);
+            if (saveData(data)) {
+                updateUI(data);
+                if (confirm('信息已保存！是否下载更新后的 data.json 数据文件？')) {
+                    var blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+                    var url = URL.createObjectURL(blob);
+                    var a = document.createElement('a');
+                    a.href = url;
+                    a.download = 'data.json';
+                    a.click();
+                    URL.revokeObjectURL(url);
+                }
+                isProfileEditing = false;
+                document.getElementById('profileSaveBtn').style.display = 'none';
+                openModal('profile');
+            } else {
+                alert('❌ 保存失败，请重试！');
             }
-            isProfileEditing = false;
-            document.getElementById('profileSaveBtn').style.display = 'none';
-            openModal('profile');
         }
 
         // ================================================================
@@ -935,7 +938,9 @@
             } else {
                 bgm.volume = parseInt(val) / 100;
             }
-            event.target.nextElementSibling.textContent = val + '%';
+            // 使用 event 参数
+            var span = event.target.nextElementSibling;
+            if (span) span.textContent = val + '%';
         }
 
         function setSFXVol(val) {
@@ -944,7 +949,8 @@
             if (!data.user.settings) data.user.settings = {};
             data.user.settings.sfxVolume = parseInt(val);
             saveData(data);
-            event.target.nextElementSibling.textContent = val + '%';
+            var span = event.target.nextElementSibling;
+            if (span) span.textContent = val + '%';
         }
 
         function toggleBGM() {
@@ -973,6 +979,7 @@
             if (confirm('确定要清除所有数据吗？此操作不可恢复！')) {
                 localStorage.removeItem('data.json');
                 localStorage.removeItem('GuangXianData');
+                dataCache = null;
                 alert('数据已清除！即将跳转回登录页。');
                 window.location.href = 'Signin.html';
             }
