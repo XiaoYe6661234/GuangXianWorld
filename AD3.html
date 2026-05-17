@@ -93,7 +93,6 @@
             color: #888;
             margin-top: 0.8vw;
         }
-        /* 跳过按钮 - 默认隐藏 */
         .skip-btn {
             position: absolute;
             top: 2vw;
@@ -133,10 +132,9 @@
 </head>
 <body>
     <div class="ad-container">
-        <!-- 跳过按钮 -->
-        <button class="skip-btn" id="skipBtn" onclick="skipAd()"> 跳过 &gt;&gt;</button>
+        <button class="skip-btn" id="skipBtn" onclick="skipAd()">跳过 &gt;&gt;</button>
 
-        <div class="ad-title">🎮广告时间</div>
+        <div class="ad-title">🎮 广告时间</div>
         <div class="ad-subtitle">感谢您的支持，观看10秒即可获得250广仙币</div>
         <div class="ad-video-wrapper">
             <video id="adVideo" src="https://xiaoye6661234.github.io/GuangXianWorld/AD3.mp4" preload="auto" playsinline></video>
@@ -149,10 +147,6 @@
     </div>
 
     <script>
-        // ================================================================
-        //  广告倒计时逻辑（与视频同步）
-        // ================================================================
-
         var totalTime = 10;
         var remaining = totalTime;
         var timerId = null;
@@ -163,18 +157,22 @@
         var skipBtn = document.getElementById('skipBtn');
         var video = document.getElementById('adVideo');
 
-        // 跳过广告
+        // 跳过广告（仅在完成后有效）
         function skipAd() {
             if (isCompleted) {
-                // 已完成倒计时，关闭页面
+                // 尝试关闭窗口
                 window.close();
+                // 如果 close 失败（某些浏览器限制），提示手动关闭
+                setTimeout(function() {
+                    if (!window.closed) {
+                        alert('请手动关闭此窗口。');
+                    }
+                }, 500);
             }
         }
 
-        // 尝试自动播放视频
         function playVideo() {
             video.play().catch(function() {
-                // 如果自动播放被阻止，用户点击任意位置后尝试播放
                 document.addEventListener('click', function playOnClick() {
                     video.play().catch(function(e) {});
                     document.removeEventListener('click', playOnClick);
@@ -182,12 +180,10 @@
             });
         }
 
-        // 视频加载完成后开始播放
         video.addEventListener('loadeddata', function() {
             playVideo();
         });
 
-        // 如果视频无法加载，仍然启动倒计时
         video.addEventListener('error', function() {
             console.warn('视频加载失败，倒计时继续');
             startTimer();
@@ -212,15 +208,19 @@
                 timerDisplay.innerText = '0';
                 // 显示跳过按钮
                 skipBtn.style.display = 'block';
-                // 更新提示文字
                 document.querySelector('.ad-hint').innerText = '✅ 广告已完成，点击右上角“跳过”关闭页面';
-                // 通知父窗口发放奖励
+                // 通知父窗口
                 notifyParent();
+                // 尝试自动关闭（延迟1秒）
+                setTimeout(function() {
+                    if (window.opener && !window.closed) {
+                        window.close();
+                    }
+                }, 1000);
             }
         }
 
         function notifyParent() {
-            // 使用 postMessage 通知父窗口
             if (window.opener) {
                 try {
                     window.opener.postMessage({ type: 'adCompleted', reward: 250 }, '*');
@@ -230,21 +230,20 @@
             }
         }
 
-        // 启动倒计时（先等待视频加载，如果3秒后仍未加载则强制启动）
+        // 如果视频加载慢，3秒后强制开始倒计时
         setTimeout(function() {
             if (!timerId) {
                 startTimer();
             }
         }, 3000);
 
-        // 视频加载完成后立即启动倒计时
         video.addEventListener('canplaythrough', function() {
             if (!timerId) {
                 startTimer();
             }
         });
 
-        // 禁止用户在倒计时完成前通过点击跳过（但可以点击视频区域）
+        // 阻止提前点击跳过（但点击视频区域不受影响）
         document.addEventListener('click', function(e) {
             if (!isCompleted && e.target !== video && e.target !== skipBtn) {
                 e.preventDefault();
@@ -253,11 +252,11 @@
 
         window.addEventListener('beforeunload', function(e) {
             if (!isCompleted) {
-                // 没有完成，不发放奖励
+                // 没有完成，不发放奖励（但不会阻止关闭）
             }
         });
 
-        console.log('📺 AD3 广告页面加载完成，倒计时 10 秒');
+        console.log('📺 AD1 广告页面加载完成，倒计时 10 秒');
     </script>
 </body>
 </html>

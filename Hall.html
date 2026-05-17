@@ -904,67 +904,34 @@
 
         // 监听来自广告页面的消息
         window.addEventListener('message', function(event) {
-            if (event.data && event.data.type === 'adCompleted') {
-                // 广告观看完成，发放奖励
-                var data = loadData();
-                if (!data) return;
-
-                var today = new Date().toISOString().split('T')[0];
-                var adWatchDate = data.user.adWatchDate || '';
-                var adWatchCount = (adWatchDate === today) ? (data.user.adWatchCount || 0) : 0;
-
-                // 再次检查次数（防止并发问题）
-                if (adWatchCount >= 5) {
-                    alert('今日广告次数已用完。');
-                    return;
-                }
-
-                // 增加次数
-                data.user.adWatchCount = adWatchCount + 1;
-                data.user.adWatchDate = today;
-                // 增加金币
-                data.user.coins = (data.user.coins || 0) + 250;
-
-                if (saveData(data)) {
-                    updateUI(data);
-                    // 刷新充值弹窗
-                    if (currentModal === 'recharge') {
-                        openModal('recharge');
-                    }
-                    alert('🎉 观看广告成功！获得 250 广仙币！');
-                } else {
-                    alert('❌ 保存失败，请重试！');
-                }
-            }
-        });
-
-        // ================================================================
-        //  领取功能
-        // ================================================================
-
-        function claimNotice() {
-            playClickSound();
-            var data = loadData();
-            if (!data) return;
-            if (data.user.hasClaimedNotice) {
-                alert('你已经领取过公告福利了！');
-                return;
-            }
-            data.user.coins = (data.user.coins || 0) + 1000;
-            data.user.hasClaimedNotice = true;
-            if (saveData(data)) {
-                updateUI(data);
-                var btn = document.getElementById('claimNoticeBtn');
-                if (btn) {
-                    btn.innerText = '✅ 已领取';
-                    btn.disabled = true;
-                    btn.classList.add('disabled');
-                }
-                alert('🎉 恭喜领取 1000 广仙币！');
-            } else {
-                alert('❌ 保存失败，请重试！');
-            }
+    if (event.data && event.data.type === 'adCompleted') {
+        var data = loadData();
+        if (!data) return;
+        var today = new Date().toISOString().split('T')[0];
+        var adWatchDate = data.user.adWatchDate || '';
+        var adWatchCount = (adWatchDate === today) ? (data.user.adWatchCount || 0) : 0;
+        if (adWatchCount >= 5) {
+            alert('今日广告次数已用完。');
+            return;
         }
+        data.user.adWatchCount = adWatchCount + 1;
+        data.user.adWatchDate = today;
+        data.user.coins = (data.user.coins || 0) + 250;
+
+        if (saveData(data)) {
+            updateUI(data);
+            // 延迟一点刷新弹窗，确保数据已保存
+            setTimeout(function() {
+                if (currentModal === 'recharge') {
+                    openModal('recharge');
+                }
+            }, 300);
+            alert('🎉 观看广告成功！获得 250 广仙币！');
+        } else {
+            alert('❌ 保存失败，请重试！');
+        }
+    }
+});
 
         function claimDailyWelfare() {
             playClickSound();
