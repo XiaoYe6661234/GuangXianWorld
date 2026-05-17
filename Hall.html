@@ -238,44 +238,95 @@
             cursor: not-allowed;
         }
         .recharge-container {
-            padding: 8% 5%;
+            padding: 6% 4%;
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 2vw;
         }
         .recharge-row {
             display: flex;
             gap: 2vw;
             justify-content: center;
+            align-items: stretch;
+            width: 100%;
+            max-width: 90vw;
+        }
+        .recharge-col {
+            flex: 1;
+            min-width: 0;
+            display: flex;
+            flex-direction: column;
             align-items: center;
-            flex-wrap: wrap;
+            background: rgba(255, 255, 255, 0.6);
+            border-radius: 12px;
+            padding: 1.5vw 1vw;
+            backdrop-filter: blur(4px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+        .recharge-col .col-title {
+            font-size: 2.6vw;
+            font-weight: bold;
+            margin-bottom: 1vw;
+            color: #000;
+        }
+        .recharge-col .col-sub {
+            font-size: 1.5vw;
+            color: #555;
+            margin-bottom: 0.6vw;
         }
         .recharge-item {
             display: flex;
             flex-direction: column;
             align-items: center;
-            width: 18%;
             cursor: pointer;
-            min-width: 80px;
+            min-width: 60px;
         }
         .recharge-item .coin-box {
-            width: 100%;
-            aspect-ratio: 1/1;
-            border: 0.5vw solid #ff9900;
+            width: 6vw;
+            height: 6vw;
+            border: 0.4vw solid #ff9900;
             background: white;
             border-radius: 4px;
             display: flex;
             align-items: center;
             justify-content: center;
-            margin-bottom: 0.5vw;
+            margin-bottom: 0.3vw;
+            transition: 0.2s;
+        }
+        .recharge-item .coin-box:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 10px rgba(255, 153, 0, 0.4);
         }
         .recharge-item img {
             width: 60%;
         }
         .recharge-item .amount {
-            font-size: 2.5vw;
+            font-size: 2vw;
             font-weight: bold;
+        }
+        .watch-ad-btn {
+            background: #ff8800;
+            color: white;
+            font-size: 2.2vw;
+            padding: 0.6vw 2.5vw;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            margin-top: 0.5vw;
+            transition: 0.2s;
+        }
+        .watch-ad-btn:hover {
+            background: #ff7700;
+            transform: scale(1.03);
+        }
+        .watch-ad-btn:active {
+            transform: scale(0.96);
+        }
+        .watch-ad-btn:disabled {
+            background: #aaa;
+            cursor: not-allowed;
+            transform: none;
         }
         .settings-container {
             padding: 8% 8%;
@@ -406,6 +457,29 @@
         @media (orientation: portrait) {
             .container {
                 transform: rotate(-90deg) scale(0.8);
+            }
+        }
+        @media (max-width: 600px) {
+            .recharge-row {
+                flex-direction: column;
+                gap: 3vw;
+            }
+            .recharge-col {
+                padding: 3vw 2vw;
+            }
+            .recharge-col .col-title {
+                font-size: 4vw;
+            }
+            .recharge-item .coin-box {
+                width: 10vw;
+                height: 10vw;
+            }
+            .recharge-item .amount {
+                font-size: 3.5vw;
+            }
+            .watch-ad-btn {
+                font-size: 3.5vw;
+                padding: 1vw 4vw;
             }
         }
     </style>
@@ -651,32 +725,30 @@
 
                 body.innerHTML = `
                     <div class="recharge-container">
-                        <div class="modal-title">获取广仙币</div>
-                        
-                        <!-- 每日免费 -->
-                        <div style="width:100%; text-align:center;">
-                            <div style="font-size:3vw; font-weight:bold; margin-bottom:1vw;">📅 每日免费</div>
-                            <div class="recharge-row">
+                        <div class="modal-title" style="margin-bottom:2vw;">获取广仙币</div>
+                        <div class="recharge-row">
+                            <!-- 每日免费 -->
+                            <div class="recharge-col">
+                                <div class="col-title">📅 每日免费</div>
                                 <div class="recharge-item" onclick="receiveFree()">
                                     <div class="coin-box">
                                         <img src="https://xiaoye6661234.github.io/GuangXianWorld/CuangXianCoin.png" />
                                     </div>
                                     <div class="amount">×250</div>
                                 </div>
+                                <div style="font-size:1.2vw; color:#666; margin-top:0.3vw;">每日一次</div>
                             </div>
-                        </div>
 
-                        <!-- 看广告 -->
-                        <div style="width:100%; text-align:center; margin-top:1vw;">
-                            <div style="font-size:3vw; font-weight:bold; margin-bottom:1vw;">📺 看广告领币</div>
-                            <div style="font-size:1.8vw; color:#555; margin-bottom:0.5vw;">
-                                今日已看 <strong>${adsToday}</strong> / 5 次
-                            </div>
-                            <button class="modal-btn" id="watchAdBtn" onclick="watchAd()" ${remainingAds <= 0 ? 'disabled' : ''}>
-                                ${remainingAds > 0 ? `🎬 看广告 (剩余${remainingAds}次)` : '✅ 今日已满'}
-                            </button>
-                            <div style="font-size:1.5vw; color:#888; margin-top:0.5vw;">
-                                每次观看10秒，可获得 <strong style="color:#ff8800;">250</strong> 广仙币
+                            <!-- 看广告 -->
+                            <div class="recharge-col">
+                                <div class="col-title">📺 看广告领币</div>
+                                <div class="col-sub">今日已看 <strong>${adsToday}</strong> / 5 次</div>
+                                <button class="watch-ad-btn" id="watchAdBtn" onclick="watchAd()" ${remainingAds <= 0 ? 'disabled' : ''}>
+                                    ${remainingAds > 0 ? `🎬 看广告 (剩余${remainingAds}次)` : '✅ 今日已满'}
+                                </button>
+                                <div style="font-size:1.2vw; color:#888; margin-top:0.3vw;">
+                                    每次观看10秒，获得 <strong style="color:#ff8800;">250</strong> 广仙币
+                                </div>
                             </div>
                         </div>
                     </div>
