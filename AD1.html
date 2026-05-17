@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>广告1 · 广仙世界</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            user-select: none;
+        }
+        body {
+            background: #000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            width: 100vw;
+            overflow: hidden;
+            font-family: system-ui, 'Segoe UI', 'PingFang SC', Roboto;
+        }
+        .ad-container {
+            width: 100vw;
+            height: 56.25vw;
+            max-height: 100vh;
+            max-width: 177.78vh;
+            position: relative;
+            background: #111;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+        video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .timer-overlay {
+            position: absolute;
+            bottom: 5%;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.5vw;
+            z-index: 10;
+            background: rgba(0, 0, 0, 0.7);
+            padding: 1vw 2.5vw;
+            border-radius: 12px;
+            backdrop-filter: blur(4px);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+        }
+        .timer-number {
+            font-size: 4vw;
+            font-weight: bold;
+            color: #ffcc00;
+            text-shadow: 0 0 20px rgba(255, 204, 0, 0.3);
+        }
+        .timer-label {
+            font-size: 1.4vw;
+            color: #fff;
+            opacity: 0.8;
+            letter-spacing: 0.04em;
+        }
+        .timer-progress {
+            width: 20vw;
+            height: 0.4vw;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            overflow: hidden;
+            margin-top: 0.3vw;
+        }
+        .timer-progress-bar {
+            height: 100%;
+            width: 100%;
+            background: linear-gradient(90deg, #ff8800, #ffcc00);
+            border-radius: 10px;
+            transition: width 0.3s ease;
+        }
+        .ad-hint {
+            position: absolute;
+            top: 4%;
+            left: 50%;
+            transform: translateX(-50%);
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 1.4vw;
+            letter-spacing: 0.06em;
+            text-shadow: 0 2px 8px rgba(0, 0, 0, 0.8);
+            z-index: 10;
+            background: rgba(0, 0, 0, 0.5);
+            padding: 0.3vw 1.5vw;
+            border-radius: 20px;
+            backdrop-filter: blur(2px);
+        }
+        .skip-btn {
+            position: absolute;
+            top: 4%;
+            right: 4%;
+            z-index: 10;
+            background: rgba(0, 0, 0, 0.6);
+            color: #fff;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 0.4vw 1.2vw;
+            border-radius: 6px;
+            font-size: 1.2vw;
+            cursor: pointer;
+            transition: 0.2s;
+            backdrop-filter: blur(2px);
+        }
+        .skip-btn:hover {
+            background: rgba(255, 255, 255, 0.15);
+        }
+        .skip-btn:active {
+            transform: scale(0.95);
+        }
+        @media (orientation: portrait) {
+            .ad-container {
+                transform: rotate(-90deg) scale(0.8);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="ad-container">
+        <!-- 视频广告 -->
+        <video id="adVideo" src="AD1.mp4" autoplay muted playsinline></video>
+
+        <!-- 顶部提示 -->
+        <div class="ad-hint">📺 观看广告 10 秒即可领取奖励</div>
+
+        <!-- 跳过按钮（点击不发放奖励） -->
+        <button class="skip-btn" onclick="skipAd()">✕ 跳过</button>
+
+        <!-- 倒计时叠加层 -->
+        <div class="timer-overlay">
+            <div class="timer-number" id="timerDisplay">10</div>
+            <div class="timer-label">剩余秒数</div>
+            <div class="timer-progress">
+                <div class="timer-progress-bar" id="progressBar" style="width:100%"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ================================================================
+        //  广告倒计时逻辑
+        // ================================================================
+
+        var totalSeconds = 10;
+        var remainingSeconds = totalSeconds;
+        var timerInterval = null;
+        var isCompleted = false;
+
+        var timerDisplay = document.getElementById('timerDisplay');
+        var progressBar = document.getElementById('progressBar');
+        var video = document.getElementById('adVideo');
+
+        // 尝试播放视频
+        function tryPlayVideo() {
+            video.play().catch(function(e) {
+                console.log('视频自动播放被阻止，等待用户交互');
+                // 如果自动播放失败，点击任意位置继续
+                document.addEventListener('click', function playOnClick() {
+                    video.play().catch(function() {});
+                    document.removeEventListener('click', playOnClick);
+                }, { once: true });
+            });
+        }
+
+        // 启动倒计时
+        function startTimer() {
+            if (timerInterval) return;
+            timerInterval = setInterval(function() {
+                remainingSeconds--;
+                timerDisplay.innerText = remainingSeconds;
+                progressBar.style.width = (remainingSeconds / totalSeconds * 100) + '%';
+
+                if (remainingSeconds <= 0) {
+                    clearInterval(timerInterval);
+                    timerInterval = null;
+                    completeAd();
+                }
+            }, 1000);
+        }
+
+        // 广告完成
+        function completeAd() {
+            if (isCompleted) return;
+            isCompleted = true;
+
+            // 标记已观看，存储到 localStorage
+            localStorage.setItem('adWatched', 'true');
+
+            // 跳转回大厅
+            window.location.href = 'Hall.html';
+        }
+
+        // 跳过广告（不发放奖励）
+        function skipAd() {
+            if (isCompleted) return;
+            // 清除计时器
+            if (timerInterval) {
+                clearInterval(timerInterval);
+                timerInterval = null;
+            }
+            // 不设置标记，直接返回
+            window.location.href = 'Hall.html';
+        }
+
+        // 初始化
+        function init() {
+            tryPlayVideo();
+            // 点击屏幕开始计时（防止自动播放策略干扰）
+            document.addEventListener('click', function() {
+                if (!timerInterval && !isCompleted) {
+                    startTimer();
+                }
+            }, { once: true });
+            // 也支持触摸事件
+            document.addEventListener('touchstart', function() {
+                if (!timerInterval && !isCompleted) {
+                    startTimer();
+                }
+            }, { once: true });
+
+            // 视频播放结束后自动完成（备用）
+            video.addEventListener('ended', function() {
+                if (!isCompleted) {
+                    completeAd();
+                }
+            });
+
+            // 如果视频已经可以播放，尝试自动开始计时（但受浏览器策略限制）
+            setTimeout(function() {
+                if (!timerInterval && !isCompleted) {
+                    // 如果用户没有交互，等待用户点击
+                }
+            }, 2000);
+        }
+
+        // 页面加载完成后初始化
+        init();
+    </script>
+</body>
+</html>
