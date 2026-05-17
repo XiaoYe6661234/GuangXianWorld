@@ -239,8 +239,17 @@
         }
         .recharge-container {
             padding: 8% 5%;
-            overflow-y: auto;
-            max-height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 2vw;
+        }
+        .recharge-row {
+            display: flex;
+            gap: 2vw;
+            justify-content: center;
+            align-items: center;
+            flex-wrap: wrap;
         }
         .recharge-item {
             display: flex;
@@ -248,6 +257,7 @@
             align-items: center;
             width: 18%;
             cursor: pointer;
+            min-width: 80px;
         }
         .recharge-item .coin-box {
             width: 100%;
@@ -266,32 +276,6 @@
         .recharge-item .amount {
             font-size: 2.5vw;
             font-weight: bold;
-        }
-        .recharge-row {
-            display: flex;
-            gap: 3%;
-            justify-content: center;
-            flex-wrap: wrap;
-            margin-top: 1vw;
-        }
-        .recharge-row .recharge-item {
-            width: 22%;
-        }
-        .ad-section {
-            margin-top: 4vw;
-            border-top: 1px solid #ddd;
-            padding-top: 2vw;
-        }
-        .ad-section .section-title {
-            font-size: 3vw;
-            font-weight: bold;
-            margin-bottom: 1vw;
-            color: #000;
-        }
-        .ad-section .sub-info {
-            font-size: 1.6vw;
-            color: #666;
-            margin-bottom: 1vw;
         }
         .settings-container {
             padding: 8% 8%;
@@ -468,12 +452,14 @@
 
     <script>
         // ================================================================
-        //  统一 data.json 操作函数
+        //  统一 data.json 操作函数（优化版）
         // ================================================================
 
+        // 缓存数据，避免频繁解析
         var dataCache = null;
 
         function loadData() {
+            // 如果缓存有效，直接返回
             if (dataCache) return dataCache;
             var raw = localStorage.getItem('data.json');
             if (!raw) return null;
@@ -487,8 +473,10 @@
 
         function saveData(data) {
             try {
+                // 更新缓存
                 dataCache = data;
                 localStorage.setItem('data.json', JSON.stringify(data));
+                // 兼容旧数据
                 localStorage.setItem('GuangXianData', JSON.stringify(data));
                 return true;
             } catch (e) {
@@ -521,20 +509,14 @@
                     lastDailyWelfare: '',
                     lastFreeClaim: '',
                     adWatchCount: 0,
-                    lastAdWatchDate: ''
+                    adWatchDate: ''
                 },
                 inventory: [],
                 equippedWeapon: null,
-                chapterProgress: {
-                    "1": { taskProgress: 0, taskClaimed1: false, taskClaimed5: false, taskClaimed10: false },
-                    "2": { taskProgress: 0, taskClaimed1: false, taskClaimed5: false, taskClaimed10: false },
-                    "3": { taskProgress: 0, taskClaimed1: false, taskClaimed5: false, taskClaimed10: false },
-                    "4": { taskProgress: 0, taskClaimed1: false, taskClaimed5: false, taskClaimed10: false },
-                    "5": { taskProgress: 0, taskClaimed1: false, taskClaimed5: false, taskClaimed10: false },
-                    "6": { giantKills: 0, eliteKills: 0, midKills: 0, claimed: false },
-                    "7": { bossKills: 0, eliteKills: 0, midKills: 0, claimed: false },
-                    "8": { bossKills: 0, eliteKills: 0, claimed: false }
-                },
+                taskProgress: 0,
+                taskClaimed1: false,
+                taskClaimed5: false,
+                taskClaimed10: false,
                 chapter: 1
             };
         }
@@ -554,9 +536,6 @@
         // ================================================================
 
         function loadAndRender() {
-            // 检查广告观看完成标记
-            checkAdCompletion();
-
             var data = loadData();
             if (!data) {
                 alert('请先登录！');
@@ -594,6 +573,7 @@
             }
         }
 
+        // 手动导出 data.json（仅当用户主动点击时）
         function manualExportData() {
             playClickSound();
             var data = loadData();
@@ -615,32 +595,8 @@
             }
         }
 
-        // ================================================================
-        //  广告观看完成检查（从 AD 页面返回时触发）
-        // ================================================================
-
-        function checkAdCompletion() {
-            if (localStorage.getItem('adWatched') === 'true') {
-                localStorage.removeItem('adWatched');
-                var data = loadData();
-                if (!data) return;
-                var today = new Date().toISOString().split('T')[0];
-                if (data.user.lastAdWatchDate !== today) {
-                    data.user.adWatchCount = 0;
-                    data.user.lastAdWatchDate = today;
-                }
-                if (data.user.adWatchCount < 5) {
-                    data.user.adWatchCount = (data.user.adWatchCount || 0) + 1;
-                    data.user.coins = (data.user.coins || 0) + 250;
-                    if (saveData(data)) {
-                        updateUI(data);
-                        alert('🎉 观看广告获得 250 广仙币！');
-                    } else {
-                        alert('❌ 发放奖励失败，请重试！');
-                    }
-                }
-            }
-        }
+        // 页面加载
+        loadAndRender();
 
         // ================================================================
         //  弹窗管理
@@ -688,43 +644,39 @@
                 `;
             } else if (type === 'recharge') {
                 var today = new Date().toISOString().split('T')[0];
-                var adCount = data.user.adWatchCount || 0;
-                var lastDate = data.user.lastAdWatchDate || '';
-                if (lastDate !== today) {
-                    adCount = 0;
-                }
-                var remaining = 5 - adCount;
+                var adWatchDate = data.user.adWatchDate || '';
+                var adWatchCount = (adWatchDate === today) ? (data.user.adWatchCount || 0) : 0;
+                var remainingAds = Math.max(0, 5 - adWatchCount);
+                var adsToday = adWatchCount;
+
                 body.innerHTML = `
                     <div class="recharge-container">
-                        <div class="modal-title">💰 获取广仙币</div>
-
-                        <div style="margin-top:2vw;">
-                            <div style="font-size:2.8vw; font-weight:bold; margin-bottom:1.5vw; color:#000;">🎁 每日免费</div>
+                        <div class="modal-title">获取广仙币</div>
+                        
+                        <!-- 每日免费 -->
+                        <div style="width:100%; text-align:center;">
+                            <div style="font-size:3vw; font-weight:bold; margin-bottom:1vw;">📅 每日免费</div>
                             <div class="recharge-row">
                                 <div class="recharge-item" onclick="receiveFree()">
                                     <div class="coin-box">
                                         <img src="https://xiaoye6661234.github.io/GuangXianWorld/CuangXianCoin.png" />
                                     </div>
                                     <div class="amount">×250</div>
-                                    <div style="font-size:1.2vw; color:#999;">每日一次</div>
                                 </div>
                             </div>
                         </div>
 
-                        <div class="ad-section">
-                            <div class="section-title">📺 看广告领取</div>
-                            <div class="sub-info">今日剩余: <strong>${remaining}</strong> 次</div>
-                            <div class="recharge-row">
-                                <div class="recharge-item" onclick="watchAd()" style="${remaining <= 0 ? 'opacity:0.4;pointer-events:none;' : ''}">
-                                    <div class="coin-box" style="background:#ffdd00;">
-                                        <img src="https://xiaoye6661234.github.io/GuangXianWorld/CuangXianCoin.png" />
-                                    </div>
-                                    <div class="amount">×250</div>
-                                    <div style="font-size:1.2vw; color:#999;">观看10秒</div>
-                                </div>
+                        <!-- 看广告 -->
+                        <div style="width:100%; text-align:center; margin-top:1vw;">
+                            <div style="font-size:3vw; font-weight:bold; margin-bottom:1vw;">📺 看广告领币</div>
+                            <div style="font-size:1.8vw; color:#555; margin-bottom:0.5vw;">
+                                今日已看 <strong>${adsToday}</strong> / 5 次
                             </div>
-                            <div style="font-size:1.2vw; color:#999; text-align:center; margin-top:0.5vw;">
-                                ${remaining <= 0 ? '✅ 今日广告已看完，明天再来！' : '点击上方图标，观看10秒广告领取250广仙币'}
+                            <button class="modal-btn" id="watchAdBtn" onclick="watchAd()" ${remainingAds <= 0 ? 'disabled' : ''}>
+                                ${remainingAds > 0 ? `🎬 看广告 (剩余${remainingAds}次)` : '✅ 今日已满'}
+                            </button>
+                            <div style="font-size:1.5vw; color:#888; margin-top:0.5vw;">
+                                每次观看10秒，可获得 <strong style="color:#ff8800;">250</strong> 广仙币
                             </div>
                         </div>
                     </div>
@@ -840,29 +792,79 @@
         }
 
         // ================================================================
-        //  看广告功能
+        //  看广告系统
         // ================================================================
 
+        // 广告页面列表
+        var AD_PAGES = ['AD1.html', 'AD2.html', 'AD3.html'];
+
+        // 观看广告
         function watchAd() {
+            playClickSound();
+
             var data = loadData();
             if (!data) return;
+
             var today = new Date().toISOString().split('T')[0];
-            if (data.user.lastAdWatchDate !== today) {
-                data.user.adWatchCount = 0;
-                data.user.lastAdWatchDate = today;
-            }
-            if (data.user.adWatchCount >= 5) {
-                alert('今日广告已看完，明天再来吧！');
+            var adWatchDate = data.user.adWatchDate || '';
+            var adWatchCount = (adWatchDate === today) ? (data.user.adWatchCount || 0) : 0;
+
+            if (adWatchCount >= 5) {
+                alert('今日广告次数已用完，明天再来吧！');
                 return;
             }
-            // 随机选择广告页面
-            var adPages = ['AD1.html', 'AD2.html', 'AD3.html'];
-            var randomAd = adPages[Math.floor(Math.random() * adPages.length)];
-            saveData(data);
-            // 跳转前先关闭弹窗
-            document.getElementById('modalOverlay').style.display = 'none';
-            window.location.href = randomAd;
+
+            // 随机选择一个广告页面
+            var randomIndex = Math.floor(Math.random() * AD_PAGES.length);
+            var adPage = AD_PAGES[randomIndex];
+
+            // 打开广告页面
+            var adWindow = window.open(adPage, '_blank', 'width=400,height=600,menubar=no,toolbar=no,location=no,status=no,scrollbars=no');
+
+            if (!adWindow) {
+                alert('请允许弹窗，以便观看广告。');
+                return;
+            }
+
+            // 记录本次广告观看的请求
+            // 将在广告页面完成倒计时后通过 postMessage 通知
         }
+
+        // 监听来自广告页面的消息
+        window.addEventListener('message', function(event) {
+            if (event.data && event.data.type === 'adCompleted') {
+                // 广告观看完成，发放奖励
+                var data = loadData();
+                if (!data) return;
+
+                var today = new Date().toISOString().split('T')[0];
+                var adWatchDate = data.user.adWatchDate || '';
+                var adWatchCount = (adWatchDate === today) ? (data.user.adWatchCount || 0) : 0;
+
+                // 再次检查次数（防止并发问题）
+                if (adWatchCount >= 5) {
+                    alert('今日广告次数已用完。');
+                    return;
+                }
+
+                // 增加次数
+                data.user.adWatchCount = adWatchCount + 1;
+                data.user.adWatchDate = today;
+                // 增加金币
+                data.user.coins = (data.user.coins || 0) + 250;
+
+                if (saveData(data)) {
+                    updateUI(data);
+                    // 刷新充值弹窗
+                    if (currentModal === 'recharge') {
+                        openModal('recharge');
+                    }
+                    alert('🎉 观看广告成功！获得 250 广仙币！');
+                } else {
+                    alert('❌ 保存失败，请重试！');
+                }
+            }
+        });
 
         // ================================================================
         //  领取功能
@@ -1049,6 +1051,7 @@
             } else {
                 bgm.volume = parseInt(val) / 100;
             }
+            // 使用 event 参数
             var span = event.target.nextElementSibling;
             if (span) span.textContent = val + '%';
         }
