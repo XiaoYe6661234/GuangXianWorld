@@ -1,0 +1,2171 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>广仙世界 · 第十五章</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+        body {
+            background: #111;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            width: 100vw;
+            overflow: hidden;
+            font-family: system-ui, 'Segoe UI', 'PingFang SC', Roboto;
+        }
+        #gameContainer {
+            position: relative;
+            width: 100vw;
+            height: 56.25vw;
+            max-height: 100vh;
+            max-width: 177.78vh;
+            background: #2d5e2b;
+            overflow: hidden;
+        }
+        canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            display: block;
+            background: #87ceeb;
+        }
+        .ui-layer {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 10;
+            pointer-events: none;
+        }
+        .ui-layer>* {
+            pointer-events: auto;
+        }
+
+        /* 左上玩家信息 */
+        #playerInfo {
+            position: absolute;
+            top: 1.5%;
+            left: 1.5%;
+            display: flex;
+            align-items: center;
+            gap: 0.6vw;
+        }
+        #avatarBox {
+            width: 6vw;
+            height: 6vw;
+            border: 2px solid white;
+            border-radius: 4px;
+            overflow: hidden;
+            background: #ccc;
+        }
+        #avatarBox img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .info-text {
+            display: flex;
+            flex-direction: column;
+            gap: 0.3vw;
+        }
+        .info-text .nickname {
+            background: rgba(0, 0, 0, 0.7);
+            color: #fff;
+            font-size: 1.3vw;
+            font-weight: bold;
+            padding: 0.15vw 1vw;
+            border-radius: 4px;
+        }
+        .info-text .lvl {
+            background: rgba(0, 0, 0, 0.7);
+            color: #fff;
+            font-size: 1.7vw;
+            font-weight: bold;
+            padding: 0.15vw 1vw;
+            border-radius: 4px;
+        }
+
+        /* 血条 */
+        #hpBarContainer {
+            position: absolute;
+            top: 2.5%;
+            left: 30%;
+            width: 35%;
+            height: 3vw;
+            background: #cc0000;
+            border: 0.25vw solid #ff9900;
+            border-radius: 5px;
+            overflow: hidden;
+        }
+        #hpBarInner {
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, #d61a1a, #ff4444);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.6vw;
+            font-weight: bold;
+            color: white;
+            text-shadow: 1px 1px 3px black;
+        }
+
+        /* 返回大厅按钮 */
+        #backToHallBtn {
+            position: absolute;
+            top: 1.5%;
+            right: 1.5%;
+            background: rgba(0, 0, 0, 0.7);
+            color: #fff;
+            border: 2px solid #ffaa00;
+            border-radius: 5px;
+            padding: 0.2vw 1vw;
+            font-size: 1vw;
+            font-weight: bold;
+            cursor: pointer;
+            z-index: 12;
+            pointer-events: auto;
+            transition: 0.2s;
+        }
+        #backToHallBtn:hover {
+            background: rgba(255, 170, 0, 0.3);
+        }
+
+        /* 任务面板 - 多目标 */
+        #taskContainer {
+            position: absolute;
+            top: 12%;
+            right: 1.5%;
+            background: rgba(0, 0, 0, 0.7);
+            padding: 0.6vw 1vw;
+            border-radius: 5px;
+            color: white;
+            font-size: 1vw;
+            line-height: 1.3;
+            min-width: 18vw;
+        }
+        #taskContainer .task-title {
+            font-size: 1.2vw;
+            font-weight: bold;
+            margin-bottom: 0.2vw;
+            color: #fff;
+        }
+        #taskContainer .task-reward {
+            margin-top: 0.15vw;
+            color: #ffaa00;
+            font-size: 0.85vw;
+        }
+        #claimTaskBtn {
+            background: #ffaa00;
+            color: black;
+            font-weight: bold;
+            border: none;
+            padding: 0.15vw 1vw;
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 0.9vw;
+            margin-top: 0.3vw;
+            display: none;
+        }
+        #taskProgressList {
+            font-size: 0.9vw;
+            line-height: 1.5;
+            margin-top: 0.2vw;
+        }
+        .task-progress-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .task-progress-item .label {
+            color: #ccc;
+        }
+        .task-progress-item .count {
+            color: #ffcc00;
+            font-weight: bold;
+        }
+        .task-progress-item.done .count {
+            color: #44ff44;
+        }
+
+        /* 右侧控制按钮 */
+        #controls {
+            position: absolute;
+            bottom: 3%;
+            right: 2%;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 0.6vw;
+        }
+        .ctrl-row {
+            display: flex;
+            gap: 0.6vw;
+            align-items: center;
+        }
+        .ctrl-btn {
+            width: 7vw;
+            height: 7vw;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.2);
+            border: 2px solid rgba(255, 255, 255, 0.4);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: 0.1s;
+        }
+        .ctrl-btn:active {
+            transform: scale(0.9);
+        }
+        .ctrl-btn.small {
+            width: 5.5vw;
+            height: 5.5vw;
+        }
+        .ctrl-btn img {
+            width: 55%;
+            height: 55%;
+            object-fit: contain;
+        }
+        .ctrl-label {
+            color: white;
+            font-size: 0.85vw;
+            text-shadow: 1px 1px 3px black;
+            background: rgba(0, 0, 0, 0.6);
+            padding: 0.1vw 0.5vw;
+            border-radius: 3px;
+            font-weight: bold;
+        }
+
+        /* 摇杆 */
+        #joystickZone {
+            position: absolute;
+            bottom: 3%;
+            left: 3%;
+            width: 12vw;
+            height: 12vw;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        #joystickKnob {
+            width: 4.5vw;
+            height: 4.5vw;
+            border-radius: 50%;
+            background: rgba(0, 0, 0, 0.5);
+            position: relative;
+            transition: 0.05s;
+        }
+
+        /* 背包弹窗 */
+        #inventoryModal {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 20;
+            background: rgba(0, 0, 0, 0.7);
+            display: none;
+            align-items: center;
+            justify-content: center;
+        }
+        #inventoryPanel {
+            width: 75%;
+            height: 75%;
+            background-image: url('https://xiaoye6661234.github.io/GuangXianWorld/settingbackground.jpg');
+            background-size: cover;
+            border-radius: 8px;
+            padding: 2vw;
+            position: relative;
+        }
+        #invHeader {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 2.8vw;
+            font-weight: bold;
+            margin-bottom: 1.5vw;
+            color: #000;
+        }
+        #invClose {
+            font-size: 3.5vw;
+            cursor: pointer;
+            color: #000;
+            line-height: 1;
+        }
+        #invGrid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(9vw, 1fr));
+            gap: 1.2vw;
+        }
+        .inv-item {
+            background: rgba(0, 0, 0, 0.6);
+            border-radius: 5px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 1vw 0.6vw;
+            cursor: pointer;
+            transition: 0.2s;
+            border: 2px solid transparent;
+        }
+        .inv-item:hover {
+            border-color: #ffaa00;
+            transform: translateY(-2px);
+        }
+        .inv-item img {
+            width: 60%;
+            height: auto;
+            object-fit: contain;
+            border-radius: 4px;
+        }
+        .inv-item .item-name {
+            color: white;
+            font-size: 1vw;
+            margin-top: 0.3vw;
+            font-weight: bold;
+        }
+        .inv-item .item-qty {
+            color: #ffaa00;
+            font-size: 0.85vw;
+            margin-top: 0.1vw;
+        }
+
+        /* 物品详情弹窗 */
+        #itemDetailModal {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 30;
+            background: rgba(0, 0, 0, 0.8);
+            display: none;
+            align-items: center;
+            justify-content: center;
+        }
+        #detailPanel {
+            width: 50%;
+            max-width: 35vw;
+            background: rgba(0, 0, 0, 0.85);
+            border-radius: 8px;
+            padding: 2vw;
+            position: relative;
+            color: white;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        #detailClose {
+            position: absolute;
+            top: 1.2vw;
+            right: 2vw;
+            font-size: 3vw;
+            cursor: pointer;
+            color: #fff;
+            line-height: 1;
+        }
+        #detailTitle {
+            font-size: 2.4vw;
+            font-weight: bold;
+            margin-bottom: 1.2vw;
+            color: #fff;
+        }
+        #detailImg {
+            width: 10vw;
+            height: 10vw;
+            object-fit: contain;
+            margin-bottom: 1.2vw;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 5px;
+            padding: 0.6vw;
+        }
+        #detailDesc {
+            font-size: 1.3vw;
+            margin-bottom: 2vw;
+            text-align: center;
+            color: #ccc;
+        }
+        #detailUseBtn {
+            background: #ff8800;
+            color: white;
+            font-size: 1.5vw;
+            padding: 0.6vw 3.5vw;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        /* 结算/复活弹窗 */
+        #settlementModal {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 40;
+            background: rgba(0, 0, 0, 0.8);
+            display: none;
+            align-items: center;
+            justify-content: center;
+        }
+        #settlementPanel {
+            width: 55%;
+            max-width: 40vw;
+            background: rgba(0, 0, 0, 0.9);
+            border-radius: 10px;
+            padding: 2.5vw;
+            position: relative;
+            color: white;
+            text-align: center;
+            border: 2px solid #ffd700;
+        }
+        #settlementPanel .title {
+            font-size: 2.5vw;
+            font-weight: bold;
+            margin-bottom: 1vw;
+            color: #ffd700;
+        }
+        #settlementPanel .info {
+            font-size: 1.3vw;
+            margin-bottom: 1vw;
+            color: #ccc;
+            line-height: 1.6;
+        }
+        #settlementPanel .info span {
+            color: #ffaa00;
+            font-weight: bold;
+        }
+        #settlementPanel .btns {
+            display: flex;
+            gap: 1.5vw;
+            justify-content: center;
+            margin-top: 1vw;
+            flex-wrap: wrap;
+        }
+        #settlementPanel .btns button {
+            padding: 0.6vw 2vw;
+            border: none;
+            border-radius: 5px;
+            font-size: 1.2vw;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        #settlementPanel .btns button:hover {
+            transform: scale(1.05);
+        }
+        .btn-gold {
+            background: #ffd700;
+            color: black;
+        }
+        .btn-red {
+            background: #cc3333;
+            color: white;
+        }
+        .btn-blue {
+            background: #4488ff;
+            color: white;
+        }
+        .btn-green {
+            background: #44bb44;
+            color: white;
+        }
+
+        @media (orientation: portrait) {
+            #gameContainer {
+                transform: rotate(-90deg) scale(0.8);
+                transform-origin: center center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="gameContainer">
+        <canvas id="gameCanvas"></canvas>
+        <div id="uiLayer" class="ui-layer">
+            <!-- 返回大厅按钮 -->
+            <div id="backToHallBtn">🏠 返回大厅</div>
+
+            <!-- 玩家信息 -->
+            <div id="playerInfo">
+                <div id="avatarBox"><img id="avatarImg" src="https://xiaoye6661234.github.io/GuangXianWorld/Default avatar.jpg" /></div>
+                <div class="info-text">
+                    <div class="nickname" id="nickDisplay">昵称</div>
+                    <div class="lvl" id="lvlDisplay">Lv.15</div>
+                </div>
+            </div>
+            <!-- 血条 -->
+            <div id="hpBarContainer">
+                <div id="hpBarInner" style="width:100%">100%</div>
+            </div>
+            <!-- 任务面板 - 多目标 -->
+            <div id="taskContainer">
+                <div class="task-title">📜 任务</div>
+                <div id="taskProgressList">
+                    <div class="task-progress-item">
+                        <span class="label">击败 Boss</span>
+                        <span class="count" id="killBoss">0/1</span>
+                    </div>
+                    <div class="task-progress-item">
+                        <span class="label">击败高级小兵</span>
+                        <span class="count" id="killElite">0/12</span>
+                    </div>
+                </div>
+                <div class="task-reward" id="taskReward">奖励: 1000经验 + 500金币</div>
+                <button id="claimTaskBtn">领取奖励</button>
+            </div>
+            <!-- 摇杆 -->
+            <div id="joystickZone">
+                <div id="joystickKnob"></div>
+            </div>
+            <!-- 控制按钮 -->
+            <div id="controls">
+                <div class="ctrl-row">
+                    <span class="ctrl-label">B:背包</span>
+                    <div class="ctrl-btn small" id="invBtn"><img src="https://xiaoye6661234.github.io/GuangXianWorld/Bag.png" alt="背包" /></div>
+                </div>
+                <div class="ctrl-row">
+                    <span class="ctrl-label">R:恢复</span>
+                    <div class="ctrl-btn small" id="healBtn"><img src="https://xiaoye6661234.github.io/GuangXianWorld/Restore HP.png" alt="恢复" /></div>
+                </div>
+                <div class="ctrl-row">
+                    <span class="ctrl-label">Q:疾跑</span>
+                    <div class="ctrl-btn small" id="sprintBtn"><img src="https://xiaoye6661234.github.io/GuangXianWorld/Sprint.png" alt="疾跑" /></div>
+                </div>
+                <div class="ctrl-row">
+                    <span class="ctrl-label">H:攻击</span>
+                    <div class="ctrl-btn" id="attackBtn"><img src="https://xiaoye6661234.github.io/GuangXianWorld/Beat.png" alt="攻击" /></div>
+                </div>
+            </div>
+            <!-- 背包弹窗 -->
+            <div id="inventoryModal">
+                <div id="inventoryPanel">
+                    <div id="invHeader">
+                        <span>🎒 背包</span>
+                        <div id="invClose">✕</div>
+                    </div>
+                    <div id="invGrid"></div>
+                </div>
+            </div>
+            <!-- 物品详情弹窗 -->
+            <div id="itemDetailModal">
+                <div id="detailPanel">
+                    <div id="detailClose">✕</div>
+                    <div id="detailTitle">物品名称</div>
+                    <img id="detailImg" src="" />
+                    <div id="detailDesc">物品描述</div>
+                    <button id="detailUseBtn">使用</button>
+                </div>
+            </div>
+            <!-- 结算弹窗 -->
+            <div id="settlementModal">
+                <div id="settlementPanel">
+                    <div class="title" id="settlementTitle">⚔️ 战斗结算</div>
+                    <div class="info" id="settlementInfo">
+                        击败 Boss: <span id="killBossDisplay">0</span>/1<br />
+                        击败高级小兵: <span id="killEliteDisplay">0</span>/12<br />
+                        获得经验: <span id="rewardExp">0</span><br />
+                        获得广仙币: <span id="rewardCoins">0</span>
+                    </div>
+                    <div class="btns" id="settlementBtns">
+                        <button class="btn-gold" id="settlementContinue">✅ 通关晋级</button>
+                        <button class="btn-red" id="settlementQuit">🚪 返回大厅</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        // ================================================================
+        //  1. 统一 data.json 操作函数
+        // ================================================================
+
+        function loadData() {
+            var raw = localStorage.getItem('data.json');
+            if (!raw) return null;
+            try {
+                return JSON.parse(raw);
+            } catch (e) {
+                return null;
+            }
+        }
+
+        function saveData(data) {
+            localStorage.setItem('data.json', JSON.stringify(data));
+            localStorage.setItem('GuangXianData', JSON.stringify(data));
+        }
+
+        function createDefaultData() {
+            var now = new Date().toISOString().split('T')[0];
+            return {
+                user: {
+                    username: '',
+                    password: '',
+                    nickname: '云游仙友',
+                    avatar: 'https://xiaoye6661234.github.io/GuangXianWorld/Default avatar.jpg',
+                    region: '',
+                    bgImage: '',
+                    level: 1,
+                    coins: 1000,
+                    exp: 0,
+                    nextExp: 1000,
+                    role: '',
+                    joinedDate: now,
+                    lastLoginDate: now,
+                    loginStreak: 0,
+                    signHistory: [],
+                    settings: { bgm: true, bgmVolume: 40, sfxVolume: 50 },
+                    hasClaimedNotice: false,
+                    lastDailyWelfare: '',
+                    lastFreeClaim: ''
+                },
+                inventory: [],
+                equippedWeapon: null,
+                chapterProgress: {
+                    "1": { taskProgress: 0, taskClaimed1: false, taskClaimed5: false, taskClaimed10: false },
+                    "2": { taskProgress: 0, taskClaimed1: false, taskClaimed5: false, taskClaimed10: false },
+                    "3": { taskProgress: 0, taskClaimed1: false, taskClaimed5: false, taskClaimed10: false },
+                    "4": { taskProgress: 0, taskClaimed1: false, taskClaimed5: false, taskClaimed10: false },
+                    "5": { taskProgress: 0, taskClaimed1: false, taskClaimed5: false, taskClaimed10: false },
+                    "6": { giantKills: 0, eliteKills: 0, midKills: 0, claimed: false },
+                    "7": { bossKills: 0, eliteKills: 0, midKills: 0, claimed: false },
+                    "8": { bossKills: 0, eliteKills: 0, claimed: false },
+                    "15": { bossKills: 0, eliteKills: 0, claimed: false }
+                },
+                chapter: 15
+            };
+        }
+
+        // ================================================================
+        //  2. 全局配置与数据（硬编码）
+        // ================================================================
+
+        var canvas = document.getElementById('gameCanvas');
+        var ctx = canvas.getContext('2d');
+        var W = 0,
+            H = 0;
+
+        function resizeCanvas() {
+            var container = document.getElementById('gameContainer');
+            var rect = container.getBoundingClientRect();
+            W = canvas.width = rect.width;
+            H = canvas.height = rect.height;
+        }
+        resizeCanvas();
+        window.addEventListener('resize', resizeCanvas);
+
+        // 怪物配置
+        var monsterDB = {};
+        var foodDB = {};
+        var weaponDB = {};
+        var gameConfig = {};
+
+        var gameData = {
+            monsters: [],
+            monsterIdCounter: 0,
+            effects: [],
+            lastTime: 0,
+            deltaTime: 0,
+            terrainSeed: Math.random() * 10000,
+            isDead: false,
+            isCleared: false,
+            showSettlement: false,
+            // 第十五章任务数据
+            bossKills: 0,
+            eliteKills: 0,
+            taskClaimed: false
+        };
+
+        var player = {};
+        var keys = { w: false, a: false, s: false, d: false };
+        var joyX = 0,
+            joyY = 0;
+        var longPressTimer = null;
+        var isLongPress = false;
+        var bgm = null;
+        var bgmPlaying = false;
+        var clickAudio = null;
+
+        // ================================================================
+        //  3. 加载游戏数据（Lv.15 配置）
+        // ================================================================
+
+        function loadGameData() {
+            gameConfig = {
+                resurrectionCost: 500,
+                drowningTime: 10,
+                swimImageMing: 'Ming-swim.png',
+                swimImageQing: 'Qing-swim.png',
+                mapBoundaryMultiplier: 20
+            };
+
+            // Lv.15 Boss —— 适配Lv15难度
+            monsterDB['boss'] = {
+                name: 'Boss',
+                Lv: 15,
+                imc: 'https://xiaoye6661234.github.io/GuangXianWorld/Boss2.png',
+                hp: 700,
+                maxHp: 700,
+                Beat: 90,
+                Def: 18,
+                exp: 200,
+                money: 100,
+                isBoss: true,
+                size: 100
+            };
+
+            // 中级小兵 - Monster5.png
+            monsterDB['mid'] = {
+                name: '中级小兵',
+                Lv: 12,
+                imc: 'https://xiaoye6661234.github.io/GuangXianWorld/Monster5.png',
+                hp: 160,
+                maxHp: 160,
+                Beat: 32,
+                Def: 8,
+                exp: 25,
+                money: 12,
+                isMinion: true,
+                isMid: true,
+                size: 45
+            };
+
+            // 高级小兵 - Monster6.png
+            monsterDB['elite'] = {
+                name: '高级小兵',
+                Lv: 14,
+                imc: 'https://xiaoye6661234.github.io/GuangXianWorld/Monster6.png',
+                hp: 220,
+                maxHp: 220,
+                Beat: 45,
+                Def: 10,
+                exp: 35,
+                money: 18,
+                isMinion: true,
+                isElite: true,
+                size: 50
+            };
+
+            foodDB = {};
+            foodDB['披萨'] = {
+                name: '披萨',
+                HP: 50,
+                imc: 'https://xiaoye6661234.github.io/GuangXianWorld/Pizza.png'
+            };
+            foodDB['面条'] = {
+                name: '面条',
+                HP: 25,
+                imc: 'https://xiaoye6661234.github.io/GuangXianWorld/Noodle.png'
+            };
+            foodDB['蛋糕'] = {
+                name: '蛋糕',
+                HP: 25,
+                imc: 'https://xiaoye6661234.github.io/GuangXianWorld/Cake.png'
+            };
+            foodDB['广仙果'] = {
+                name: '广仙果',
+                HP: 75,
+                imc: 'https://xiaoye6661234.github.io/GuangXianWorld/GuangXianApple.png'
+            };
+
+            weaponDB = {};
+            weaponDB['木剑'] = {
+                name: '木剑',
+                hit: 10,
+                imc: 'https://xiaoye6661234.github.io/GuangXianWorld/WoodSword.png',
+                Lv: 1
+            };
+            weaponDB['铁剑'] = {
+                name: '铁剑',
+                hit: 18,
+                imc: 'https://xiaoye6661234.github.io/GuangXianWorld/WoodSword.png',
+                Lv: 2
+            };
+            weaponDB['青铜剑'] = {
+                name: '青铜剑',
+                hit: 5,
+                imc: 'https://xiaoye6661234.github.io/GuangXianWorld/WoodSword.png',
+                Lv: 4
+            };
+            weaponDB['精钢剑'] = {
+                name: '精钢剑',
+                hit: 10,
+                imc: 'https://xiaoye6661234.github.io/GuangXianWorld/WoodSword.png',
+                Lv: 6
+            };
+            weaponDB['暗影剑'] = {
+                name: '暗影剑',
+                hit: 15,
+                imc: 'https://xiaoye6661234.github.io/GuangXianWorld/WoodSword.png',
+                Lv: 7
+            };
+            weaponDB['圣光剑'] = {
+                name: '圣光剑',
+                hit: 20,
+                imc: 'https://xiaoye6661234.github.io/GuangXianWorld/WoodSword.png',
+                Lv: 15
+            };
+
+            console.log('✅ 广仙世界 · 第十五章（Lv.15适配）数据加载完成');
+            return true;
+        }
+
+        // ================================================================
+        //  4. 玩家系统（从 data.json 加载）
+        // ================================================================
+
+        function createDefaultPlayer() {
+            return {
+                x: 1000,
+                y: 1000,
+                speed: 350,
+                hp: 450,
+                maxHP: 450,
+                attack: 80,
+                defense: 0,
+                level: 15,
+                exp: 0,
+                nextExp: 1000,
+                coins: 0,
+                nickname: '用户',
+                avatar: 'https://xiaoye6661234.github.io/GuangXianWorld/Default avatar.jpg',
+                inventory: [
+                    { type: 'food', key: '披萨', qty: 3 },
+                    { type: 'food', key: '蛋糕', qty: 3 },
+                    { type: 'food', key: '面条', qty: 3 },
+                    { type: 'food', key: '广仙果', qty: 3 },
+                    { type: 'weapon', key: '圣光剑', qty: 1 }
+                ],
+                equippedWeapon: null,
+                attackCooldown: 0,
+                attackCooldownMax: 0.4,
+                isAttacking: false,
+                attackTimer: 0,
+                isSprinting: false,
+                sprintTimer: 0,
+                sprintCooldown: 0,
+                invincible: 0,
+                facing: 'down',
+                inWater: false,
+                waterTimer: 0,
+                role: 'Ming',
+                isDead: false
+            };
+        }
+
+        function loadPlayerFromData(data) {
+            if (!data || !data.user) return createDefaultPlayer();
+
+            var u = data.user;
+            var p = createDefaultPlayer();
+
+            p.nickname = u.nickname || '广仙道友';
+            p.avatar = u.avatar || 'https://xiaoye6661234.github.io/GuangXianWorld/Default avatar.jpg';
+            p.level = parseInt(u.level) || 15;
+            p.coins = parseInt(u.coins) || 0;
+            p.exp = parseInt(u.exp) || 0;
+            p.nextExp = u.nextExp || (900 + p.level * 100);
+            p.role = u.role || 'Ming';
+
+            // 适配Lv15的血量与攻击
+            p.maxHP = 450;
+            p.hp = p.maxHP;
+            p.attack = 80;
+
+            // 自动装备圣光剑
+            var hasWeapon = false;
+            for (var i = 0; i < p.inventory.length; i++) {
+                if (p.inventory[i].type === 'weapon' && p.inventory[i].key === '圣光剑') {
+                    hasWeapon = true;
+                    break;
+                }
+            }
+            if (!hasWeapon) {
+                p.inventory.push({ type: 'weapon', key: '圣光剑', qty: 1 });
+            }
+
+            // 装备圣光剑
+            if (weaponDB['圣光剑']) {
+                p.equippedWeapon = weaponDB['圣光剑'];
+                p.attack = 80 + (p.equippedWeapon.hit || 20);
+            }
+
+            // 确保食物数量正确
+            var foodCount = { '披萨': 0, '蛋糕': 0, '面条': 0, '广仙果': 0 };
+            for (var i = 0; i < p.inventory.length; i++) {
+                if (p.inventory[i].type === 'food') {
+                    foodCount[p.inventory[i].key] = (foodCount[p.inventory[i].key] || 0) + p.inventory[i].qty;
+                }
+            }
+            var required = { '披萨': 3, '蛋糕': 3, '面条': 3, '广仙果': 3 };
+            for (var key in required) {
+                if (foodCount[key] < required[key]) {
+                    var need = required[key] - foodCount[key];
+                    var found = false;
+                    for (var i = 0; i < p.inventory.length; i++) {
+                        if (p.inventory[i].type === 'food' && p.inventory[i].key === key) {
+                            p.inventory[i].qty += need;
+                            found = true;
+                            break;
+                        }
+                    }
+                    if (!found) {
+                        p.inventory.push({ type: 'food', key: key, qty: need });
+                    }
+                }
+            }
+
+            if (data.inventory && Array.isArray(data.inventory)) {
+                var existingKeys = {};
+                for (var i = 0; i < p.inventory.length; i++) {
+                    existingKeys[p.inventory[i].key] = true;
+                }
+                for (var i = 0; i < data.inventory.length; i++) {
+                    var item = data.inventory[i];
+                    if (existingKeys[item.key]) {
+                        for (var j = 0; j < p.inventory.length; j++) {
+                            if (p.inventory[j].key === item.key) {
+                                p.inventory[j].qty += item.qty;
+                                break;
+                            }
+                        }
+                    } else {
+                        p.inventory.push(item);
+                        existingKeys[item.key] = true;
+                    }
+                }
+            }
+
+            // 读取第十五章独立任务数据
+            if (data.chapterProgress && data.chapterProgress[15]) {
+                var cp = data.chapterProgress[15];
+                gameData.bossKills = cp.bossKills || 0;
+                gameData.eliteKills = cp.eliteKills || 0;
+                gameData.taskClaimed = cp.claimed || false;
+            } else {
+                gameData.bossKills = 0;
+                gameData.eliteKills = 0;
+                gameData.taskClaimed = false;
+            }
+
+            return p;
+        }
+
+        function saveGame() {
+            var data = loadData();
+            if (!data) {
+                data = createDefaultData();
+            }
+
+            if (!data.chapterProgress) {
+                data.chapterProgress = {};
+            }
+            if (!data.chapterProgress[15]) {
+                data.chapterProgress[15] = {
+                    bossKills: 0,
+                    eliteKills: 0,
+                    claimed: false
+                };
+            }
+
+            data.user.nickname = player.nickname;
+            data.user.avatar = player.avatar;
+            data.user.level = player.level;
+            data.user.coins = player.coins;
+            data.user.exp = player.exp;
+            data.user.nextExp = player.nextExp;
+            data.user.role = player.role;
+
+            data.inventory = player.inventory;
+            data.equippedWeapon = player.equippedWeapon ? player.equippedWeapon.name : null;
+
+            data.chapterProgress[15].bossKills = gameData.bossKills || 0;
+            data.chapterProgress[15].eliteKills = gameData.eliteKills || 0;
+            data.chapterProgress[15].claimed = gameData.taskClaimed || false;
+
+            data.chapter = 16;
+            saveData(data);
+            console.log('💾 第十五章（Lv.15适配）数据已保存到 data.json');
+        }
+
+        // ================================================================
+        //  5. 地形系统
+        // ================================================================
+
+        var MAP_SIZE = 25;
+        var TILE_SIZE = 80;
+        var MAP_PIXELS = MAP_SIZE * TILE_SIZE;
+
+        function getTerrainType(c, r, seed) {
+            var x = c * 0.12 + seed * 0.001;
+            var y = r * 0.12 + seed * 0.001;
+            var n1 = Math.sin(x * 1.7 + y * 2.3) * 0.5 + Math.cos(x * 2.1 - y * 1.9) * 0.5;
+            var n2 = Math.sin(x * 3.7 + y * 4.1) * 0.3 + Math.cos(x * 4.3 - y * 3.5) * 0.3;
+            var n3 = Math.sin(x * 7.1 + y * 8.3) * 0.15 + Math.cos(x * 9.7 - y * 6.5) * 0.15;
+            var value = n1 + n2 + n3;
+            if (value < -0.5) return 'water';
+            if (value < -0.05) return 'sand';
+            return 'grass';
+        }
+
+        var terrainMap = [];
+
+        function generateTerrain() {
+            terrainMap = [];
+            for (var r = 0; r < MAP_SIZE; r++) {
+                terrainMap[r] = [];
+                for (var c = 0; c < MAP_SIZE; c++) {
+                    terrainMap[r][c] = getTerrainType(c, r, gameData.terrainSeed);
+                }
+            }
+        }
+        generateTerrain();
+
+        // ================================================================
+        //  6. 怪物系统
+        // ================================================================
+
+        function spawnBoss() {
+            var template = monsterDB['boss'];
+            if (!template) return null;
+
+            var x = 1000 + (Math.random() - 0.5) * 400;
+            var y = 1000 + (Math.random() - 0.5) * 400;
+            x = Math.max(80, Math.min(MAP_PIXELS - 80, x));
+            y = Math.max(80, Math.min(MAP_PIXELS - 80, y));
+
+            var m = {
+                id: gameData.monsterIdCounter++,
+                x: x,
+                y: y,
+                name: template.name,
+                Lv: template.Lv,
+                imc: template.imc,
+                hp: template.hp,
+                maxHp: template.maxHp,
+                Beat: template.Beat,
+                Def: template.Def,
+                exp: template.exp,
+                money: template.money,
+                alive: true,
+                attackCooldown: 0,
+                hitFlash: 0,
+                moveTimer: 0,
+                moveAngle: Math.random() * Math.PI * 2,
+                isBoss: true,
+                size: template.size || 100,
+                summoned1: false,
+                summoned2: false,
+                summoned3: false
+            };
+            gameData.monsters.push(m);
+            return m;
+        }
+
+        function spawnMinion(type, bossX, bossY) {
+            var template = monsterDB[type];
+            if (!template) return null;
+
+            var angle = Math.random() * Math.PI * 2;
+            var dist = 60 + Math.random() * 80;
+            var x = bossX + Math.cos(angle) * dist;
+            var y = bossY + Math.sin(angle) * dist;
+            x = Math.max(80, Math.min(MAP_PIXELS - 80, x));
+            y = Math.max(80, Math.min(MAP_PIXELS - 80, y));
+
+            var m = {
+                id: gameData.monsterIdCounter++,
+                x: x,
+                y: y,
+                name: template.name,
+                Lv: template.Lv,
+                imc: template.imc,
+                hp: template.hp,
+                maxHp: template.maxHp,
+                Beat: template.Beat,
+                Def: template.Def,
+                exp: template.exp,
+                money: template.money,
+                alive: true,
+                attackCooldown: 0,
+                hitFlash: 0,
+                moveTimer: 0,
+                moveAngle: Math.random() * Math.PI * 2,
+                isMinion: true,
+                isMid: template.isMid || false,
+                isElite: template.isElite || false,
+                size: template.size || 45
+            };
+            gameData.monsters.push(m);
+            return m;
+        }
+
+        function initMonsters() {
+            gameData.monsters = [];
+            gameData.monsterIdCounter = 0;
+            // 初始生成1只Boss
+            spawnBoss();
+            console.log('✅ 已生成 1 只 Boss（Lv.15 适配：HP:700, 攻击:90）');
+        }
+
+        // ================================================================
+        //  7. 任务系统（多目标）
+        // ================================================================
+
+        function updateTaskUI() {
+            var bossKills = gameData.bossKills || 0;
+            var eliteKills = gameData.eliteKills || 0;
+
+            document.getElementById('killBoss').innerText = bossKills + '/1';
+            document.getElementById('killElite').innerText = eliteKills + '/12';
+
+            var btn = document.getElementById('claimTaskBtn');
+
+            var allDone = bossKills >= 1 && eliteKills >= 12;
+            var rewardText = '奖励: 1000经验 + 500金币';
+
+            if (allDone && !gameData.taskClaimed) {
+                document.getElementById('taskReward').innerText = '🎉 任务完成！' + rewardText;
+                btn.style.display = 'block';
+                btn.innerText = '领取奖励';
+            } else if (gameData.taskClaimed) {
+                document.getElementById('taskReward').innerText = '✅ 奖励已领取！';
+                btn.style.display = 'none';
+            } else {
+                document.getElementById('taskReward').innerText = rewardText;
+                btn.style.display = 'none';
+            }
+
+            // 更新结算面板信息
+            document.getElementById('killBossDisplay').innerText = bossKills;
+            document.getElementById('killEliteDisplay').innerText = eliteKills;
+        }
+
+        function claimTaskReward() {
+            var bossKills = gameData.bossKills || 0;
+            var eliteKills = gameData.eliteKills || 0;
+
+            if (bossKills >= 1 && eliteKills >= 12 && !gameData.taskClaimed) {
+                player.exp += 1000;
+                player.coins += 500;
+                gameData.taskClaimed = true;
+                alert('🎉 领取奖励：1000经验 + 500金币！');
+                checkLevelUp();
+                saveGame();
+                updateUI();
+                updateInventoryGrid();
+                updateTaskUI();
+            }
+        }
+
+        function addItemToInventory(key, num) {
+            var found = false;
+            for (var i = 0; i < player.inventory.length; i++) {
+                if (player.inventory[i].key === key) {
+                    player.inventory[i].qty += num;
+                    found = true;
+                    break;
+                }
+            }
+            if (!found) {
+                var type = 'food';
+                if (weaponDB[key]) type = 'weapon';
+                player.inventory.push({ type: type, key: key, qty: num });
+            }
+        }
+
+        // ================================================================
+        //  8. 升级系统
+        // ================================================================
+
+        function checkLevelUp() {
+            while (player.exp >= player.nextExp) {
+                player.exp -= player.nextExp;
+                player.level++;
+                player.nextExp = 900 + player.level * 100;
+                if ((player.level - 1) % 3 === 0) {
+                    player.maxHP += 10;
+                }
+                player.hp = player.maxHP;
+                alert('🎉 升级！当前等级 ' + player.level + '，生命上限 +10');
+            }
+        }
+
+        // ================================================================
+        //  9. 背包与物品系统
+        // ================================================================
+
+        function useFoodItem(foodKey) {
+            var food = foodDB[foodKey];
+            if (!food) { alert('无效食物'); return false; }
+            if (player.hp >= player.maxHP) {
+                alert('❤️ 生命值已满！');
+                return false;
+            }
+            var healAmount = 0;
+            if (foodKey === '披萨') {
+                healAmount = Math.floor(player.maxHP * 0.5);
+            } else if (foodKey === '面条' || foodKey === '蛋糕') {
+                healAmount = 25;
+            } else if (foodKey === '广仙果') {
+                healAmount = 75;
+            } else {
+                healAmount = food.HP || 25;
+            }
+            player.hp = Math.min(player.hp + healAmount, player.maxHP);
+
+            var idx = -1;
+            for (var i = 0; i < player.inventory.length; i++) {
+                if (player.inventory[i].type === 'food' && player.inventory[i].key === foodKey) {
+                    idx = i;
+                    break;
+                }
+            }
+            if (idx !== -1) {
+                player.inventory[idx].qty -= 1;
+                if (player.inventory[idx].qty <= 0) {
+                    player.inventory.splice(idx, 1);
+                }
+            }
+            updateUI();
+            updateInventoryGrid();
+            saveGame();
+            return true;
+        }
+
+        function equipWeapon(weaponKey) {
+            var w = weaponDB[weaponKey];
+            if (!w) return;
+            player.equippedWeapon = w;
+            var baseAttack = 80;
+            player.attack = baseAttack + (w.hit || 0);
+            alert('⚔️ 装备了 ' + w.name + '，攻击力 +' + (w.hit || 0));
+            updateUI();
+            saveGame();
+        }
+
+        function autoHeal() {
+            // 优先使用广仙果
+            var apple = null;
+            for (var i = 0; i < player.inventory.length; i++) {
+                if (player.inventory[i].type === 'food' && player.inventory[i].key === '广仙果') {
+                    apple = player.inventory[i];
+                    break;
+                }
+            }
+            if (apple) {
+                useFoodItem('广仙果');
+                return;
+            }
+            var noodle = null;
+            for (var i = 0; i < player.inventory.length; i++) {
+                if (player.inventory[i].type === 'food' && player.inventory[i].key === '面条') {
+                    noodle = player.inventory[i];
+                    break;
+                }
+            }
+            if (noodle) {
+                useFoodItem('面条');
+                return;
+            }
+            var pizza = null;
+            for (var i = 0; i < player.inventory.length; i++) {
+                if (player.inventory[i].type === 'food' && player.inventory[i].key === '披萨') {
+                    pizza = player.inventory[i];
+                    break;
+                }
+            }
+            if (pizza) {
+                useFoodItem('披萨');
+                return;
+            }
+            alert('🍕 背包中没有食物！');
+        }
+
+        // ================================================================
+        //  10. 战斗系统
+        // ================================================================
+
+        function performAttack() {
+            if (player.attackCooldown > 0 || player.isAttacking || player.isDead || gameData.showSettlement) return;
+            player.attackCooldown = player.attackCooldownMax;
+            player.isAttacking = true;
+            player.attackTimer = 0.3;
+
+            var target = null;
+            var minDist = 220;
+            for (var i = 0; i < gameData.monsters.length; i++) {
+                var m = gameData.monsters[i];
+                if (!m.alive) continue;
+                var dx = m.x - player.x;
+                var dy = m.y - player.y;
+                var dist = Math.sqrt(dx * dx + dy * dy);
+                if (dist < minDist) {
+                    minDist = dist;
+                    target = m;
+                }
+            }
+
+            if (target) {
+                var atk = player.attack;
+                var dmg = Math.max(1, atk - (target.Def || 0));
+                target.hp -= dmg;
+                target.hitFlash = 0.2;
+
+                var hitNum = Math.floor(Math.random() * 7) + 1;
+                var effectImg = new Image();
+                effectImg.src = 'https://xiaoye6661234.github.io/GuangXianWorld/HitSound' + hitNum + '.png';
+                gameData.effects.push({
+                    img: effectImg,
+                    x: target.x,
+                    y: target.y,
+                    life: 0.4,
+                    timer: 0
+                });
+
+                try {
+                    var audio = new Audio('https://xiaoye6661234.github.io/GuangXianWorld/Beat.mp3');
+                    audio.volume = 0.3;
+                    audio.play().catch(function() {});
+                } catch (e) {}
+
+                // Boss 召唤机制（Lv.15适配）
+                if (target.isBoss && target.alive) {
+                    // 血量低于500召唤第一波
+                    if (target.hp < 500 && !target.summoned1) {
+                        target.summoned1 = true;
+                        var count = 1 + Math.floor(Math.random() * 2);
+                        for (var k = 0; k < count; k++) {
+                            spawnMinion('mid', target.x, target.y);
+                        }
+                        console.log('⚔️ Boss召唤了 ' + count + ' 只中级小兵！');
+                    }
+                    // 血量低于350召唤第二波
+                    if (target.hp < 350 && !target.summoned2) {
+                        target.summoned2 = true;
+                        var count = 1 + Math.floor(Math.random() * 2);
+                        for (var k = 0; k < count; k++) {
+                            spawnMinion('elite', target.x, target.y);
+                        }
+                        console.log('⚔️ Boss召唤了 ' + count + ' 只高级小兵！');
+                    }
+                    // 血量低于200召唤第三波
+                    if (target.hp < 200 && !target.summoned3) {
+                        target.summoned3 = true;
+                        for (var k = 0; k < 2; k++) {
+                            spawnMinion('elite', target.x, target.y);
+                        }
+                        console.log('⚔️ Boss召唤了 2 只高级小兵！');
+                    }
+                }
+
+                if (target.hp <= 0) {
+                    target.alive = false;
+                    if (target.isBoss) {
+                        gameData.bossKills++;
+                        player.exp += target.exp || 200;
+                        player.coins += target.money || 100;
+                    } else if (target.isElite) {
+                        gameData.eliteKills++;
+                        player.exp += target.exp || 35;
+                        player.coins += target.money || 18;
+                    } else if (target.isMid) {
+                        player.exp += target.exp || 25;
+                        player.coins += target.money || 12;
+                    }
+
+                    // 检查是否所有目标达成
+                    var boss = gameData.bossKills || 0;
+                    var elites = gameData.eliteKills || 0;
+                    if (boss >= 1 && elites >= 12 && !gameData.isCleared) {
+                        gameData.isCleared = true;
+                        autoPromote();
+                    }
+
+                    checkLevelUp();
+                    saveGame();
+                    updateUI();
+                    updateTaskUI();
+                }
+            }
+            setTimeout(function() { player.isAttacking = false; }, 400);
+        }
+
+        // ================================================================
+        //  11. 自动晋级（任务完成自动晋级Lv.16）
+        // ================================================================
+
+        function autoPromote() {
+            if (gameData.showSettlement) return;
+            gameData.showSettlement = true;
+
+            player.level++;
+            player.nextExp = 900 + player.level * 100;
+            if ((player.level - 1) % 3 === 0) {
+                player.maxHP += 10;
+            }
+            player.hp = player.maxHP;
+            player.exp += 1000;
+            player.coins += 500;
+
+            var data = loadData();
+            if (data) {
+                if (!data.chapterProgress) {
+                    data.chapterProgress = {};
+                }
+                if (!data.chapterProgress[15]) {
+                    data.chapterProgress[15] = {
+                        bossKills: 0,
+                        eliteKills: 0,
+                        claimed: false
+                    };
+                }
+
+                data.user.level = player.level;
+                data.user.coins = player.coins;
+                data.user.exp = player.exp;
+                data.user.nextExp = player.nextExp;
+                data.inventory = player.inventory;
+                data.equippedWeapon = player.equippedWeapon ? player.equippedWeapon.name : null;
+
+                data.chapterProgress[15].bossKills = gameData.bossKills;
+                data.chapterProgress[15].eliteKills = gameData.eliteKills;
+                data.chapterProgress[15].claimed = gameData.taskClaimed;
+
+                data.chapter = 16;
+                saveData(data);
+            }
+
+            alert('🎊 恭喜通关第十五章（Lv.15适配）！自动晋级至 Lv.' + player.level + '，解锁第十六章！');
+            window.location.href = 'Hall.html';
+        }
+
+        // ================================================================
+        //  12. 疾跑系统
+        // ================================================================
+
+        function activateSprint() {
+            if (player.isSprinting || player.sprintCooldown > 0 || player.isDead || gameData.showSettlement) return;
+            player.isSprinting = true;
+            player.sprintTimer = 1.2;
+            player.speed = 600;
+            setTimeout(function() {
+                player.isSprinting = false;
+                player.speed = 350;
+                player.sprintCooldown = 2.5;
+            }, 1200);
+        }
+
+        // ================================================================
+        //  13. 死亡与复活系统
+        // ================================================================
+
+        function handleDeath() {
+            if (gameData.isDead || gameData.showSettlement) return;
+            gameData.isDead = true;
+            player.isDead = true;
+
+            var cost = gameConfig.resurrectionCost || 500;
+            var notice = document.getElementById('settlementModal');
+            var title = document.getElementById('settlementTitle');
+            var info = document.getElementById('settlementInfo');
+            var btns = document.getElementById('settlementBtns');
+
+            title.innerText = '💀 你被击败了！';
+            info.innerHTML = '消耗 <span>' + cost + '</span> 广仙币复活？<br />当前广仙币: <span>' + player.coins + '</span>';
+            btns.innerHTML = '';
+            if (player.coins >= cost) {
+                var btnRes = document.createElement('button');
+                btnRes.className = 'btn-gold';
+                btnRes.innerText = '💰 复活 (-' + cost + ')';
+                btnRes.addEventListener('click', resurrectPlayer);
+                btns.appendChild(btnRes);
+            } else {
+                var info2 = document.createElement('div');
+                info2.style.cssText = 'color:#ff6666;font-size:1.2vw;margin-bottom:0.5vw;';
+                info2.innerText = '广仙币不足，无法复活！';
+                btns.appendChild(info2);
+            }
+            var btnQuit = document.createElement('button');
+            btnQuit.className = 'btn-red';
+            btnQuit.innerText = '🚪 返回大厅 (不保存)';
+            btnQuit.addEventListener('click', function() {
+                document.getElementById('settlementModal').style.display = 'none';
+                gameData.isDead = false;
+                player.isDead = false;
+                window.location.href = 'Hall.html';
+            });
+            btns.appendChild(btnQuit);
+
+            document.getElementById('settlementModal').style.display = 'flex';
+            gameData.showSettlement = true;
+        }
+
+        function resurrectPlayer() {
+            var cost = gameConfig.resurrectionCost || 500;
+            if (player.coins < cost) {
+                alert('广仙币不足，无法复活！');
+                return;
+            }
+            player.coins -= cost;
+            player.hp = player.maxHP;
+            player.x = 1000;
+            player.y = 1000;
+            player.isDead = false;
+            gameData.isDead = false;
+            player.inWater = false;
+            player.waterTimer = 0;
+            document.getElementById('settlementModal').style.display = 'none';
+            gameData.showSettlement = false;
+            updateUI();
+            saveGame();
+            alert('💪 复活成功！消耗 ' + cost + ' 广仙币。');
+        }
+
+        // ================================================================
+        //  14. BGM和音效
+        // ================================================================
+
+        function initAudio() {
+            try {
+                bgm = new Audio('https://xiaoye6661234.github.io/GuangXianWorld/BGM1.mp3');
+                bgm.loop = true;
+                bgm.volume = 0.4;
+                bgm.play().catch(function() {});
+                bgmPlaying = true;
+            } catch (e) {}
+
+            try {
+                clickAudio = new Audio('https://xiaoye6661234.github.io/GuangXianWorld/click.mp3');
+                clickAudio.volume = 0.3;
+            } catch (e) {}
+        }
+
+        function playClick() {
+            try {
+                if (clickAudio) {
+                    clickAudio.currentTime = 0;
+                    clickAudio.play().catch(function() {});
+                }
+            } catch (e) {}
+        }
+
+        function addClickSounds() {
+            var btns = document.querySelectorAll('button, .ctrl-btn, #invClose, #detailClose, #backToHallBtn');
+            btns.forEach(function(btn) {
+                btn.addEventListener('click', playClick);
+            });
+        }
+
+        // ================================================================
+        //  15. 输入控制
+        // ================================================================
+
+        document.addEventListener('keydown', function(e) {
+            var k = e.key.toLowerCase();
+            if (k === 'w' || k === 'a' || k === 's' || k === 'd') {
+                keys[k] = true;
+                e.preventDefault();
+            }
+            if (k === 'h') { performAttack();
+                e.preventDefault(); }
+            if (k === 'q') { activateSprint();
+                e.preventDefault(); }
+            if (k === 'r') { autoHeal();
+                e.preventDefault(); }
+            if (k === 'b') { toggleInventory();
+                e.preventDefault(); }
+            if (k === 'f') { claimTaskReward();
+                e.preventDefault(); }
+        });
+        document.addEventListener('keyup', function(e) {
+            var k = e.key.toLowerCase();
+            if (k === 'w' || k === 'a' || k === 's' || k === 'd') {
+                keys[k] = false;
+            }
+        });
+
+        var joystickZone = document.getElementById('joystickZone');
+        var joystickKnob = document.getElementById('joystickKnob');
+        var touchId = null;
+        joystickZone.addEventListener('touchstart', function(e) {
+            var t = e.changedTouches[0];
+            touchId = t.identifier;
+            handleJoystick(t);
+        });
+        joystickZone.addEventListener('touchmove', function(e) {
+            for (var i = 0; i < e.changedTouches.length; i++) {
+                if (e.changedTouches[i].identifier === touchId) handleJoystick(e.changedTouches[i]);
+            }
+        });
+        joystickZone.addEventListener('touchend', function(e) {
+            for (var i = 0; i < e.changedTouches.length; i++) {
+                if (e.changedTouches[i].identifier === touchId) {
+                    joyX = 0;
+                    joyY = 0;
+                    joystickKnob.style.transform = 'translate(0, 0)';
+                    touchId = null;
+                }
+            }
+        });
+
+        function handleJoystick(touch) {
+            var rect = joystickZone.getBoundingClientRect();
+            var cx = rect.left + rect.width / 2;
+            var cy = rect.top + rect.height / 2;
+            var dx = touch.clientX - cx;
+            var dy = touch.clientY - cy;
+            var maxR = rect.width / 2 - 15;
+            var dist = Math.sqrt(dx * dx + dy * dy);
+            var ratio = Math.min(1, dist / maxR);
+            joyX = (dx / maxR) * ratio;
+            joyY = (dy / maxR) * ratio;
+            var kx = joyX * maxR;
+            var ky = joyY * maxR;
+            joystickKnob.style.transform = 'translate(' + kx + 'px, ' + ky + 'px)';
+        }
+
+        document.getElementById('attackBtn').addEventListener('click', performAttack);
+        document.getElementById('sprintBtn').addEventListener('click', activateSprint);
+        document.getElementById('healBtn').addEventListener('click', autoHeal);
+        document.getElementById('invBtn').addEventListener('click', toggleInventory);
+        document.getElementById('invClose').addEventListener('click', toggleInventory);
+        document.getElementById('detailClose').addEventListener('click', closeDetail);
+        document.getElementById('claimTaskBtn').addEventListener('click', claimTaskReward);
+        document.getElementById('detailUseBtn').addEventListener('click', useDetailItem);
+
+        document.getElementById('backToHallBtn').addEventListener('click', function() {
+            saveGame();
+            window.location.href = 'Hall.html';
+        });
+
+        // ================================================================
+        //  16. 背包UI
+        // ================================================================
+
+        function toggleInventory() {
+            var modal = document.getElementById('inventoryModal');
+            if (modal.style.display === 'flex') {
+                modal.style.display = 'none';
+            } else {
+                modal.style.display = 'flex';
+                updateInventoryGrid();
+            }
+        }
+
+        function updateInventoryGrid() {
+            var grid = document.getElementById('invGrid');
+            grid.innerHTML = '';
+            if (player.inventory.length === 0) {
+                grid.innerHTML =
+                    '<div style="color:white;text-align:center;font-size:1.3vw;grid-column:1/-1;padding:3vw;">背包空空如也...</div>';
+                return;
+            }
+            player.inventory.forEach(function(item, idx) {
+                var div = document.createElement('div');
+                div.className = 'inv-item';
+                var imgSrc = '';
+                if (item.type === 'food' && foodDB[item.key]) {
+                    imgSrc = foodDB[item.key].imc;
+                } else if (item.type === 'weapon' && weaponDB[item.key]) {
+                    imgSrc = weaponDB[item.key].imc;
+                } else {
+                    imgSrc = 'https://xiaoye6661234.github.io/GuangXianWorld/Default avatar.jpg';
+                }
+                div.innerHTML = '<img src="' + imgSrc +
+                    '" onerror="this.src=\'https://xiaoye6661234.github.io/GuangXianWorld/Default avatar.jpg\'" />' +
+                    '<div class="item-name">' + item.key + '</div>' +
+                    '<div class="item-qty">×' + item.qty + '</div>';
+
+                div.addEventListener('click', function(e) {
+                    if (isLongPress) {
+                        isLongPress = false;
+                        return;
+                    }
+                    if (item.type === 'food') {
+                        useFoodItem(item.key);
+                    } else if (item.type === 'weapon') {
+                        equipWeapon(item.key);
+                    }
+                    e.stopPropagation();
+                });
+                div.addEventListener('touchstart', function(e) {
+                    longPressTimer = setTimeout(function() {
+                        isLongPress = true;
+                        showDetail(item, idx);
+                        longPressTimer = null;
+                    }, 600);
+                });
+                div.addEventListener('touchend', function() {
+                    if (longPressTimer) clearTimeout(longPressTimer);
+                });
+                div.addEventListener('mousedown', function(e) {
+                    longPressTimer = setTimeout(function() {
+                        isLongPress = true;
+                        showDetail(item, idx);
+                        longPressTimer = null;
+                    }, 600);
+                });
+                div.addEventListener('mouseup', function() {
+                    if (longPressTimer) clearTimeout(longPressTimer);
+                });
+                div.addEventListener('mouseleave', function() {
+                    if (longPressTimer) clearTimeout(longPressTimer);
+                });
+                grid.appendChild(div);
+            });
+        }
+
+        var currentDetailIdx = -1;
+
+        function showDetail(item, idx) {
+            currentDetailIdx = idx;
+            var modal = document.getElementById('itemDetailModal');
+            var title = document.getElementById('detailTitle');
+            var img = document.getElementById('detailImg');
+            var desc = document.getElementById('detailDesc');
+            var btn = document.getElementById('detailUseBtn');
+            title.innerText = item.key;
+            var imgSrc = '';
+            var description = '';
+            var btnText = '使用';
+            if (item.type === 'food' && foodDB[item.key]) {
+                var food = foodDB[item.key];
+                imgSrc = food.imc;
+                description = '❤️ 可恢复 ' + (item.key === '披萨' ? '50% HP' : (item.key === '广仙果' ? '75 HP' : '25 HP'));
+                btnText = '使用恢复';
+            } else if (item.type === 'weapon' && weaponDB[item.key]) {
+                var weapon = weaponDB[item.key];
+                imgSrc = weapon.imc;
+                description = '⚔️ 攻击力 +' + (weapon.hit || 0) + ' (Lv.' + (weapon.Lv || 1) + ')';
+                btnText = '装备武器';
+            } else {
+                imgSrc = 'https://xiaoye6661234.github.io/GuangXianWorld/Default avatar.jpg';
+                description = '📦 未知物品';
+                btnText = '关闭';
+            }
+            img.src = imgSrc;
+            desc.innerText = description;
+            btn.innerText = btnText;
+            modal.style.display = 'flex';
+        }
+
+        function closeDetail() {
+            document.getElementById('itemDetailModal').style.display = 'none';
+            currentDetailIdx = -1;
+        }
+
+        function useDetailItem() {
+            if (currentDetailIdx === -1) return;
+            var item = player.inventory[currentDetailIdx];
+            if (!item) return;
+            if (item.type === 'food') {
+                if (useFoodItem(item.key)) {
+                    closeDetail();
+                }
+            } else if (item.type === 'weapon') {
+                equipWeapon(item.key);
+                closeDetail();
+                updateInventoryGrid();
+            }
+            updateUI();
+        }
+
+        // ================================================================
+        //  17. UI更新
+        // ================================================================
+
+        function updateUI() {
+            document.getElementById('lvlDisplay').innerText = 'Lv.' + player.level;
+            document.getElementById('nickDisplay').innerText = player.nickname;
+            document.getElementById('avatarImg').src = player.avatar;
+            var hpPercent = Math.max(0, (player.hp / player.maxHP) * 100);
+            document.getElementById('hpBarInner').style.width = hpPercent + '%';
+            document.getElementById('hpBarInner').innerText = Math.round(hpPercent) + '%';
+            updateTaskUI();
+        }
+
+        // ================================================================
+        //  18. 游戏更新循环
+        // ================================================================
+
+        function update(dt) {
+            if (player.isDead || gameData.showSettlement) return;
+
+            var dx = 0,
+                dy = 0;
+            if (keys.w) dy = -1;
+            if (keys.s) dy = 1;
+            if (keys.a) dx = -1;
+            if (keys.d) dx = 1;
+            if (joyX !== 0 || joyY !== 0) {
+                dx = joyX;
+                dy = joyY;
+            }
+            var len = Math.sqrt(dx * dx + dy * dy);
+            if (len > 0) {
+                dx /= len;
+                dy /= len;
+                var speedMod = player.inWater ? 0.5 : 1;
+                player.x += dx * player.speed * speedMod * dt;
+                player.y += dy * player.speed * speedMod * dt;
+                if (Math.abs(dx) >= Math.abs(dy)) {
+                    player.facing = dx > 0 ? 'right' : 'left';
+                } else {
+                    player.facing = dy > 0 ? 'down' : 'up';
+                }
+            }
+
+            var margin = 30;
+            player.x = Math.max(margin, Math.min(MAP_PIXELS - margin, player.x));
+            player.y = Math.max(margin, Math.min(MAP_PIXELS - margin, player.y));
+
+            var c = Math.floor(player.x / TILE_SIZE);
+            var r = Math.floor(player.y / TILE_SIZE);
+            if (c >= 0 && c < MAP_SIZE && r >= 0 && r < MAP_SIZE) {
+                var terrainType = terrainMap[r][c];
+                if (terrainType === 'water') {
+                    if (!player.inWater) {
+                        player.inWater = true;
+                        player.waterTimer = 0;
+                    }
+                    player.waterTimer += dt;
+                    if (player.waterTimer >= gameConfig.drowningTime) {
+                        player.hp = 0;
+                        handleDeath();
+                        return;
+                    }
+                } else {
+                    if (player.inWater) {
+                        player.inWater = false;
+                        player.waterTimer = 0;
+                    }
+                }
+            }
+
+            if (player.attackCooldown > 0) player.attackCooldown -= dt;
+            if (player.attackTimer > 0) player.attackTimer -= dt;
+            if (player.invincible > 0) player.invincible -= dt;
+            if (player.sprintCooldown > 0) player.sprintCooldown -= dt;
+            if (player.isSprinting) {
+                player.sprintTimer -= dt;
+                if (player.sprintTimer <= 0) {
+                    player.isSprinting = false;
+                    player.speed = 350;
+                }
+            }
+
+            for (var i = 0; i < gameData.monsters.length; i++) {
+                var m = gameData.monsters[i];
+                if (!m.alive) continue;
+                if (m.hitFlash > 0) m.hitFlash -= dt;
+                m.attackCooldown = Math.max(0, m.attackCooldown - dt);
+
+                var dx2 = player.x - m.x;
+                var dy2 = player.y - m.y;
+                var dist = Math.sqrt(dx2 * dx2 + dy2 * dy2);
+
+                if (dist < 400) {
+                    var speed = 50 + m.Lv * 12 + (player.isSprinting ? 20 : 0);
+                    if (dist > 30) {
+                        m.x += (dx2 / dist) * speed * dt;
+                        m.y += (dy2 / dist) * speed * dt;
+                    }
+                } else if (dist < 600) {
+                    m.moveTimer -= dt;
+                    if (m.moveTimer <= 0) {
+                        m.moveTimer = 0.5 + Math.random() * 1.5;
+                        m.moveAngle += (Math.random() - 0.5) * 2;
+                        m.x += Math.cos(m.moveAngle) * 30 * dt;
+                        m.y += Math.sin(m.moveAngle) * 30 * dt;
+                    }
+                }
+
+                m.x = Math.max(margin, Math.min(MAP_PIXELS - margin, m.x));
+                m.y = Math.max(margin, Math.min(MAP_PIXELS - margin, m.y));
+
+                if (dist < 70 && m.attackCooldown <= 0 && player.invincible <= 0) {
+                    var dmg = Math.max(1, (m.Beat || 0) - player.defense);
+                    player.hp -= dmg;
+                    player.invincible = 0.5;
+                    m.attackCooldown = 1.0;
+                    if (player.hp <= 0) {
+                        player.hp = 0;
+                        handleDeath();
+                        return;
+                    }
+                    updateUI();
+                }
+            }
+
+            // 清理已死亡的怪物
+            gameData.monsters = gameData.monsters.filter(function(m) { return m.alive; });
+
+            // 如果Boss死亡，不再补充
+            var hasBoss = false;
+            for (var i = 0; i < gameData.monsters.length; i++) {
+                if (gameData.monsters[i].isBoss) {
+                    hasBoss = true;
+                    break;
+                }
+            }
+            if (!hasBoss && !gameData.isCleared) {
+                // Boss已死，不补充（任务完成）
+            }
+
+            for (var j = gameData.effects.length - 1; j >= 0; j--) {
+                var ef = gameData.effects[j];
+                ef.timer += dt;
+                if (ef.timer >= ef.life) {
+                    gameData.effects.splice(j, 1);
+                }
+            }
+
+            updateUI();
+        }
+
+        // ================================================================
+        //  19. 渲染
+        // ================================================================
+
+        function render() {
+            ctx.clearRect(0, 0, W, H);
+            var offsetX = player.x - W / 2;
+            var offsetY = player.y - H / 2;
+
+            var viewCols = Math.ceil(W / TILE_SIZE) + 3;
+            var viewRows = Math.ceil(H / TILE_SIZE) + 3;
+            var startCol = Math.floor((player.x - W / 2) / TILE_SIZE) - 2;
+            var startRow = Math.floor((player.y - H / 2) / TILE_SIZE) - 2;
+
+            var terrainImages = {
+                grass: new Image(),
+                sand: new Image(),
+                water: new Image()
+            };
+            terrainImages.grass.src = 'https://xiaoye6661234.github.io/GuangXianWorld/Grass.jpg';
+            terrainImages.sand.src = 'https://xiaoye6661234.github.io/GuangXianWorld/Sand.jpg';
+            terrainImages.water.src = 'https://xiaoye6661234.github.io/GuangXianWorld/Water.jpg';
+
+            for (var r = startRow; r < startRow + viewRows; r++) {
+                for (var c = startCol; c < startCol + viewCols; c++) {
+                    if (c < 0 || c >= MAP_SIZE || r < 0 || r >= MAP_SIZE) {
+                        var x = c * TILE_SIZE - offsetX;
+                        var y = r * TILE_SIZE - offsetY;
+                        ctx.fillStyle = '#1a1a1a';
+                        ctx.fillRect(x, y, TILE_SIZE, TILE_SIZE);
+                        continue;
+                    }
+                    var type = terrainMap[r][c];
+                    var img = terrainImages[type];
+                    var px = c * TILE_SIZE - offsetX;
+                    var py = r * TILE_SIZE - offsetY;
+                    if (img.complete && img.naturalWidth > 0) {
+                        ctx.drawImage(img, px, py, TILE_SIZE, TILE_SIZE);
+                    } else {
+                        if (type === 'grass') ctx.fillStyle = '#4CAF50';
+                        else if (type === 'sand') ctx.fillStyle = '#f4e4b6';
+                        else ctx.fillStyle = '#2196F3';
+                        ctx.fillRect(px, py, TILE_SIZE, TILE_SIZE);
+                    }
+                }
+            }
+
+            ctx.strokeStyle = 'rgba(255,0,0,0.3)';
+            ctx.lineWidth = 3;
+            ctx.strokeRect(-offsetX, -offsetY, MAP_PIXELS, MAP_PIXELS);
+
+            for (var i = 0; i < gameData.monsters.length; i++) {
+                var m = gameData.monsters[i];
+                if (!m.alive) continue;
+                var mx = m.x - offsetX;
+                var my = m.y - offsetY;
+                var size = m.size || 50;
+
+                var img = new Image();
+                img.src = m.imc;
+                if (img.complete && img.naturalWidth > 0) {
+                    ctx.drawImage(img, mx - size / 2, my - size / 2, size, size);
+                } else {
+                    ctx.fillStyle = '#8B0000';
+                    ctx.beginPath();
+                    ctx.arc(mx, my, size / 2, 0, Math.PI * 2);
+                    ctx.fill();
+                }
+
+                if (m.isBoss) {
+                    ctx.strokeStyle = '#ffd700';
+                    ctx.lineWidth = 4;
+                    ctx.beginPath();
+                    ctx.arc(mx, my, size / 2 + 6, 0, Math.PI * 2);
+                    ctx.stroke();
+                }
+
+                ctx.fillStyle = 'white';
+                ctx.font = (m.isBoss ? '1.4vw' : '1vw') + ' Arial';
+                ctx.textAlign = 'center';
+                ctx.shadowColor = 'black';
+                ctx.shadowBlur = 4;
+                var label = m.isBoss ? '👑 ' : '';
+                ctx.fillText(label + 'Lv.' + m.Lv, mx, my - size / 2 - 8);
+                ctx.shadowBlur = 0;
+
+                var hpW = m.isBoss ? 80 : 40;
+                var hpH = m.isBoss ? 5 : 3;
+                ctx.fillStyle = 'rgba(0,0,0,0.7)';
+                ctx.fillRect(mx - hpW / 2, my - size / 2 - 16, hpW, hpH);
+                ctx.fillStyle = '#ff3333';
+                ctx.fillRect(mx - hpW / 2, my - size / 2 - 16, hpW * (m.hp / m.maxHp), hpH);
+
+                if (m.hitFlash > 0) {
+                    ctx.fillStyle = 'rgba(255,255,255,0.35)';
+                    ctx.beginPath();
+                    ctx.arc(mx, my, size / 2 + 5, 0, Math.PI * 2);
+                    ctx.fill();
+                }
+            }
+
+            var px = player.x - offsetX;
+            var py = player.y - offsetY;
+            var pSize = 50;
+            var playerImgName = player.role === '清' ? 'Qing.png' : 'Ming.png';
+            var playerImg = new Image();
+            playerImg.src = 'https://xiaoye6661234.github.io/GuangXianWorld/' + playerImgName;
+            if (playerImg.complete && playerImg.naturalWidth > 0) {
+                ctx.drawImage(playerImg, px - pSize / 2, py - pSize / 2, pSize, pSize);
+            } else {
+                ctx.fillStyle = '#4A90E2';
+                ctx.beginPath();
+                ctx.arc(px, py, pSize / 2, 0, Math.PI * 2);
+                ctx.fill();
+            }
+            if (player.invincible > 0) {
+                ctx.fillStyle = 'rgba(255,255,255,0.2)';
+                ctx.beginPath();
+                ctx.arc(px, py, pSize / 2 + 4, 0, Math.PI * 2);
+                ctx.fill();
+            }
+            if (player.inWater && !player.isDead) {
+                ctx.fillStyle = 'rgba(100, 200, 255, 0.15)';
+                ctx.beginPath();
+                ctx.arc(px, py, pSize / 2 + 6, 0, Math.PI * 2);
+                ctx.fill();
+            }
+
+            for (var k = 0; k < gameData.effects.length; k++) {
+                var ef2 = gameData.effects[k];
+                var ex = ef2.x - offsetX;
+                var ey = ef2.y - offsetY;
+                var size2 = 80 * (W / 1000);
+                if (ef2.img.complete && ef2.img.naturalWidth > 0) {
+                    ctx.drawImage(ef2.img, ex - size2 / 2, ey - size2 / 2, size2, size2);
+                }
+            }
+
+            if (player.isAttacking) {
+                var angle = player.facing === 'right' ? 0 : player.facing === 'left' ? Math.PI : player.facing === 'up' ? -Math
+                    .PI / 2 : Math.PI / 2;
+                var len2 = 30;
+                var ex2 = px + Math.cos(angle) * len2;
+                var ey2 = py + Math.sin(angle) * len2;
+                ctx.strokeStyle = 'rgba(255,255,200,0.8)';
+                ctx.lineWidth = 4;
+                ctx.shadowColor = 'rgba(255,255,100,0.6)';
+                ctx.shadowBlur = 15;
+                ctx.beginPath();
+                ctx.moveTo(px, py);
+                ctx.lineTo(ex2, ey2);
+                ctx.stroke();
+                ctx.shadowBlur = 0;
+            }
+        }
+
+        // ================================================================
+        //  20. 游戏循环
+        // ================================================================
+
+        function loop(timestamp) {
+            var dt = Math.min((timestamp - gameData.lastTime) / 1000, 0.05);
+            gameData.lastTime = timestamp;
+            update(dt);
+            render();
+            requestAnimationFrame(loop);
+        }
+
+        // ================================================================
+        //  21. 初始化启动
+        // ================================================================
+
+        function init() {
+            loadGameData();
+            generateTerrain();
+
+            var data = loadData();
+            if (!data) {
+                alert('请先登录！');
+                window.location.href = 'Signin.html';
+                return;
+            }
+            if (!data.user) {
+                alert('数据异常，请重新登录！');
+                window.location.href = 'Signin.html';
+                return;
+            }
+            if (!data.user.role) {
+                window.location.href = 'ChooseRole.html';
+                return;
+            }
+            if (!data.user.nickname || data.user.nickname === '云游仙友' || !data.user.region) {
+                window.location.href = 'PersonalInformation.html';
+                return;
+            }
+
+            player = loadPlayerFromData(data);
+            updateUI();
+            updateInventoryGrid();
+            updateTaskUI();
+
+            player.x = 1000;
+            player.y = 1000;
+            initMonsters();
+
+            initAudio();
+            addClickSounds();
+
+            gameData.lastTime = performance.now();
+            requestAnimationFrame(loop);
+        }
+
+        init();
+        window.addEventListener('resize', function() { resizeCanvas(); });
+        document.addEventListener('contextmenu', function(e) { e.preventDefault(); });
+
+        console.log('🎮 广仙世界 · 第十五章（Lv.15适配）已启动！');
+        console.log('📖 玩家属性: HP 450, 攻击 80（+20圣光剑=100）');
+        console.log('📖 怪物属性: Boss HP700 攻击90, 高级小兵 HP220 攻击45');
+        console.log('📖 任务目标: Boss×1, 高级小兵×12');
+        console.log('⌨️ 快捷键: W/A/S/D 移动 | H 攻击 | Q 疾跑 | R 恢复 | B 背包 | F 领任务');
+        console.log('💾 数据与 data.json 完全互通，第十五章任务数据独立存储');
+    </script>
+</body>
+</html>

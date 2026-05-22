@@ -3,173 +3,151 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-    <title>选择角色</title>
+    <title>选择角色 · 广仙世界</title>
     <style>
-        /* ===== 全局重置 & 防下载 ===== */
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: "Microsoft YaHei", "PingFang SC", system-ui, sans-serif;
-            -webkit-touch-callout: none;
-            -webkit-user-select: none;
             user-select: none;
+            -webkit-tap-highlight-color: transparent;
         }
-
         body {
-            margin: 0;
-            padding: 0;
-            height: 100vh;
-            background: #000;
+            background: #f5efe6;
             display: flex;
             justify-content: center;
             align-items: center;
+            height: 100vh;
+            width: 100vw;
+            overflow: hidden;
+            font-family: 'PingFang SC', 'Microsoft YaHei', system-ui, sans-serif;
         }
-
-        /* ===== 主容器 ===== */
         .container {
             width: 100vw;
             height: 56.25vw;
             max-height: 100vh;
             max-width: 177.78vh;
             position: relative;
-            background-image: url('https://xiaoye6661234.github.io/GuangXianWorld/Choose Character.png');
-            background-size: cover;
-            background-position: center;
+            background: #f5efe6;
+            overflow: hidden;
         }
-
-        /* ===== 标题 ===== */
         .title {
             position: absolute;
             top: 5%;
             left: 50%;
             transform: translateX(-50%);
-            font-size: 2.6vw;
-            color: white;
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
-            font-weight: bold;
-            letter-spacing: 0.04em;
+            font-size: 3.6vw;
+            font-weight: 900;
+            color: #1a1a1a;
+            letter-spacing: 0.06em;
         }
-
-        /* ===== 角色容器 ===== */
         .characters {
             position: absolute;
-            top: 28%;
-            width: 70%;
-            left: 15%;
+            top: 24%;
+            left: 10%;
+            width: 80%;
+            height: 50%;
             display: flex;
-            justify-content: space-between;
+            justify-content: center;
             align-items: center;
+            gap: 6%;
         }
-
-        /* ===== 单个角色框 ===== */
         .char-box {
             text-align: center;
             cursor: pointer;
+            transition: 0.2s;
+            flex: 0 0 30%;
+            max-width: 180px;
         }
-
-        /* ===== 角色图片 (防下载) ===== */
+        .char-box:active {
+            transform: scale(0.96);
+        }
         .char-box img {
-            height: 24vw;
-            border: 3px solid transparent;
-            border-radius: 0;
-            transition: 0.3s;
-            -webkit-touch-callout: none;
-            -webkit-user-select: none;
-            user-select: none;
+            width: 100%;
+            height: auto;
+            border: 4px solid transparent;
+            border-radius: 8px;
+            transition: 0.2s;
             pointer-events: none;
             draggable: false;
         }
-
         .char-box.selected img {
-            border: 3px solid #ffcc00;
-            box-shadow: 0 0 25px rgba(255, 204, 0, 0.6);
+            border-color: #ffb300;
+            box-shadow: 0 0 30px rgba(255, 179, 0, 0.4);
         }
-
-        /* ===== 角色名 ===== */
         .char-name {
-            color: white;
-            font-size: 1.8vw;
-            margin-top: 1.2vw;
-            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.6);
-            font-weight: 600;
-            letter-spacing: 0.02em;
+            color: #1a1a1a;
+            font-size: 2.2vw;
+            font-weight: 700;
+            margin-top: 1vw;
         }
-
-        /* ===== 确定按钮 ===== */
         .btn-confirm {
             position: absolute;
-            bottom: 10%;
+            bottom: 12%;
             left: 50%;
             transform: translateX(-50%);
             background: #ffb300;
-            color: white;
-            font-size: 2.0vw;
+            color: #fff;
+            font-size: 2.2vw;
             padding: 0.8vw 6vw;
             border: none;
-            border-radius: 12px;
+            border-radius: 10px;
             cursor: pointer;
-            font-weight: bold;
-            transition: 0.2s;
-            -webkit-touch-callout: none;
-            -webkit-user-select: none;
-            user-select: none;
-        }
-        .btn-confirm:hover {
-            background: #ffa000;
-            transform: translateX(-50%) scale(1.02);
-        }
-        .btn-confirm:disabled {
-            background: #888;
-            cursor: not-allowed;
-            transform: translateX(-50%) scale(1);
+            font-weight: 700;
+            transition: 0.15s;
+            box-shadow: 0 4px 16px rgba(255, 179, 0, 0.3);
         }
         .btn-confirm:active {
             transform: translateX(-50%) scale(0.96);
+            background: #ffa000;
         }
-
-        /* ===== 竖屏适配 ===== */
+        .btn-confirm:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            box-shadow: none;
+            transform: translateX(-50%) scale(1);
+        }
         @media (orientation: portrait) {
             .container {
                 transform: rotate(-90deg) scale(0.8);
+                transform-origin: center center;
+            }
+        }
+        @media (max-width: 600px) {
+            .title {
+                font-size: 5vw;
+            }
+            .char-name {
+                font-size: 3.5vw;
+            }
+            .btn-confirm {
+                font-size: 3.5vw;
+                padding: 1.2vw 8vw;
             }
         }
     </style>
 </head>
 <body>
-
     <div class="container">
-        <div class="title">请选择角色</div>
-
+        <div class="title">请选择你的角色</div>
         <div class="characters">
-            <!-- 角色 清 -->
             <div class="char-box" id="charQing">
-                <img src="https://xiaoye6661234.github.io/GuangXianWorld/Qing.png" alt="清" draggable="false" oncontextmenu="return false" />
+                <img src="https://xiaoye6661234.github.io/GuangXianWorld/Qing.png" draggable="false" alt="清" />
                 <div class="char-name">清</div>
             </div>
-            <!-- 角色 铭 -->
             <div class="char-box" id="charMing">
-                <img src="https://xiaoye6661234.github.io/GuangXianWorld/Ming.png" alt="铭" draggable="false" oncontextmenu="return false" />
+                <img src="https://xiaoye6661234.github.io/GuangXianWorld/Ming.png" draggable="false" alt="铭" />
                 <div class="char-name">铭</div>
             </div>
         </div>
-
         <button class="btn-confirm" id="confirmBtn">确定</button>
     </div>
 
     <script>
-        // ================================================================
-        //  统一 data.json 操作函数
-        // ================================================================
-
         function loadData() {
             var raw = localStorage.getItem('data.json');
             if (!raw) return null;
-            try {
-                return JSON.parse(raw);
-            } catch (e) {
-                return null;
-            }
+            try { return JSON.parse(raw); } catch (e) { return null; }
         }
 
         function saveData(data) {
@@ -177,51 +155,12 @@
             localStorage.setItem('GuangXianData', JSON.stringify(data));
         }
 
-        function createDefaultData() {
-            var now = new Date().toISOString().split('T')[0];
-            return {
-                user: {
-                    username: '',
-                    password: '',
-                    nickname: '云游仙友',
-                    avatar: 'https://xiaoye6661234.github.io/GuangXianWorld/Default avatar.jpg',
-                    region: '',
-                    bgImage: '',
-                    level: 1,
-                    coins: 1000,
-                    exp: 0,
-                    nextExp: 1000,
-                    role: '',
-                    joinedDate: now,
-                    lastLoginDate: now,
-                    loginStreak: 0,
-                    signHistory: [],
-                    settings: { bgm: true, bgmVolume: 40, sfxVolume: 50 },
-                    hasClaimedNotice: false,
-                    lastDailyWelfare: '',
-                    lastFreeClaim: ''
-                },
-                inventory: [],
-                equippedWeapon: null,
-                taskProgress: 0,
-                taskClaimed1: false,
-                taskClaimed5: false,
-                taskClaimed10: false,
-                chapter: 1
-            };
-        }
-
-        // ================================================================
-        //  核心功能
-        // ================================================================
-
         var selectedChar = '';
 
-        // 检查数据并确保存在 user
-        (function checkData() {
+        // 检查数据
+        (function() {
             var data = loadData();
             if (!data) {
-                // 若无数据，创建默认数据，但跳转登录
                 alert('请先登录！');
                 window.location.href = 'Signin.html';
                 return;
@@ -231,9 +170,7 @@
                 window.location.href = 'Signin.html';
                 return;
             }
-            // 如果已有角色，直接跳转完善信息（如果昵称地区不完整）或大厅
             if (data.user.role) {
-                // 如果昵称或地区缺失，跳转完善信息
                 if (!data.user.nickname || data.user.nickname === '云游仙友' || !data.user.region) {
                     window.location.href = 'PersonalInformation.html';
                 } else {
@@ -241,51 +178,31 @@
                 }
                 return;
             }
-            // 如果没有角色，显示当前页面
         })();
 
         document.querySelectorAll('.char-box').forEach(function(box) {
             box.addEventListener('click', function() {
-                document.querySelectorAll('.char-box').forEach(function(b) {
-                    b.classList.remove('selected');
-                });
+                document.querySelectorAll('.char-box').forEach(function(b) { b.classList.remove('selected'); });
                 this.classList.add('selected');
                 selectedChar = this.id === 'charQing' ? '清' : '铭';
-
-                // 音效
-                var click = new Audio('https://xiaoye6661234.github.io/GuangXianWorld/click.mp3');
-                click.volume = 0.5;
-                click.play().catch(function(e) {});
             });
         });
 
         document.getElementById('confirmBtn').addEventListener('click', function() {
-            var click = new Audio('https://xiaoye6661234.github.io/GuangXianWorld/click.mp3');
-            click.volume = 0.5;
-            click.play().catch(function(e) {});
-
             if (!selectedChar) {
                 alert('请选择一个角色！');
                 return;
             }
-
             var data = loadData();
             if (!data) {
                 alert('数据错误，请重新登录！');
                 window.location.href = 'Signin.html';
                 return;
             }
-            try {
-                data.user.role = selectedChar;
-                saveData(data);
-                // 跳转到完善个人信息
-                window.location.href = 'PersonalInformation.html';
-            } catch (e) {
-                alert('数据保存失败，请重新登录！');
-                window.location.href = 'Signin.html';
-            }
+            data.user.role = selectedChar;
+            saveData(data);
+            window.location.href = 'PersonalInformation.html';
         });
     </script>
-
 </body>
 </html>

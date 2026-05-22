@@ -5,208 +5,183 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
     <title>登录 · 广仙世界</title>
     <style>
-        /* ===== 全局重置 ===== */
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
             user-select: none;
-            -webkit-touch-callout: none;
-            -webkit-user-select: none;
+            -webkit-tap-highlight-color: transparent;
         }
-
         body {
-            background: #ffffff;
+            background: #f5efe6;
             display: flex;
             justify-content: center;
             align-items: center;
             height: 100vh;
             width: 100vw;
             overflow: hidden;
-            font-family: system-ui, 'Segoe UI', 'PingFang SC', Roboto, 'Helvetica Neue', sans-serif;
+            font-family: 'PingFang SC', 'Microsoft YaHei', system-ui, sans-serif;
         }
-
-        /* ===== 主容器 ===== */
         .container {
             width: 100vw;
             height: 56.25vw;
             max-height: 100vh;
             max-width: 177.78vh;
             position: relative;
-            background: #ffffff;
+            background: #f5efe6;
             overflow: hidden;
         }
-
-        /* ===== 返回按钮 ===== */
         .back-btn {
             position: absolute;
-            top: 2.8%;
-            left: 4.5%;
+            top: 3%;
+            left: 4%;
             font-size: 2vw;
             font-weight: 700;
             cursor: pointer;
-            color: #000000;
-            background: transparent;
-            padding: 0;
-            border: none;
-            line-height: 1;
-            letter-spacing: -0.02em;
+            color: #333;
             z-index: 10;
-            -webkit-tap-highlight-color: transparent;
+            background: rgba(200, 200, 200, 0.5);
+            padding: 0.3vw 1.5vw;
+            border-radius: 8px;
+            backdrop-filter: blur(4px);
+            transition: 0.2s;
+            border: none;
         }
         .back-btn:active {
-            opacity: 0.6;
+            transform: scale(0.95);
         }
-
-        /* ===== 顶部标题 ===== */
         .title {
             position: absolute;
-            top: 2.8%;
+            top: 5%;
             left: 50%;
             transform: translateX(-50%);
-            font-size: 2.2vw;
-            font-weight: 700;
-            color: #000000;
-            letter-spacing: 0.04em;
-            white-space: nowrap;
-            z-index: 10;
+            font-size: 3.2vw;
+            font-weight: 900;
+            color: #1a1a1a;
+            letter-spacing: 0.06em;
         }
-
-        /* ===== Logo ===== */
         .logo-mini {
             position: absolute;
-            top: 14%;
+            top: 16%;
             left: 50%;
             transform: translateX(-50%);
-            width: 32%;
-            max-width: 220px;
+            width: 28%;
+            max-width: 200px;
             pointer-events: none;
-            -webkit-touch-callout: none;
-            -webkit-user-select: none;
-            user-select: none;
             draggable: false;
         }
-
-        /* ===== 表单区域 ===== */
         .form-area {
             position: absolute;
             top: 40%;
             left: 50%;
             transform: translateX(-50%);
-            width: 64%;
+            width: 60%;
+            max-width: 500px;
             background: transparent;
-            padding: 0;
-            box-shadow: none;
         }
-
-        /* 每一行 */
         .row {
             display: flex;
             align-items: center;
             margin-bottom: 1.6vw;
             gap: 1.2%;
         }
-
-        /* 标签 */
         .row label {
-            width: 20%;
+            width: 22%;
             font-size: 1.6vw;
             font-weight: 600;
-            color: #000000;
-            letter-spacing: 0.02em;
+            color: #1a1a1a;
             flex-shrink: 0;
             text-align: left;
         }
-
-        /* 输入框 */
         .row input {
             flex: 1;
-            background: #d1d1d1;
+            background: #e8e0d8;
             border: none;
             border-radius: 8px;
             padding: 0.9vw 1.8vw;
             font-size: 1.4vw;
             outline: none;
             font-family: inherit;
-            color: #000000;
+            color: #1a1a1a;
             min-height: 3.2vw;
             -webkit-user-select: text;
             user-select: text;
         }
         .row input::placeholder {
-            color: #777;
+            color: #999;
             font-weight: 400;
-            font-size: 1.3vw;
+            font-size: 1.2vw;
         }
         .row input:disabled {
-            background: #c5c5c5;
-            color: #333;
+            background: #d5cdc5;
+            color: #555;
             opacity: 0.85;
         }
-
-        /* ===== 确定按钮 ===== */
         .btn-confirm {
             position: absolute;
-            bottom: 16%;
+            bottom: 18%;
             left: 50%;
             transform: translateX(-50%);
-            background: #666666;
-            color: #ffffff;
-            font-size: 1.9vw;
+            background: #ffb300;
+            color: #fff;
+            font-size: 2vw;
             font-weight: 700;
-            padding: 0.85vw 4.8vw;
+            padding: 0.8vw 5vw;
             border: none;
-            border-radius: 8px;
+            border-radius: 10px;
             cursor: pointer;
-            box-shadow: none;
-            transition: background 0.08s ease, transform 0.08s ease;
+            transition: 0.15s;
+            box-shadow: 0 4px 16px rgba(255, 179, 0, 0.3);
             letter-spacing: 0.04em;
-            -webkit-tap-highlight-color: transparent;
         }
         .btn-confirm:active {
-            transform: translateX(-50%) scale(0.97);
-            background: #555555;
+            transform: translateX(-50%) scale(0.96);
+            background: #ffa000;
         }
         .btn-confirm:disabled {
-            background: #aaaaaa;
+            background: #ccc;
             cursor: not-allowed;
+            box-shadow: none;
             transform: translateX(-50%) scale(1);
         }
-
-        /* ===== 竖屏适配 ===== */
         @media (orientation: portrait) {
             .container {
                 transform: rotate(-90deg) scale(0.8);
+                transform-origin: center center;
             }
         }
-
-        /* ===== 禁止图片长按/右键 ===== */
-        img {
-            -webkit-touch-callout: none;
-            -webkit-user-select: none;
-            user-select: none;
-            pointer-events: none;
+        @media (max-width: 600px) {
+            .title {
+                font-size: 5vw;
+            }
+            .row label {
+                font-size: 2.8vw;
+                width: 28%;
+            }
+            .row input {
+                font-size: 2.4vw;
+                padding: 1.2vw 2.5vw;
+                min-height: 5vw;
+            }
+            .btn-confirm {
+                font-size: 3.5vw;
+                padding: 1.2vw 8vw;
+            }
+            .logo-mini {
+                width: 40%;
+            }
         }
     </style>
 </head>
 <body>
-
     <div class="container">
-
-        <!-- 返回 → index.html -->
-        <div class="back-btn" onclick="window.location.href='index.html'">← 返回</div>
-
-        <!-- 标题 -->
-        <div class="title">登录/注册</div>
-
-        <!-- Logo (防下载) -->
-        <img src="https://xiaoye6661234.github.io/GuangXianWorld/logo.png" class="logo-mini" draggable="false" oncontextmenu="return false" alt="广仙世界" />
-
-        <!-- 表单 -->
+        <button class="back-btn" onclick="window.location.href='index.html'">← 返回</button>
+        <div class="title">登录 / 注册</div>
+        <img src="https://xiaoye6661234.github.io/GuangXianWorld/logo.png" class="logo-mini" draggable="false" alt="广仙世界" />
         <div class="form-area">
             <div class="row">
                 <label>账号：</label>
-                <input type="text" id="username" placeholder="手机号/邮箱" />
+                <input type="text" id="username" placeholder="手机号 / 邮箱" />
             </div>
             <div class="row">
                 <label>密码：</label>
@@ -217,25 +192,18 @@
                 <input type="password" id="confirmPass" placeholder="再次输入" />
             </div>
         </div>
-
-        <!-- 确定按钮 -->
         <button class="btn-confirm" id="confirmBtn">确定</button>
-
     </div>
 
     <script>
         // ================================================================
-        //  统一 data.json 操作函数（与所有页面共享）
+        //  统一数据操作（所有页面共用）
         // ================================================================
 
         function loadData() {
             var raw = localStorage.getItem('data.json');
             if (!raw) return null;
-            try {
-                return JSON.parse(raw);
-            } catch (e) {
-                return null;
-            }
+            try { return JSON.parse(raw); } catch (e) { return null; }
         }
 
         function saveData(data) {
@@ -265,7 +233,31 @@
                     settings: { bgm: true, bgmVolume: 40, sfxVolume: 50 },
                     hasClaimedNotice: false,
                     lastDailyWelfare: '',
-                    lastFreeClaim: ''
+                    lastFreeClaim: '',
+                    adWatchCount: 0,
+                    adWatchDate: '',
+                    moneyPicks: 0,
+                    moneyPickDate: '',
+                    hasDrawnBefore: false,
+                    totalDraws: 0,
+                    tenDrawsCount: 0,
+                    taskData: {
+                        monstersKilled: 0,
+                        healItemsUsed: 0,
+                        bossesKilled: 0,
+                        minionsKilled: 0,
+                        coinsSpent: 0,
+                        coinsGained: 0,
+                        nicknameChanges: 0,
+                        avatarChanges: 0,
+                        hardModeWins: 0,
+                        totalDraws: 0,
+                        tenDrawsCount: 0,
+                        moneyPicks: 0
+                    },
+                    taskRefreshDate: '',
+                    currentTasks: [],
+                    taskStates: {}
                 },
                 inventory: [],
                 equippedWeapon: null,
@@ -278,76 +270,61 @@
         }
 
         // ================================================================
-        //  核心功能
+        //  登录 / 注册逻辑
         // ================================================================
 
-        var confirmBtn = document.getElementById('confirmBtn');
         var usernameInput = document.getElementById('username');
         var passwordInput = document.getElementById('password');
         var confirmInput = document.getElementById('confirmPass');
         var confirmRow = document.getElementById('confirmRow');
 
-        // ---- 检查模式：已有数据则进入登录模式 ----
-        (function checkMode() {
+        // 检查已有数据 → 登录模式
+        (function() {
             var data = loadData();
             if (data && data.user && data.user.username) {
                 usernameInput.value = data.user.username;
                 usernameInput.disabled = true;
                 confirmRow.style.display = 'none';
                 document.querySelector('.title').textContent = '欢迎回来';
-                return;
             }
-            usernameInput.disabled = false;
-            confirmRow.style.display = 'flex';
-            document.querySelector('.title').textContent = '登录/注册';
         })();
 
-        // ---- 确定按钮 ----
-        confirmBtn.addEventListener('click', function() {
-            // 点击音效
-            var clickAudio = new Audio('https://xiaoye6661234.github.io/GuangXianWorld/click.mp3');
-            clickAudio.volume = 0.5;
-            clickAudio.play().catch(function(e) {});
-
+        document.getElementById('confirmBtn').addEventListener('click', function() {
             var username = usernameInput.value.trim();
             var password = passwordInput.value;
             var confirm = confirmInput.value;
 
             if (!username || !password) {
-                alert('账号/密码不可为空');
+                alert('账号和密码不能为空');
                 return;
             }
 
-            // 读取已有数据
             var data = loadData();
 
-            // ===== 登录模式（已有账号且用户名匹配） =====
+            // 登录模式（已有账号且匹配）
             if (data && data.user && data.user.username === username) {
                 if (data.user.password !== password) {
                     alert('密码错误！');
                     return;
                 }
-                // 登录成功，保存数据（刷新时间戳）
                 data.user.lastLoginDate = new Date().toISOString().split('T')[0];
                 saveData(data);
-                window.location.href = 'PersonalInformation.html';
+                window.location.href = 'Hall.html';
                 return;
             }
 
-            // ===== 注册模式（新账号 或 用户名不匹配） =====
+            // 注册模式（新账号或覆盖）
             if (data && data.user && data.user.username !== username) {
                 if (!confirm('当前已有账号 "' + data.user.username + '"，是否创建新账号 "' + username + '"？\n（原有数据将被覆盖）')) {
                     return;
                 }
             }
 
-            // 验证密码一致性
             if (password !== confirm) {
                 alert('两次密码不一致');
                 return;
             }
 
-            // 创建新账号（使用统一数据结构）
             var newData = createDefaultData();
             newData.user.username = username;
             newData.user.password = password;
@@ -355,8 +332,7 @@
             newData.user.joinedDate = new Date().toISOString().split('T')[0];
             saveData(newData);
 
-            // 询问是否下载 data.json
-            if (confirm('注册成功！是否现在下载您的 data.json 数据文件？')) {
+            if (confirm('注册成功！是否下载您的 data.json 数据文件？')) {
                 var blob = new Blob([JSON.stringify(newData, null, 2)], { type: 'application/json' });
                 var url = URL.createObjectURL(blob);
                 var a = document.createElement('a');
@@ -368,9 +344,8 @@
                 URL.revokeObjectURL(url);
             }
 
-            window.location.href = 'PersonalInformation.html';
+            window.location.href = 'ChooseRole.html';
         });
     </script>
-
 </body>
 </html>

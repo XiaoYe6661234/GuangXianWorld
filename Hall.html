@@ -2,24 +2,25 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>广仙世界大厅</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>大厅 · 广仙世界</title>
     <style>
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
             user-select: none;
+            -webkit-tap-highlight-color: transparent;
         }
         body {
-            margin: 0;
-            padding: 0;
-            height: 100vh;
-            background: black;
+            background: #f5efe6;
             display: flex;
             justify-content: center;
             align-items: center;
-            font-family: system-ui, 'Segoe UI', 'PingFang SC', Roboto;
+            height: 100vh;
+            width: 100vw;
+            overflow: hidden;
+            font-family: 'PingFang SC', 'Microsoft YaHei', system-ui, sans-serif;
         }
         .container {
             width: 100vw;
@@ -27,8 +28,8 @@
             max-height: 100vh;
             max-width: 177.78vh;
             position: relative;
+            background: #f5efe6;
             overflow: hidden;
-            background: #f0f0f0;
         }
         .hall-bg {
             position: absolute;
@@ -40,25 +41,20 @@
             background-size: cover;
             background-position: center;
         }
-
-        /* ===== 顶部栏 ===== */
         .top-bar {
             position: absolute;
-            top: 3%;
+            top: 2.5%;
             width: 100%;
             display: flex;
             justify-content: space-between;
             align-items: center;
             padding: 0 2%;
-            box-sizing: border-box;
             z-index: 10;
             pointer-events: none;
         }
         .top-bar>* {
             pointer-events: auto;
         }
-
-        /* 左上按钮组 */
         .top-left-buttons {
             display: flex;
             gap: 1vw;
@@ -66,52 +62,45 @@
         }
         .btn-adventure {
             background: #ffb300;
-            color: white;
+            color: #fff;
             font-size: 2.8vw;
             padding: 0.6vw 2.5vw;
             border: none;
             border-radius: 8px;
-            font-weight: bold;
+            font-weight: 700;
             cursor: pointer;
-            transition: 0.1s;
             box-shadow: 0 4px 12px rgba(255, 179, 0, 0.3);
+            transition: 0.15s;
         }
         .btn-adventure:active {
-            transform: scale(0.97);
+            transform: scale(0.96);
         }
         .btn-difficult {
             background: #8b0000;
-            color: white;
+            color: #fff;
             font-size: 2.2vw;
             padding: 0.5vw 1.8vw;
             border: 2px solid #ff4444;
             border-radius: 8px;
-            font-weight: bold;
+            font-weight: 700;
             cursor: pointer;
-            transition: 0.1s;
             box-shadow: 0 4px 12px rgba(139, 0, 0, 0.3);
-            text-shadow: 0 0 8px rgba(255, 0, 0, 0.3);
-        }
-        .btn-difficult:hover {
-            background: #a00000;
-            transform: scale(1.02);
+            transition: 0.15s;
         }
         .btn-difficult:active {
-            transform: scale(0.97);
+            transform: scale(0.96);
         }
-
-        /* 金币栏 */
         .currency-box {
-            background: rgba(224, 224, 224, 0.9);
+            background: rgba(255, 255, 255, 0.85);
             border-radius: 20px;
             padding: 0.3vw 1.5vw;
             display: flex;
             align-items: center;
-            font-weight: bold;
+            font-weight: 700;
             font-size: 2.5vw;
             gap: 1vw;
-            backdrop-filter: blur(2px);
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(4px);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
         }
         .currency-box img {
             width: 3vw;
@@ -119,7 +108,7 @@
         }
         .currency-box .add-btn {
             background: #666;
-            color: white;
+            color: #fff;
             width: 3.2vw;
             height: 3.2vw;
             border-radius: 6px;
@@ -128,41 +117,30 @@
             justify-content: center;
             cursor: pointer;
             font-size: 2.2vw;
-            font-weight: bold;
-            transition: 0.1s;
-        }
-        .currency-box .add-btn:hover {
-            background: #555;
-            transform: scale(1.05);
+            font-weight: 700;
+            transition: 0.15s;
         }
         .currency-box .add-btn:active {
             transform: scale(0.95);
         }
-
-        /* 右上角图标 */
         .top-icons {
             display: flex;
-            gap: 1.5vw;
+            gap: 1.2vw;
             align-items: center;
         }
         .top-icons img {
-            width: 4vw;
+            width: 3.8vw;
             cursor: pointer;
-            transition: 0.1s;
-            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
+            transition: 0.15s;
+            filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
         }
         .top-icons img:active {
             transform: scale(0.95);
         }
-
-        /* ===== 左下角用户卡片 ===== */
         .user-card {
             position: absolute;
             bottom: 5%;
             left: 2%;
-            display: flex;
-            flex-direction: column;
-            gap: 0.5vw;
             z-index: 10;
             cursor: pointer;
         }
@@ -179,43 +157,39 @@
         .user-card img {
             width: 8vw;
             height: 8vw;
-            border: 2px solid white;
+            border: 2px solid #fff;
             border-radius: 8px;
             object-fit: cover;
             background: #ccc;
         }
         .user-info .nickname {
             background: rgba(0, 0, 0, 0.6);
-            color: white;
+            color: #fff;
             font-size: 2.2vw;
-            font-weight: bold;
+            font-weight: 700;
             padding: 0.2vw 1.5vw;
             border-radius: 6px;
-            margin-bottom: 0.3vw;
             display: inline-block;
         }
         .user-info .lvl {
             background: rgba(0, 0, 0, 0.6);
-            color: white;
+            color: #fff;
             font-size: 2.8vw;
-            font-weight: bold;
+            font-weight: 700;
             padding: 0.2vw 1.5vw;
             border-radius: 6px;
             display: inline-block;
+            margin-top: 0.3vw;
         }
-
-        /* ===== 中间角色 ===== */
         .center-char {
             position: absolute;
             left: 50%;
-            top: 18%;
+            top: 16%;
             transform: translateX(-50%);
-            height: 65%;
+            height: 68%;
             z-index: 5;
-            filter: drop-shadow(0 8px 20px rgba(0,0,0,0.3));
+            filter: drop-shadow(0 8px 20px rgba(0, 0, 0, 0.2));
         }
-
-        /* ===== 右下角功能按钮 ===== */
         .action-buttons {
             position: absolute;
             bottom: 8%;
@@ -238,15 +212,12 @@
             border: none;
             border-radius: 12px;
             font-size: 2.2vw;
-            font-weight: bold;
-            color: white;
+            font-weight: 700;
+            color: #fff;
             cursor: pointer;
             transition: 0.15s;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
             min-width: 12vw;
-        }
-        .action-btn:hover {
-            transform: scale(1.04);
         }
         .action-btn:active {
             transform: scale(0.96);
@@ -259,23 +230,12 @@
         .btn-task {
             background: #a855f7;
         }
-        .btn-task:hover {
-            background: #9333ea;
-        }
         .btn-money {
             background: #22c55e;
-        }
-        .btn-money:hover {
-            background: #16a34a;
         }
         .btn-reward {
             background: #0ea5e9;
         }
-        .btn-reward:hover {
-            background: #0284c7;
-        }
-
-        /* ===== 弹窗 ===== */
         .modal-overlay {
             position: absolute;
             top: 0;
@@ -283,90 +243,84 @@
             width: 100%;
             height: 100%;
             background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(4px);
             display: none;
             align-items: center;
             justify-content: center;
             z-index: 20;
         }
         .modal-content {
-            width: 100%;
-            height: 100%;
+            width: 80%;
+            max-width: 700px;
+            max-height: 80%;
+            background: #f5efe6;
+            border-radius: 20px;
+            padding: 2vw 3vw;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
             position: relative;
-            background-image: url('https://xiaoye6661234.github.io/GuangXianWorld/Setting background.jpg');
-            background-size: cover;
-            background-position: center;
-            box-sizing: border-box;
+            overflow-y: auto;
+        }
+        .modal-content::-webkit-scrollbar {
+            width: 4px;
+        }
+        .modal-content::-webkit-scrollbar-thumb {
+            background: #aaa;
+            border-radius: 4px;
         }
         .modal-close {
             position: absolute;
-            top: 2%;
-            right: 3%;
-            font-size: 5vw;
-            font-weight: bold;
-            cursor: pointer;
-            color: #000;
-            z-index: 25;
-            line-height: 1;
-        }
-        .notice-tabs {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 15%;
-            height: 100%;
-            display: flex;
-            flex-direction: column;
-            padding-top: 5%;
-        }
-        .tab-item {
+            top: 1.2vw;
+            right: 2vw;
             font-size: 3.5vw;
-            font-weight: bold;
-            padding: 2vw 0;
-            text-align: center;
+            font-weight: 900;
             cursor: pointer;
-            color: #000;
+            color: #333;
+            line-height: 1;
+            transition: 0.15s;
+            z-index: 5;
         }
-        .tab-item.active {
-            border-left: 1vw solid #ff9900;
-        }
-        .notice-content {
-            position: absolute;
-            top: 0;
-            left: 15%;
-            width: 85%;
-            height: 100%;
-            padding: 5% 8%;
+        .modal-close:hover {
+            color: #e74c3c;
+            transform: scale(1.2);
         }
         .modal-title {
             text-align: center;
-            font-size: 4vw;
-            font-weight: bold;
-            margin-bottom: 4vw;
-            color: #000;
+            font-size: 3.2vw;
+            font-weight: 900;
+            color: #1a1a1a;
+            margin-bottom: 1.5vw;
         }
         .notice-text {
-            font-size: 2.5vw;
+            font-size: 2vw;
             line-height: 1.6;
-            margin-bottom: 5vw;
+            color: #333;
+            background: rgba(255, 255, 255, 0.7);
+            padding: 1.5vw 2vw;
+            border-radius: 10px;
+            margin-bottom: 1.5vw;
         }
         .modal-btn {
-            background: #ff8800;
-            color: white;
-            font-size: 3vw;
+            background: #ffb300;
+            color: #fff;
+            font-size: 2.2vw;
+            font-weight: 700;
+            padding: 0.6vw 3vw;
             border: none;
             border-radius: 8px;
-            padding: 1vw 6vw;
+            cursor: pointer;
+            transition: 0.15s;
             display: block;
             margin: 0 auto;
-            cursor: pointer;
-            font-weight: bold;
+        }
+        .modal-btn:active {
+            transform: scale(0.96);
         }
         .modal-btn.disabled {
-            background: #aaa;
+            background: #ccc;
             cursor: not-allowed;
         }
         .recharge-container {
-            padding: 6% 4%;
+            padding: 2vw 0;
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -375,9 +329,7 @@
             display: flex;
             gap: 2vw;
             justify-content: center;
-            align-items: stretch;
             width: 100%;
-            max-width: 90vw;
         }
         .recharge-col {
             flex: 1;
@@ -385,62 +337,58 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            background: rgba(255, 255, 255, 0.6);
+            background: rgba(255, 255, 255, 0.7);
             border-radius: 12px;
             padding: 1.5vw 1vw;
             backdrop-filter: blur(4px);
             border: 1px solid rgba(255, 255, 255, 0.3);
         }
         .recharge-col .col-title {
-            font-size: 2.6vw;
-            font-weight: bold;
+            font-size: 2.4vw;
+            font-weight: 700;
+            color: #1a1a1a;
             margin-bottom: 1vw;
-            color: #000;
-        }
-        .recharge-col .col-sub {
-            font-size: 1.5vw;
-            color: #555;
-            margin-bottom: 0.6vw;
         }
         .recharge-item {
             display: flex;
             flex-direction: column;
             align-items: center;
             cursor: pointer;
-            min-width: 60px;
         }
         .recharge-item .coin-box {
             width: 6vw;
             height: 6vw;
-            border: 0.4vw solid #ff9900;
-            background: white;
-            border-radius: 4px;
+            border: 0.4vw solid #ffb300;
+            background: #fff;
+            border-radius: 6px;
             display: flex;
             align-items: center;
             justify-content: center;
-            margin-bottom: 0.3vw;
             transition: 0.2s;
         }
         .recharge-item .coin-box:hover {
             transform: scale(1.05);
-            box-shadow: 0 0 10px rgba(255, 153, 0, 0.4);
+            box-shadow: 0 0 10px rgba(255, 179, 0, 0.3);
         }
         .recharge-item img {
             width: 60%;
         }
         .recharge-item .amount {
             font-size: 2vw;
-            font-weight: bold;
+            font-weight: 700;
+            color: #1a1a1a;
+            margin-top: 0.3vw;
         }
         .settings-container {
-            padding: 8% 8%;
+            padding: 1vw 0;
         }
         .settings-row {
             display: flex;
             align-items: center;
-            margin-bottom: 3vw;
-            font-size: 2.5vw;
+            margin-bottom: 2vw;
+            font-size: 2.2vw;
             gap: 1.5vw;
+            color: #1a1a1a;
         }
         .settings-row input[type=range] {
             width: 45%;
@@ -449,24 +397,29 @@
         }
         .settings-btn {
             background: #666;
-            color: white;
+            color: #fff;
             border: none;
             border-radius: 6px;
-            padding: 0.8vw 3vw;
-            font-size: 2.2vw;
+            padding: 0.6vw 2vw;
+            font-size: 2vw;
             cursor: pointer;
-            font-weight: bold;
+            font-weight: 700;
+            transition: 0.15s;
+        }
+        .settings-btn:active {
+            transform: scale(0.96);
         }
         .profile-container {
             display: flex;
-            width: 100%;
-            height: 100%;
+            gap: 2vw;
+            padding: 1vw 0;
         }
         .profile-left {
-            width: 55%;
-            height: 100%;
+            flex: 0 0 45%;
+            aspect-ratio: 1/1.2;
             background-size: cover;
             background-position: center;
+            border-radius: 12px;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -475,22 +428,20 @@
             height: 70%;
         }
         .profile-right {
-            width: 45%;
-            height: 100%;
-            padding: 5% 3%;
+            flex: 1;
             position: relative;
         }
         .profile-header {
             display: flex;
             align-items: flex-start;
             gap: 1.5vw;
-            margin-bottom: 3vw;
+            margin-bottom: 2vw;
         }
         .profile-avatar {
             width: 10vw;
             height: 10vw;
-            border: 3px solid white;
-            border-radius: 4px;
+            border: 3px solid #fff;
+            border-radius: 6px;
             object-fit: cover;
             background: #ccc;
             cursor: pointer;
@@ -503,9 +454,9 @@
         }
         .profile-nickname {
             background: rgba(0, 0, 0, 0.7);
-            color: white;
+            color: #fff;
             font-size: 2.5vw;
-            font-weight: bold;
+            font-weight: 700;
             padding: 0.4vw 1.5vw;
             border-radius: 6px;
             cursor: pointer;
@@ -520,40 +471,37 @@
         .profile-lvl,
         .profile-region {
             background: rgba(0, 0, 0, 0.7);
-            color: white;
+            color: #fff;
             font-size: 2.2vw;
-            font-weight: bold;
+            font-weight: 700;
             padding: 0.3vw 1.2vw;
             border-radius: 6px;
         }
         .profile-bg {
-            position: absolute;
-            top: 0;
-            left: 0;
             width: 100%;
             height: 35%;
             background-size: cover;
             background-position: center;
-            z-index: -1;
+            border-radius: 8px;
             cursor: pointer;
+            margin-bottom: 1vw;
         }
         .profile-join {
-            font-size: 2.2vw;
-            margin-top: 2vw;
+            font-size: 2vw;
+            color: #555;
+            margin-top: 1vw;
         }
         .profile-save-btn {
-            position: absolute;
-            bottom: 5%;
-            right: 5%;
-            background: #ff8800;
-            color: white;
+            background: #ffb300;
+            color: #fff;
             border: none;
             border-radius: 6px;
-            padding: 0.8vw 3vw;
+            padding: 0.6vw 2vw;
             font-size: 2vw;
             cursor: pointer;
-            font-weight: bold;
+            font-weight: 700;
             display: none;
+            margin-top: 1vw;
         }
         .hidden-input {
             display: none;
@@ -561,38 +509,107 @@
         @media (orientation: portrait) {
             .container {
                 transform: rotate(-90deg) scale(0.8);
+                transform-origin: center center;
             }
         }
         @media (max-width: 600px) {
+            .btn-adventure {
+                font-size: 4vw;
+                padding: 1vw 3vw;
+            }
+            .btn-difficult {
+                font-size: 3.2vw;
+                padding: 0.8vw 2vw;
+            }
+            .currency-box {
+                font-size: 3.5vw;
+                padding: 0.5vw 2vw;
+            }
+            .currency-box img {
+                width: 4.5vw;
+                height: 4.5vw;
+            }
+            .top-icons img {
+                width: 5vw;
+            }
+            .action-btn {
+                font-size: 3.5vw;
+                padding: 1vw 3vw;
+                min-width: 16vw;
+            }
+            .action-btn img {
+                width: 4vw;
+                height: 4vw;
+            }
+            .user-card img {
+                width: 12vw;
+                height: 12vw;
+            }
+            .user-info .nickname {
+                font-size: 3.2vw;
+            }
+            .user-info .lvl {
+                font-size: 4vw;
+            }
+            .modal-content {
+                width: 92%;
+                padding: 4vw 5vw;
+            }
+            .modal-title {
+                font-size: 5vw;
+            }
+            .notice-text {
+                font-size: 3vw;
+            }
+            .modal-btn {
+                font-size: 3.5vw;
+                padding: 1vw 4vw;
+            }
             .recharge-row {
                 flex-direction: column;
                 gap: 3vw;
             }
-            .recharge-col {
-                padding: 3vw 2vw;
-            }
             .recharge-col .col-title {
-                font-size: 4vw;
+                font-size: 3.5vw;
             }
             .recharge-item .coin-box {
                 width: 10vw;
                 height: 10vw;
             }
             .recharge-item .amount {
+                font-size: 3vw;
+            }
+            .settings-row {
+                font-size: 3.2vw;
+            }
+            .profile-container {
+                flex-direction: column;
+            }
+            .profile-left {
+                flex: 0 0 auto;
+                height: 30vw;
+                aspect-ratio: 1/1;
+            }
+            .profile-avatar {
+                width: 14vw;
+                height: 14vw;
+            }
+            .profile-nickname {
                 font-size: 3.5vw;
             }
-            .action-btn {
-                font-size: 3.5vw;
-                padding: 1vw 3vw;
-                min-width: 18vw;
+            .profile-lvl,
+            .profile-region {
+                font-size: 3vw;
             }
-            .action-btn img {
-                width: 4vw;
-                height: 4vw;
-            }
-            .btn-difficult {
+            .profile-join {
                 font-size: 2.8vw;
-                padding: 0.8vw 2vw;
+            }
+            .profile-save-btn {
+                font-size: 3vw;
+                padding: 1vw 3vw;
+            }
+            .modal-close {
+                font-size: 5vw;
             }
         }
     </style>
@@ -601,20 +618,16 @@
     <div class="container">
         <div class="hall-bg"></div>
 
-        <!-- ===== 顶部栏 ===== -->
         <div class="top-bar">
-            <!-- 左上角 -->
             <div class="top-left-buttons">
                 <button class="btn-adventure" id="adventureBtn">开始冒险!</button>
                 <button class="btn-difficult" id="difficultBtn">超难模式!</button>
             </div>
-            <!-- 中央金币 -->
             <div class="currency-box">
-                <img src="https://xiaoye6661234.github.io/GuangXianWorld/CuangXianCoin.png" alt="金币" />
+                <img src="https://xiaoye6661234.github.io/GuangXianWorld/CuangXianCoin.png" alt="币" />
                 <span id="coinDisplay">1000</span>
                 <div class="add-btn" onclick="openModal('recharge')">+</div>
             </div>
-            <!-- 右上角图标 -->
             <div class="top-icons">
                 <img src="https://xiaoye6661234.github.io/GuangXianWorld/email.png" alt="邮件" onclick="openModal('mail')" />
                 <img src="https://xiaoye6661234.github.io/GuangXianWorld/Notice.png" alt="公告" onclick="openModal('notice')" />
@@ -623,7 +636,6 @@
             </div>
         </div>
 
-        <!-- ===== 左下角用户卡片 ===== -->
         <div class="user-card" onclick="openModal('profile')">
             <div class="card-inner">
                 <img id="avatarDisplay" src="https://xiaoye6661234.github.io/GuangXianWorld/Default avatar.jpg" alt="头像" />
@@ -634,26 +646,20 @@
             </div>
         </div>
 
-        <!-- ===== 中间角色 ===== -->
         <img src="https://xiaoye6661234.github.io/GuangXianWorld/Ming.png" class="center-char" id="centerChar" alt="角色" />
 
-        <!-- ===== 右下角功能按钮 ===== -->
         <div class="action-buttons">
             <button class="action-btn btn-task" id="taskBtn">
-                <img src="https://xiaoye6661234.github.io/GuangXianWorld/Task.png" alt="任务" />
-                任务
+                <img src="https://xiaoye6661234.github.io/GuangXianWorld/Task.png" alt="任务" /> 任务
             </button>
             <button class="action-btn btn-money" id="moneyBtn">
-                <img src="https://xiaoye6661234.github.io/GuangXianWorld/CuangXianCoin.png" alt="赚钱" />
-                赚钱
+                <img src="https://xiaoye6661234.github.io/GuangXianWorld/CuangXianCoin.png" alt="赚钱" /> 赚钱
             </button>
             <button class="action-btn btn-reward" id="rewardBtn">
-                <img src="https://xiaoye6661234.github.io/GuangXianWorld/Reward.png" alt="抽奖" />
-                抽奖
+                <img src="https://xiaoye6661234.github.io/GuangXianWorld/Reward.png" alt="抽奖" /> 抽奖
             </button>
         </div>
 
-        <!-- ===== 弹窗 ===== -->
         <div id="modalOverlay" class="modal-overlay">
             <div class="modal-content" id="modalContent">
                 <div class="modal-close" onclick="closeModal()">✕</div>
@@ -667,74 +673,22 @@
 
     <script>
         // ================================================================
-        //  统一 data.json 操作函数（优化版）
+        //  统一数据操作
         // ================================================================
 
-        // 缓存数据，避免频繁解析
-        var dataCache = null;
-
         function loadData() {
-            if (dataCache) return dataCache;
             var raw = localStorage.getItem('data.json');
             if (!raw) return null;
-            try {
-                dataCache = JSON.parse(raw);
-                return dataCache;
-            } catch (e) {
-                return null;
-            }
+            try { return JSON.parse(raw); } catch (e) { return null; }
         }
 
         function saveData(data) {
-            try {
-                dataCache = data;
-                localStorage.setItem('data.json', JSON.stringify(data));
-                localStorage.setItem('GuangXianData', JSON.stringify(data));
-                return true;
-            } catch (e) {
-                console.warn('保存数据失败:', e);
-                return false;
-            }
-        }
-
-        function createDefaultData() {
-            var now = new Date().toISOString().split('T')[0];
-            return {
-                user: {
-                    username: '',
-                    password: '',
-                    nickname: '云游仙友',
-                    avatar: 'https://xiaoye6661234.github.io/GuangXianWorld/Default avatar.jpg',
-                    region: '',
-                    bgImage: '',
-                    level: 1,
-                    coins: 1000,
-                    exp: 0,
-                    nextExp: 1000,
-                    role: '',
-                    joinedDate: now,
-                    lastLoginDate: now,
-                    loginStreak: 0,
-                    signHistory: [],
-                    settings: { bgm: true, bgmVolume: 40, sfxVolume: 50 },
-                    hasClaimedNotice: false,
-                    lastDailyWelfare: '',
-                    lastFreeClaim: '',
-                    adWatchCount: 0,
-                    adWatchDate: ''
-                },
-                inventory: [],
-                equippedWeapon: null,
-                taskProgress: 0,
-                taskClaimed1: false,
-                taskClaimed5: false,
-                taskClaimed10: false,
-                chapter: 1
-            };
+            localStorage.setItem('data.json', JSON.stringify(data));
+            localStorage.setItem('GuangXianData', JSON.stringify(data));
         }
 
         // ================================================================
-        //  大厅全局变量
+        //  大厅逻辑
         // ================================================================
 
         var currentModal = '';
@@ -742,10 +696,6 @@
         var tempNickname = '';
         var tempAvatar = '';
         var tempBgImage = '';
-
-        // ================================================================
-        //  数据加载与 UI 更新
-        // ================================================================
 
         function loadAndRender() {
             var data = loadData();
@@ -775,9 +725,7 @@
             document.getElementById('coinDisplay').innerText = u.coins || 0;
             document.getElementById('nickDisplay').innerText = u.nickname || '仙友';
             document.getElementById('lvlDisplay').innerText = 'LV.' + (u.level || 1);
-            if (u.avatar) {
-                document.getElementById('avatarDisplay').src = u.avatar;
-            }
+            if (u.avatar) document.getElementById('avatarDisplay').src = u.avatar;
             if (u.role === '清') {
                 document.getElementById('centerChar').src = 'https://xiaoye6661234.github.io/GuangXianWorld/Qing.png';
             } else {
@@ -785,32 +733,28 @@
             }
         }
 
-        // 页面加载
         loadAndRender();
 
         // ================================================================
-        //  弹窗管理（去除了广告选项）
+        //  弹窗管理
         // ================================================================
 
         function openModal(type) {
             currentModal = type;
             isProfileEditing = false;
             document.getElementById('modalOverlay').style.display = 'flex';
-            var body = document.getElementById('modalBody');
             playClickSound();
-
             var data = loadData();
             if (!data) return;
+            var body = document.getElementById('modalBody');
 
             if (type === 'mail') {
                 body.innerHTML = `
-                    <div style="padding:8% 5%;">
-                        <div class="modal-title">📧 官方邮件</div>
-                        <div style="font-size:2vw; line-height:1.6; background: rgba(255,255,255,0.7); padding:3vw; border-radius:10px;">
-                            <p><strong>主题：</strong> 欢迎登录广仙世界</p>
-                            <p><strong>内容：</strong> 尊敬的仙友 ${data.user.nickname || '道友'}，欢迎来到广仙世界！<br />祝您在此修仙路上，快意恩仇，逍遥自在！</p>
-                            <p style="margin-top:2vw; color:#555;">—— 广仙世界运营团队</p>
-                        </div>
+                    <div class="modal-title">📧 官方邮件</div>
+                    <div style="font-size:1.8vw;line-height:1.6;background:rgba(255,255,255,0.7);padding:2vw;border-radius:10px;color:#333;">
+                        <p><strong>主题：</strong> 欢迎登录广仙世界</p>
+                        <p><strong>内容：</strong> 尊敬的仙友 ${data.user.nickname || '道友'}，欢迎来到广仙世界！祝您修仙路上快意恩仇，逍遥自在！</p>
+                        <p style="margin-top:1.5vw;color:#888;">—— 广仙世界运营团队</p>
                     </div>
                 `;
             } else if (type === 'notice') {
@@ -818,42 +762,30 @@
                 var isDailyClaimed = data.user.lastDailyWelfare === today;
                 var isNoticeClaimed = data.user.hasClaimedNotice || false;
                 body.innerHTML = `
-                    <div class="notice-tabs">
-                        <div class="tab-item active" onclick="switchTab('notice')">公告</div>
-                        <div class="tab-item" onclick="switchTab('signin')">签到</div>
+                    <div style="display:flex;gap:2vw;margin-bottom:1.5vw;justify-content:center;">
+                        <button style="background:#ffb300;color:#fff;border:none;border-radius:6px;padding:0.4vw 2vw;font-size:1.8vw;font-weight:700;cursor:pointer;" onclick="switchTab('notice')">公告</button>
+                        <button style="background:#ccc;color:#fff;border:none;border-radius:6px;padding:0.4vw 2vw;font-size:1.8vw;font-weight:700;cursor:pointer;" onclick="switchTab('signin')">签到</button>
                     </div>
-                    <div class="notice-content">
+                    <div id="noticeContent">
                         <div class="modal-title">公告</div>
-                        <div class="notice-text">
-                            广仙世界今天正式上架，所以，我们特意为所有用户们准备了1000广仙币作为福利！
-                        </div>
+                        <div class="notice-text">广仙世界今天正式上架，我们为所有用户准备了1000广仙币作为福利！</div>
                         <button class="modal-btn" id="claimNoticeBtn" onclick="claimNotice()" ${isNoticeClaimed ? 'disabled' : ''}>
                             ${isNoticeClaimed ? '✅ 已领取' : '领取'}
                         </button>
                     </div>
                 `;
             } else if (type === 'recharge') {
-                var today = new Date().toISOString().split('T')[0];
-                var adWatchDate = data.user.adWatchDate || '';
-                var adWatchCount = (adWatchDate === today) ? (data.user.adWatchCount || 0) : 0;
-                var remainingAds = Math.max(0, 5 - adWatchCount);
-                var adsToday = adWatchCount;
-
-                // 移除了“看广告领币”板块，只保留每日免费
                 body.innerHTML = `
                     <div class="recharge-container">
-                        <div class="modal-title" style="margin-bottom:2vw;">获取广仙币</div>
+                        <div class="modal-title">获取广仙币</div>
                         <div class="recharge-row">
-                            <!-- 每日免费 -->
-                            <div class="recharge-col" style="max-width:300px;">
+                            <div class="recharge-col">
                                 <div class="col-title">📅 每日免费</div>
                                 <div class="recharge-item" onclick="receiveFree()">
-                                    <div class="coin-box">
-                                        <img src="https://xiaoye6661234.github.io/GuangXianWorld/CuangXianCoin.png" />
-                                    </div>
+                                    <div class="coin-box"><img src="https://xiaoye6661234.github.io/GuangXianWorld/CuangXianCoin.png" /></div>
                                     <div class="amount">×250</div>
                                 </div>
-                                <div style="font-size:1.2vw; color:#666; margin-top:0.3vw;">每日一次</div>
+                                <div style="font-size:1.2vw;color:#888;margin-top:0.3vw;">每日一次</div>
                             </div>
                         </div>
                     </div>
@@ -865,12 +797,12 @@
                     <div class="settings-container">
                         <div class="modal-title">设置</div>
                         <div class="settings-row">
-                            <span>背景音乐:</span>
+                            <span>背景音乐</span>
                             <input type="range" min="0" max="100" value="${vol}" onchange="setBGMVol(this.value)" />
                             <span>${vol}%</span>
                         </div>
                         <div class="settings-row">
-                            <span>音效设置:</span>
+                            <span>音效</span>
                             <input type="range" min="0" max="100" value="${sfx}" onchange="setSFXVol(this.value)" />
                             <span>${sfx}%</span>
                         </div>
@@ -880,11 +812,7 @@
                         </div>
                         <div class="settings-row">
                             <span>重置密码</span>
-                            <button class="settings-btn" onclick="resetPass()">验证</button>
-                        </div>
-                        <div class="settings-row">
-                            <span>导出 data.json</span>
-                            <button class="settings-btn" onclick="manualExportData()">导出</button>
+                            <button class="settings-btn" onclick="resetPass()">重置</button>
                         </div>
                     </div>
                 `;
@@ -896,21 +824,18 @@
                 var charImg = data.user.role === '清' ?
                     'https://xiaoye6661234.github.io/GuangXianWorld/Qing.png' :
                     'https://xiaoye6661234.github.io/GuangXianWorld/Ming.png';
-
                 tempNickname = data.user.nickname;
                 tempAvatar = data.user.avatar;
                 tempBgImage = bgImage;
-
                 body.innerHTML = `
                     <div class="profile-container">
-                        <div class="profile-left" style="background-image: url('${bgImage}');">
+                        <div class="profile-left" style="background-image:url('${bgImage}');">
                             <img src="${charImg}" alt="角色" />
                         </div>
                         <div class="profile-right">
-                            <div class="profile-bg" id="profileBg" onclick="editBgImage()" style="background-image: url('${bgImage}');"></div>
+                            <div class="profile-bg" id="profileBg" onclick="editBgImage()" style="background-image:url('${bgImage}');"></div>
                             <div class="profile-header">
-                                <img src="${data.user.avatar || 'https://xiaoye6661234.github.io/GuangXianWorld/Default avatar.jpg'}" 
-                                     class="profile-avatar" id="profileAvatar" onclick="editAvatar()" alt="头像" />
+                                <img src="${data.user.avatar}" class="profile-avatar" id="profileAvatar" onclick="editAvatar()" alt="头像" />
                                 <div class="profile-info">
                                     <div class="profile-nickname" id="profileNickname" onclick="editNickname()">${data.user.nickname}</div>
                                     <div class="profile-details">
@@ -919,9 +844,7 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="profile-join">
-                                你已经加入广仙世界${years}年了！
-                            </div>
+                            <div class="profile-join">你已经加入广仙世界 ${years} 年了！</div>
                             <button class="profile-save-btn" id="profileSaveBtn" onclick="saveProfileChanges()">保存</button>
                         </div>
                     </div>
@@ -934,73 +857,40 @@
             isProfileEditing = false;
         }
 
+        document.getElementById('modalOverlay').addEventListener('click', function(e) {
+            if (e.target === this) closeModal();
+        });
+
+        // ================================================================
+        //  公告 / 签到切换
+        // ================================================================
+
         function switchTab(tab) {
             playClickSound();
-            document.querySelectorAll('.tab-item').forEach(function(item) { item.classList.remove('active'); });
-            document.querySelector('.tab-item[onclick="switchTab(\'' + tab + '\')"]').classList.add('active');
-
-            var content = document.querySelector('.notice-content');
+            var content = document.getElementById('noticeContent');
             var data = loadData();
             if (!data) return;
+            var today = new Date().toISOString().split('T')[0];
             if (tab === 'notice') {
                 var isNoticeClaimed = data.user.hasClaimedNotice || false;
                 content.innerHTML = `
                     <div class="modal-title">公告</div>
-                    <div class="notice-text">
-                        广仙世界今天正式上架，所以，我们特意为所有用户们准备了1000广仙币作为福利！
-                    </div>
+                    <div class="notice-text">广仙世界今天正式上架，我们为所有用户准备了1000广仙币作为福利！</div>
                     <button class="modal-btn" id="claimNoticeBtn" onclick="claimNotice()" ${isNoticeClaimed ? 'disabled' : ''}>
                         ${isNoticeClaimed ? '✅ 已领取' : '领取'}
                     </button>
                 `;
-            } else if (tab === 'signin') {
-                var today = new Date().toISOString().split('T')[0];
+            } else {
                 var isDailyClaimed = data.user.lastDailyWelfare === today;
                 content.innerHTML = `
                     <div class="modal-title">每日签到</div>
-                    <div class="notice-text" style="text-align:center;">
-                        今日可领 <strong style="color:#ff5500;">100～250</strong> 广仙币（随机）
-                    </div>
+                    <div class="notice-text" style="text-align:center;">今日可领 <strong style="color:#ff5500;">100～250</strong> 广仙币（随机）</div>
                     <button class="modal-btn" id="claimDailyBtn" onclick="claimDailyWelfare()" ${isDailyClaimed ? 'disabled' : ''}>
                         ${isDailyClaimed ? '✅ 今日已签到' : '立即签到'}
                     </button>
                 `;
             }
         }
-
-        // ================================================================
-        //  功能按钮跳转
-        // ================================================================
-
-        // 冒险按钮（原有）
-        document.getElementById('adventureBtn').addEventListener('click', function() {
-            playClickSound();
-            window.location.href = 'Game.html';
-        });
-
-        // 超难模式
-        document.getElementById('difficultBtn').addEventListener('click', function() {
-            playClickSound();
-            window.location.href = 'Dofficult.html';
-        });
-
-        // 任务
-        document.getElementById('taskBtn').addEventListener('click', function() {
-            playClickSound();
-            window.location.href = 'Task.html';
-        });
-
-        // 赚钱
-        document.getElementById('moneyBtn').addEventListener('click', function() {
-            playClickSound();
-            window.location.href = 'Money.html';
-        });
-
-        // 抽奖
-        document.getElementById('rewardBtn').addEventListener('click', function() {
-            playClickSound();
-            window.location.href = 'Reward.html';
-        });
 
         // ================================================================
         //  领取功能
@@ -1010,23 +900,17 @@
             playClickSound();
             var data = loadData();
             if (!data) return;
-            if (data.user.hasClaimedNotice) {
-                alert('你已经领取过公告福利了！');
-                return;
-            }
+            if (data.user.hasClaimedNotice) { alert('已领取过公告福利！'); return; }
             data.user.coins = (data.user.coins || 0) + 1000;
             data.user.hasClaimedNotice = true;
             if (saveData(data)) {
                 updateUI(data);
                 var btn = document.getElementById('claimNoticeBtn');
-                if (btn) {
-                    btn.innerText = '✅ 已领取';
-                    btn.disabled = true;
-                    btn.classList.add('disabled');
-                }
-                alert('🎉 恭喜领取 1000 广仙币！');
+                if (btn) { btn.innerText = '✅ 已领取';
+                    btn.disabled = true; }
+                alert('🎉 获得 1000 广仙币！');
             } else {
-                alert('❌ 保存失败，请重试！');
+                alert('❌ 保存失败');
             }
         }
 
@@ -1035,24 +919,18 @@
             var data = loadData();
             if (!data) return;
             var today = new Date().toISOString().split('T')[0];
-            if (data.user.lastDailyWelfare === today) {
-                alert('今日已领取，明天再来吧！');
-                return;
-            }
+            if (data.user.lastDailyWelfare === today) { alert('今日已签到！'); return; }
             var amount = Math.floor(Math.random() * 151) + 100;
             data.user.coins = (data.user.coins || 0) + amount;
             data.user.lastDailyWelfare = today;
             if (saveData(data)) {
                 updateUI(data);
                 var btn = document.getElementById('claimDailyBtn');
-                if (btn) {
-                    btn.innerText = '✅ 今日已签到';
-                    btn.disabled = true;
-                    btn.classList.add('disabled');
-                }
-                alert('🎉 恭喜获得 ' + amount + ' 广仙币！');
+                if (btn) { btn.innerText = '✅ 今日已签到';
+                    btn.disabled = true; }
+                alert('🎉 获得 ' + amount + ' 广仙币！');
             } else {
-                alert('❌ 保存失败，请重试！');
+                alert('❌ 保存失败');
             }
         }
 
@@ -1061,18 +939,15 @@
             var data = loadData();
             if (!data) return;
             var today = new Date().toISOString().split('T')[0];
-            if (!data.user.lastFreeClaim || data.user.lastFreeClaim !== today) {
-                data.user.coins = (data.user.coins || 0) + 250;
-                data.user.lastFreeClaim = today;
-                if (saveData(data)) {
-                    updateUI(data);
-                    alert('🎉 领取成功！获得 250 广仙币');
-                    closeModal();
-                } else {
-                    alert('❌ 保存失败，请重试！');
-                }
+            if (data.user.lastFreeClaim === today) { alert('今日已领取！'); return; }
+            data.user.coins = (data.user.coins || 0) + 250;
+            data.user.lastFreeClaim = today;
+            if (saveData(data)) {
+                updateUI(data);
+                alert('🎉 获得 250 广仙币！');
+                closeModal();
             } else {
-                alert('今日已领取！');
+                alert('❌ 保存失败');
             }
         }
 
@@ -1080,15 +955,11 @@
         //  个人中心编辑
         // ================================================================
 
-        function editAvatar() {
-            playClickSound();
-            document.getElementById('avatarEditInput').click();
-        }
+        function editAvatar() { playClickSound();
+            document.getElementById('avatarEditInput').click(); }
 
-        function editBgImage() {
-            playClickSound();
-            document.getElementById('bgEditInput').click();
-        }
+        function editBgImage() { playClickSound();
+            document.getElementById('bgEditInput').click(); }
 
         function editNickname() {
             playClickSound();
@@ -1097,7 +968,7 @@
             var currentNick = nickEl.textContent;
             nickEl.innerHTML =
                 '<input type="text" id="nickInput" value="' + currentNick +
-                '" style="width:100%; background:transparent; border:none; color:white; font-size:inherit; font-weight:inherit; outline:none;" />';
+                '" style="width:100%;background:transparent;border:none;color:#fff;font-size:inherit;font-weight:inherit;outline:none;" />';
             document.getElementById('nickInput').focus();
             showSaveButton();
         }
@@ -1137,10 +1008,7 @@
             var nickInput = document.getElementById('nickInput');
             if (nickInput) {
                 tempNickname = nickInput.value.trim();
-                if (!tempNickname) {
-                    alert('昵称不能为空！');
-                    return;
-                }
+                if (!tempNickname) { alert('昵称不能为空！'); return; }
             }
             var data = loadData();
             if (!data) return;
@@ -1149,7 +1017,7 @@
             data.user.bgImage = tempBgImage;
             if (saveData(data)) {
                 updateUI(data);
-                if (confirm('信息已保存！是否下载更新后的 data.json 数据文件？')) {
+                if (confirm('信息已保存！是否下载 data.json 数据文件？')) {
                     var blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
                     var url = URL.createObjectURL(blob);
                     var a = document.createElement('a');
@@ -1162,7 +1030,7 @@
                 document.getElementById('profileSaveBtn').style.display = 'none';
                 openModal('profile');
             } else {
-                alert('❌ 保存失败，请重试！');
+                alert('❌ 保存失败');
             }
         }
 
@@ -1181,7 +1049,7 @@
                 bgm = new Audio('https://xiaoye6661234.github.io/GuangXianWorld/BGM1.mp3');
                 bgm.loop = true;
                 bgm.volume = parseInt(val) / 100;
-                bgm.play().catch(function(e) {});
+                bgm.play().catch(function() {});
                 bgm.classList.add('bgm-player');
                 document.body.appendChild(bgm);
             } else {
@@ -1214,7 +1082,7 @@
                 document.body.appendChild(bgm);
             }
             if (bgm.paused) {
-                bgm.play().catch(function(e) {});
+                bgm.play().catch(function() {});
                 icon.src = 'https://xiaoye6661234.github.io/GuangXianWorld/Volume on.png';
             } else {
                 bgm.pause();
@@ -1224,24 +1092,23 @@
 
         function clearData() {
             playClickSound();
-            if (confirm('确定要清除所有数据吗？此操作不可恢复！')) {
+            if (confirm('确定清除所有数据？此操作不可恢复！')) {
                 localStorage.removeItem('data.json');
                 localStorage.removeItem('GuangXianData');
-                dataCache = null;
-                alert('数据已清除！即将跳转回登录页。');
+                alert('数据已清除！');
                 window.location.href = 'Signin.html';
             }
         }
 
         function resetPass() {
             playClickSound();
-            var newPass = prompt("请输入新的密码：");
+            var newPass = prompt('请输入新密码：');
             if (newPass && newPass.length > 0) {
                 var data = loadData();
                 if (!data) return;
                 data.user.password = newPass;
                 saveData(data);
-                alert("密码重置成功！");
+                alert('密码重置成功！');
                 closeModal();
             }
         }
@@ -1250,11 +1117,32 @@
             var click = new Audio('https://xiaoye6661234.github.io/GuangXianWorld/click.mp3');
             var data = loadData();
             click.volume = (data ? (data.user.settings?.sfxVolume || 50) : 50) / 100;
-            click.play().catch(function(e) {});
+            click.play().catch(function() {});
         }
 
-        document.getElementById('modalOverlay').addEventListener('click', function(e) {
-            if (e.target === this) closeModal();
+        // ================================================================
+        //  页面跳转
+        // ================================================================
+
+        document.getElementById('adventureBtn').addEventListener('click', function() {
+            playClickSound();
+            window.location.href = 'Game.html';
+        });
+        document.getElementById('difficultBtn').addEventListener('click', function() {
+            playClickSound();
+            window.location.href = 'Difficult.html';
+        });
+        document.getElementById('taskBtn').addEventListener('click', function() {
+            playClickSound();
+            window.location.href = 'Task.html';
+        });
+        document.getElementById('moneyBtn').addEventListener('click', function() {
+            playClickSound();
+            window.location.href = 'Money.html';
+        });
+        document.getElementById('rewardBtn').addEventListener('click', function() {
+            playClickSound();
+            window.location.href = 'Reward.html';
         });
     </script>
 </body>

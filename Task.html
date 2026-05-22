@@ -22,8 +22,6 @@
             overflow: hidden;
             font-family: 'PingFang SC', 'Microsoft YaHei', system-ui, sans-serif;
         }
-
-        /* ===== 主容器 ===== */
         .container {
             width: 100vw;
             height: 56.25vw;
@@ -33,8 +31,6 @@
             background: #f5efe6;
             overflow: hidden;
         }
-
-        /* ===== 顶部导航 ===== */
         .top-bar {
             position: absolute;
             top: 2.5%;
@@ -50,17 +46,13 @@
             background: #ccc;
             color: #333;
             font-size: 1.8vw;
-            font-weight: bold;
+            font-weight: 700;
             padding: 0.5vw 2vw;
             border: none;
             border-radius: 8px;
             cursor: pointer;
             transition: 0.15s;
-            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
-        }
-        .btn-back:hover {
-            background: #bbb;
-            transform: scale(1.02);
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
         }
         .btn-back:active {
             transform: scale(0.96);
@@ -71,8 +63,6 @@
             color: #1a1a1a;
             letter-spacing: 0.06em;
         }
-
-        /* ===== 提示文字 ===== */
         .notice {
             position: absolute;
             top: 12%;
@@ -92,8 +82,6 @@
             color: #c0392b;
             font-weight: 700;
         }
-
-        /* ===== 任务列表 ===== */
         .tasks-container {
             position: absolute;
             top: 24%;
@@ -102,7 +90,7 @@
             height: 66%;
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 1.5vw 2.5vw;
+            gap: 1.2vw 2vw;
             z-index: 5;
             overflow-y: auto;
             padding-bottom: 1vw;
@@ -114,26 +102,20 @@
             background: #aaa;
             border-radius: 4px;
         }
-
         .task-item {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            background: #7a7a7a;
+            background: #8a8a8a;
             border-radius: 8px;
             padding: 0.6vw 1.2vw;
             min-height: 4.5vw;
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
             transition: 0.15s;
         }
-        .task-item:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
-        }
-
         .task-desc {
             flex: 1;
-            font-size: 1.6vw;
+            font-size: 1.5vw;
             font-weight: 500;
             color: #fff;
             text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
@@ -149,50 +131,39 @@
             margin-left: 0.5vw;
             font-weight: 700;
         }
-
         .task-btn {
             flex-shrink: 0;
-            padding: 0.4vw 2vw;
+            padding: 0.4vw 1.8vw;
             border: none;
             border-radius: 6px;
-            font-size: 1.6vw;
+            font-size: 1.5vw;
             font-weight: 700;
             cursor: pointer;
             transition: 0.15s;
-            min-width: 6vw;
+            min-width: 5vw;
             text-align: center;
         }
         .task-btn:active {
             transform: scale(0.95);
         }
-
         .task-btn.go {
             background: #b0b0b0;
             color: #fff;
-            cursor: pointer;
         }
-        .task-btn.go:hover {
-            background: #9a9a9a;
-        }
-
         .task-btn.claim {
             background: #ffb300;
             color: #fff;
             box-shadow: 0 4px 12px rgba(255, 179, 0, 0.3);
         }
         .task-btn.claim:hover {
-            background: #ffa000;
             transform: scale(1.03);
         }
-
         .task-btn.claimed {
             background: #b0b0b0;
             color: #fff;
             cursor: default;
             opacity: 0.7;
         }
-
-        /* ===== 响应式 ===== */
         @media (orientation: portrait) {
             .container {
                 transform: rotate(-90deg) scale(0.8);
@@ -229,42 +200,33 @@
             }
             .task-btn {
                 font-size: 2.4vw;
-                padding: 0.6vw 3vw;
-                min-width: 10vw;
+                padding: 0.6vw 2.5vw;
+                min-width: 8vw;
             }
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <!-- 顶部导航 -->
         <div class="top-bar">
-            <button class="btn-back" onclick="goBackToHall()">← 返回大厅</button>
+            <button class="btn-back" onclick="window.location.href='Hall.html'">← 返回大厅</button>
             <div class="page-title">📋 任务</div>
         </div>
-
-        <!-- 提示文字 -->
         <div class="notice">
-            ⚠️ 注意，该任务每 <strong>3天</strong> 会自动刷新，并且完成任务请及时到此页面领取奖励，<span class="highlight">刷新后之前的任务奖励无法获取</span>。
+            ⚠️ 任务每 <strong>3天</strong> 自动刷新，完成任务后请及时领取奖励，<span class="highlight">刷新后未领取的奖励将无法获取</span>。
         </div>
-
-        <!-- 任务列表 -->
         <div class="tasks-container" id="tasksContainer"></div>
     </div>
 
     <script>
         // ================================================================
-        //  1. 统一 data.json 操作
+        //  统一数据操作
         // ================================================================
 
         function loadData() {
             var raw = localStorage.getItem('data.json');
             if (!raw) return null;
-            try {
-                return JSON.parse(raw);
-            } catch (e) {
-                return null;
-            }
+            try { return JSON.parse(raw); } catch (e) { return null; }
         }
 
         function saveData(data) {
@@ -297,14 +259,11 @@
                     lastFreeClaim: '',
                     adWatchCount: 0,
                     adWatchDate: '',
-                    // 赚钱相关
                     moneyPicks: 0,
                     moneyPickDate: '',
-                    // 抽奖相关
                     hasDrawnBefore: false,
                     totalDraws: 0,
                     tenDrawsCount: 0,
-                    // 任务系统追踪数据
                     taskData: {
                         monstersKilled: 0,
                         healItemsUsed: 0,
@@ -319,7 +278,6 @@
                         tenDrawsCount: 0,
                         moneyPicks: 0
                     },
-                    // 任务系统刷新数据
                     taskRefreshDate: '',
                     currentTasks: [],
                     taskStates: {}
@@ -335,7 +293,7 @@
         }
 
         // ================================================================
-        //  2. 任务定义
+        //  任务定义
         // ================================================================
 
         var ALL_TASKS = [{
@@ -380,7 +338,7 @@
             }
         }, {
             id: 'kill_50_minions',
-            desc: '击败50只小兵小怪',
+            desc: '击败50只小兵',
             reward: 250,
             category: 'left',
             check: function(data) {
@@ -428,7 +386,7 @@
             }
         }, {
             id: 'reach_level_5',
-            desc: '等级升级到LV5',
+            desc: '等级达到LV5',
             reward: 250,
             category: 'left',
             check: function(data) {
@@ -476,7 +434,7 @@
             }
         }, {
             id: 'pick_card_once',
-            desc: '去赚钱页面翻一次卡牌',
+            desc: '去赚钱翻一次卡牌',
             reward: 500,
             category: 'right',
             check: function(data) {
@@ -485,7 +443,7 @@
         }];
 
         // ================================================================
-        //  3. 任务系统核心逻辑
+        //  任务系统核心
         // ================================================================
 
         function checkTaskRefresh(data) {
@@ -502,7 +460,6 @@
         }
 
         function refreshTasks(data) {
-            // 检查是否有未领取的任务
             var unclaimed = false;
             var states = data.user.taskStates || {};
             var current = data.user.currentTasks || [];
@@ -517,7 +474,6 @@
                 return;
             }
 
-            // 重置任务数据
             data.user.taskData = {
                 monstersKilled: 0,
                 healItemsUsed: 0,
@@ -533,7 +489,6 @@
                 moneyPicks: 0
             };
 
-            // 随机抽取10个任务
             var shuffled = ALL_TASKS.slice();
             for (var i = shuffled.length - 1; i > 0; i--) {
                 var j = Math.floor(Math.random() * (i + 1));
@@ -543,7 +498,6 @@
             }
             var selected = shuffled.slice(0, 10);
 
-            // 确保左右各5个
             var leftTasks = [];
             var rightTasks = [];
             for (var i = 0; i < selected.length; i++) {
@@ -553,20 +507,14 @@
                     rightTasks.push(selected[i]);
                 }
             }
-            // 补充
             while (leftTasks.length < 5) {
                 var fallback = ALL_TASKS.filter(function(t) { return t.category === 'left'; });
                 var idx = Math.floor(Math.random() * fallback.length);
-                // 避免重复
                 var exists = false;
                 for (var k = 0; k < leftTasks.length; k++) {
                     if (leftTasks[k].id === fallback[idx].id) { exists = true; break; }
                 }
-                if (!exists) {
-                    leftTasks.push(fallback[idx]);
-                } else {
-                    // 简单处理：直接再试一次
-                }
+                if (!exists) leftTasks.push(fallback[idx]);
             }
             while (rightTasks.length < 5) {
                 var fallback = ALL_TASKS.filter(function(t) { return t.category === 'right'; });
@@ -575,9 +523,7 @@
                 for (var k = 0; k < rightTasks.length; k++) {
                     if (rightTasks[k].id === fallback[idx].id) { exists = true; break; }
                 }
-                if (!exists) {
-                    rightTasks.push(fallback[idx]);
-                }
+                if (!exists) rightTasks.push(fallback[idx]);
             }
 
             var finalTasks = leftTasks.concat(rightTasks);
@@ -623,7 +569,6 @@
             if (states[taskId] !== 'completed') return;
             var taskDef = getTaskById(taskId);
             if (!taskDef) return;
-            // 发放奖励
             data.user.coins = (data.user.coins || 0) + taskDef.reward;
             states[taskId] = 'claimed';
             data.user.taskStates = states;
@@ -633,7 +578,7 @@
         }
 
         // ================================================================
-        //  4. UI 渲染
+        //  UI 渲染
         // ================================================================
 
         function renderTasks() {
@@ -643,46 +588,35 @@
             container.innerHTML = '';
             var current = data.user.currentTasks || [];
             var states = data.user.taskStates || {};
-            // 按 category 分组
             var leftTasks = [];
             var rightTasks = [];
             for (var i = 0; i < current.length; i++) {
                 var taskDef = getTaskById(current[i]);
                 if (taskDef) {
-                    if (taskDef.category === 'left') {
-                        leftTasks.push(taskDef);
-                    } else {
-                        rightTasks.push(taskDef);
-                    }
+                    if (taskDef.category === 'left') leftTasks.push(taskDef);
+                    else rightTasks.push(taskDef);
                 }
             }
-            // 排序：左边先渲染，右边后渲染
             var orderedTasks = leftTasks.concat(rightTasks);
             for (var i = 0; i < orderedTasks.length; i++) {
                 var task = orderedTasks[i];
                 var state = states[task.id] || 'not_started';
                 var div = document.createElement('div');
                 div.className = 'task-item';
-
                 var descSpan = document.createElement('span');
                 descSpan.className = 'task-desc';
                 descSpan.innerHTML = task.desc + ' <span class="reward-tag">💰+' + task.reward + '</span>';
                 div.appendChild(descSpan);
-
                 var btn = document.createElement('button');
                 btn.className = 'task-btn';
                 if (state === 'not_started') {
                     btn.className += ' go';
                     btn.innerText = '前往';
-                    btn.onclick = function() {
-                        window.location.href = 'Game.html';
-                    };
+                    btn.onclick = function() { window.location.href = 'Game.html'; };
                 } else if (state === 'completed') {
                     btn.className += ' claim';
                     btn.innerText = '领取';
-                    btn.onclick = function() {
-                        claimTask(task.id);
-                    };
+                    btn.onclick = function() { claimTask(task.id); };
                 } else {
                     btn.className += ' claimed';
                     btn.innerText = '已领取';
@@ -694,7 +628,7 @@
         }
 
         // ================================================================
-        //  5. 页面初始化
+        //  初始化
         // ================================================================
 
         function init() {
@@ -717,20 +651,11 @@
                 window.location.href = 'PersonalInformation.html';
                 return;
             }
-
-            // 检查任务刷新
             checkTaskRefresh(data);
-            // 更新任务状态
             updateTaskStates(data);
-            // 渲染任务
             renderTasks();
         }
 
-        function goBackToHall() {
-            window.location.href = 'Hall.html';
-        }
-
-        // 启动
         init();
 
         console.log('📋 广仙世界 · 任务系统已加载');

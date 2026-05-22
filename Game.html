@@ -2,24 +2,25 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>选择难度 · 广仙世界</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>难度选择 · 广仙世界</title>
     <style>
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
             user-select: none;
+            -webkit-tap-highlight-color: transparent;
         }
         body {
-            margin: 0;
-            padding: 0;
-            height: 100vh;
-            background: #000;
+            background: #f5efe6;
             display: flex;
             justify-content: center;
             align-items: center;
-            font-family: system-ui, 'Segoe UI', 'PingFang SC', Roboto;
+            height: 100vh;
+            width: 100vw;
+            overflow: hidden;
+            font-family: 'PingFang SC', 'Microsoft YaHei', system-ui, sans-serif;
         }
         .container {
             width: 100vw;
@@ -37,7 +38,7 @@
             top: 3%;
             left: 4%;
             font-size: 2.2vw;
-            font-weight: bold;
+            font-weight: 700;
             cursor: pointer;
             color: #000;
             z-index: 10;
@@ -45,10 +46,8 @@
             padding: 0.3vw 1.2vw;
             border-radius: 6px;
             backdrop-filter: blur(4px);
+            border: none;
             transition: 0.2s;
-        }
-        .back-btn:hover {
-            background: rgba(255, 255, 255, 0.5);
         }
         .back-btn:active {
             transform: scale(0.95);
@@ -59,7 +58,7 @@
             left: 50%;
             transform: translateX(-50%);
             font-size: 3.8vw;
-            font-weight: bold;
+            font-weight: 900;
             color: #fff;
             text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
         }
@@ -126,8 +125,8 @@
         }
         .card-level {
             font-size: 3vw;
-            font-weight: bold;
-            color: #000;
+            font-weight: 700;
+            color: #1a1a1a;
             margin-bottom: 1vw;
         }
         .card-monster {
@@ -142,7 +141,7 @@
             border: none;
             border-radius: 12px;
             font-size: 2vw;
-            font-weight: bold;
+            font-weight: 700;
             cursor: pointer;
             transition: 0.15s;
             position: relative;
@@ -152,10 +151,6 @@
             color: #fff;
             box-shadow: 0 4px 12px rgba(255, 136, 0, 0.3);
         }
-        .card-btn.unlocked:hover {
-            background: #ff7700;
-            transform: scale(1.03);
-        }
         .card-btn.unlocked:active {
             transform: scale(0.96);
         }
@@ -164,9 +159,6 @@
             color: #fff;
             cursor: not-allowed;
             opacity: 0.7;
-        }
-        .card-btn .lock-icon {
-            margin-right: 0.5vw;
         }
         .progress-bar {
             position: absolute;
@@ -202,38 +194,55 @@
         }
         .player-level-badge span {
             color: #ffcc00;
-            font-weight: bold;
+            font-weight: 700;
         }
         @media (orientation: portrait) {
             .container {
                 transform: rotate(-90deg) scale(0.8);
+                transform-origin: center center;
+            }
+        }
+        @media (max-width: 600px) {
+            .title {
+                font-size: 5vw;
+            }
+            .card-level {
+                font-size: 4vw;
+            }
+            .card-btn {
+                font-size: 3vw;
+            }
+            .player-level-badge {
+                font-size: 2.8vw;
+                padding: 0.8vw 3vw;
+            }
+            .back-btn {
+                font-size: 3.5vw;
+                padding: 0.6vw 2vw;
             }
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <div class="back-btn" onclick="window.location.href='Hall.html'">← 返回大厅</div>
+        <button class="back-btn" onclick="window.location.href='Hall.html'">← 返回大厅</button>
         <div class="title">选择等级</div>
         <div class="difficulty-container" id="difficultyContainer"></div>
         <div class="progress-bar">
             <div class="progress-fill" id="progressFill"></div>
         </div>
-        <div class="player-level-badge" id="levelBadge">当前等级: <span id="playerLevelDisplay">Lv.1</span></div>
+        <div class="player-level-badge">当前等级: <span id="playerLevelDisplay">Lv.1</span></div>
     </div>
+
     <script>
         // ================================================================
-        //  统一 data.json 操作函数（与所有页面共享）
+        //  统一数据操作
         // ================================================================
 
         function loadData() {
             var raw = localStorage.getItem('data.json');
             if (!raw) return null;
-            try {
-                return JSON.parse(raw);
-            } catch (e) {
-                return null;
-            }
+            try { return JSON.parse(raw); } catch (e) { return null; }
         }
 
         function saveData(data) {
@@ -241,83 +250,40 @@
             localStorage.setItem('GuangXianData', JSON.stringify(data));
         }
 
-        function createDefaultData() {
-            var now = new Date().toISOString().split('T')[0];
-            return {
-                user: {
-                    username: '',
-                    password: '',
-                    nickname: '云游仙友',
-                    avatar: 'https://xiaoye6661234.github.io/GuangXianWorld/Default avatar.jpg',
-                    region: '',
-                    bgImage: '',
-                    level: 1,
-                    coins: 1000,
-                    exp: 0,
-                    nextExp: 1000,
-                    role: '',
-                    joinedDate: now,
-                    lastLoginDate: now,
-                    loginStreak: 0,
-                    signHistory: [],
-                    settings: { bgm: true, bgmVolume: 40, sfxVolume: 50 },
-                    hasClaimedNotice: false,
-                    lastDailyWelfare: '',
-                    lastFreeClaim: ''
-                },
-                inventory: [],
-                equippedWeapon: null,
-                taskProgress: 0,
-                taskClaimed1: false,
-                taskClaimed5: false,
-                taskClaimed10: false,
-                chapter: 1
-            };
-        }
+        // ================================================================
+        //  难度配置（新增 Lv.10、Lv.15、Lv.20）
+        // ================================================================
+
+        var difficultyList = [
+            { level: 1, name: 'Lv.1', scene: 'Level1.html', desc: '未开智', reward: '无' },
+            { level: 2, name: 'Lv.2', scene: 'Level2.html', desc: '开智了', reward: '无' },
+            { level: 3, name: 'Lv.3', scene: 'Level3.html', desc: '暗影刺客', reward: '无' },
+            { level: 4, name: 'Lv.4', scene: 'Level4.html', desc: '那咋了那咋了', reward: '无' },
+            { level: 5, name: 'Lv.5', scene: 'Level5.html', desc: '更新配置中', reward: '无' },
+            { level: 6, name: 'Lv.6', scene: 'Level6.html', desc: '加载中', reward: '无' },
+            { level: 7, name: 'Lv.7', scene: 'Level7.html', desc: '3A大作', reward: '无' },
+            { level: 8, name: 'Lv.8', scene: 'Level8.html', desc: 'Look my eyes', reward: '无' },
+            { level: 10, name: 'Lv.10', scene: 'Level10.html', desc: '夯', reward: '无' },
+            { level: 15, name: 'Lv.15', scene: 'Level15.html', desc: '急急如律令', reward: '无' },
+            { level: 20, name: 'Lv.20', scene: 'Level20.html', desc: '不如喘口气吧小大人', reward: '无' }
+            { level: 25, name: 'Lv.25', scene: 'Level25.html', desc: '阿帕次阿帕次', reward: '无' }
+             { level: 30, name: 'Lv.30', scene: 'Level30.html', desc: '懒得更新了', reward: '无' }
+        ];
 
         // ================================================================
-        //  全局数据
+        //  数据加载与渲染
         // ================================================================
 
         var gData = {};
         var selectedDifficulty = 0;
 
-        // ================================================================
-        //  难度配置（可无限扩展，自动生成卡片）
-        // ================================================================
-
-        var difficultyList = [
-            { level: 1, name: "Lv.1", scene: "Level1.html", desc: "恶魔小兵", reward: "无" },
-            { level: 2, name: "Lv.2", scene: "Level2.html", desc: "骷髅战士", reward: "无" },
-            { level: 3, name: "Lv.3 ", scene: "Level3.html", desc: "暗影刺客", reward: "无" },
-            { level: 4, name: "Lv.4", scene: "Level4.html", desc: "初级Boss", reward: "无" },
-            { level: 5, name: "Lv.5", scene: "Level5.html", desc: "火焰魔像", reward: "无" },
-            { level: 6, name: "Lv.6", scene: "Level6.html", desc: "石巨人", reward: "无" },
-            { level: 7, name: "Lv.7", scene: "Level7.html", desc: "暗影领主", reward: "无" },
-            { level: 8, name: "Lv.8", scene: "Level8.html", desc: "普通Boss", reward: "无" }
-          
-        ];
-
-        // ================================================================
-        //  数据检查与加载
-        // ================================================================
-
         function loadDataAndCheck() {
             var data = loadData();
-            if (!data) {
-                alert('请先登录！');
-                window.location.href = 'Signin.html';
-                return;
-            }
-            if (!data.user) {
-                alert('数据异常，请重新登录！');
-                window.location.href = 'Signin.html';
-                return;
-            }
-            if (!data.user.role) {
-                window.location.href = 'ChooseRole.html';
-                return;
-            }
+            if (!data) { alert('请先登录！');
+                window.location.href = 'Signin.html'; return; }
+            if (!data.user) { alert('数据异常！');
+                window.location.href = 'Signin.html'; return; }
+            if (!data.user.role) { window.location.href = 'ChooseRole.html'; return; }
             if (!data.user.nickname || data.user.nickname === '云游仙友' || !data.user.region) {
                 window.location.href = 'PersonalInformation.html';
                 return;
@@ -328,14 +294,9 @@
             updateLevelBadge();
         }
 
-        // ================================================================
-        //  渲染难度卡片
-        // ================================================================
-
         function renderDifficultyCards() {
             var container = document.getElementById('difficultyContainer');
             var userLevel = gData.user.level || 1;
-
             container.innerHTML = '';
             difficultyList.forEach(function(diff, index) {
                 var isUnlocked = userLevel >= diff.level;
@@ -344,83 +305,46 @@
                 card.dataset.index = index;
                 card.dataset.unlocked = isUnlocked;
                 card.dataset.scene = diff.scene;
-
                 card.innerHTML = `
                     <div class="card-top">
                         <div class="card-level">${diff.name}</div>
-                        <img src="https://xiaoye6661234.github.io/GuangXianWorld/Monster.png" class="card-monster" alt="怪物" />
+                        <img src="https://xiaoye6661234.github.io/GuangXianWorld/Monster1-Ice.png" class="card-monster" alt="怪物" />
                         <div style="font-size:1.2vw;color:#555;margin-top:0.5vw;">${diff.desc}</div>
                     </div>
-                    <button class="card-btn ${isUnlocked ? 'unlocked' : 'locked'}" 
-                            ${!isUnlocked ? 'disabled' : ''}>
+                    <button class="card-btn ${isUnlocked ? 'unlocked' : 'locked'}" ${!isUnlocked ? 'disabled' : ''}>
                         ${isUnlocked ? '⚔️ 开始挑战' : '🔒 暂未解锁'}
                     </button>
                 `;
-
-                // 卡片点击事件
-                card.addEventListener('click', function() {
-                    playClickSound();
-                    selectDifficulty(index);
-                });
-
-                // 按钮点击事件（开始游戏）
+                card.addEventListener('click', function() { selectDifficulty(index); });
                 card.querySelector('.card-btn').addEventListener('click', function(e) {
                     e.stopPropagation();
-                    if (isUnlocked) {
-                        playClickSound();
-                        startGame(diff.scene);
-                    } else {
-                        alert('🔒 需要达到 ' + diff.name + ' 才能解锁此难度！\n当前等级: Lv.' + userLevel);
+                    if (isUnlocked) { startGame(diff.scene); } else {
+                        alert('🔒 需要达到 ' + diff.name + ' 才能解锁！当前等级: Lv.' + userLevel);
                     }
                 });
-
                 container.appendChild(card);
             });
         }
 
-        // ================================================================
-        //  选择难度
-        // ================================================================
-
         function selectDifficulty(index) {
-            document.querySelectorAll('.difficulty-card').forEach(function(card) {
-                card.classList.remove('selected');
-            });
+            document.querySelectorAll('.difficulty-card').forEach(function(c) { c.classList.remove('selected'); });
             var card = document.querySelector('.difficulty-card[data-index="' + index + '"]');
-            if (card) {
-                card.classList.add('selected');
+            if (card) { card.classList.add('selected');
                 selectedDifficulty = index;
-                // 滚动到选中的卡片
-                card.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
-            }
+                card.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' }); }
         }
 
-        // ================================================================
-        //  开始游戏
-        // ================================================================
-
-        function startGame(scene) {
-            // 检查关卡文件是否存在（通过尝试加载，或者直接跳转）
-            // 这里直接跳转，如果文件不存在会显示404，用户可自行创建
-            window.location.href = scene;
-        }
-
-        // ================================================================
-        //  滚动与进度条同步
-        // ================================================================
+        function startGame(scene) { window.location.href = scene; }
 
         function initScrollSync() {
             var container = document.getElementById('difficultyContainer');
             var progressFill = document.getElementById('progressFill');
-
             container.addEventListener('scroll', function() {
                 var scrollLeft = container.scrollLeft;
                 var scrollWidth = container.scrollWidth - container.clientWidth;
                 var progress = scrollWidth > 0 ? (scrollLeft / scrollWidth) * 100 : 0;
                 progressFill.style.width = progress + '%';
             });
-
-            // 初始触发一次，让进度条显示正确位置
             setTimeout(function() {
                 var scrollLeft = container.scrollLeft;
                 var scrollWidth = container.scrollWidth - container.clientWidth;
@@ -429,65 +353,45 @@
             }, 100);
         }
 
-        // ================================================================
-        //  更新等级徽章
-        // ================================================================
-
         function updateLevelBadge() {
-            var level = gData.user.level || 1;
-            document.getElementById('playerLevelDisplay').innerText = 'Lv.' + level;
+            document.getElementById('playerLevelDisplay').innerText = 'Lv.' + (gData.user.level || 1);
         }
 
         // ================================================================
-        //  播放点击音效
-        // ================================================================
-
-        function playClickSound() {
-            var click = new Audio('https://xiaoye6661234.github.io/GuangXianWorld/click.mp3');
-            click.volume = (gData.user.settings?.sfxVolume || 50) / 100;
-            click.play().catch(function(e) {});
-        }
-
-        // ================================================================
-        //  页面加载
-        // ================================================================
-
-        loadDataAndCheck();
-
-        // ================================================================
-        //  键盘快捷键支持
+        //  键盘快捷键（支持 1-9, 0 对应 Lv.10，后续可扩展）
         // ================================================================
 
         document.addEventListener('keydown', function(e) {
-            if (e.key === 'Escape') {
-                window.location.href = 'Hall.html';
-            }
-            // 数字键快速选择关卡 (1-9)
+            if (e.key === 'Escape') { window.location.href = 'Hall.html'; return; }
             var num = parseInt(e.key);
+            // 数字键 1-9 对应前9个难度，0 对应第10个（Lv.10），后续可扩展
             if (num >= 1 && num <= 9 && num <= difficultyList.length) {
                 var index = num - 1;
                 var card = document.querySelector('.difficulty-card[data-index="' + index + '"]');
-                if (card) {
-                    var isUnlocked = card.dataset.unlocked === 'true';
-                    if (isUnlocked) {
-                        selectDifficulty(index);
-                        playClickSound();
-                        setTimeout(function() {
-                            startGame(card.dataset.scene);
-                        }, 300);
-                    } else {
-                        alert('🔒 需要达到 ' + difficultyList[index].name + ' 才能解锁此难度！\n当前等级: Lv.' + (gData.user
-                            .level || 1));
-                    }
+                if (card && card.dataset.unlocked === 'true') {
+                    selectDifficulty(index);
+                    setTimeout(function() { startGame(card.dataset.scene); }, 300);
+                } else {
+                    alert('🔒 需要达到 ' + difficultyList[index].name + ' 才能解锁！');
+                }
+            } else if (num === 0 && difficultyList.length >= 10) {
+                var index = 9; // 第10个难度（Lv.10）
+                var card = document.querySelector('.difficulty-card[data-index="' + index + '"]');
+                if (card && card.dataset.unlocked === 'true') {
+                    selectDifficulty(index);
+                    setTimeout(function() { startGame(card.dataset.scene); }, 300);
+                } else {
+                    alert('🔒 需要达到 ' + difficultyList[index].name + ' 才能解锁！');
                 }
             }
         });
 
+        loadDataAndCheck();
+
         console.log('🎯 广仙世界 · 难度选择已加载');
         console.log('📖 当前等级: Lv.' + (gData.user.level || 1));
-        console.log('🔑 已解锁关卡: ' + difficultyList.filter(function(d) { return (gData.user.level || 1) >= d.level; }).map(
-            function(d) { return d.name; }).join(', '));
-        console.log('⌨️ 快捷键: 数字键 1-' + difficultyList.length + ' 快速选择关卡, ESC 返回大厅');
+        console.log('📖 共 ' + difficultyList.length + ' 个难度，新增 Lv.10、Lv.15、Lv.20');
+        console.log('⌨️ 快捷键: 数字键 1-9 对应前9个难度，0 对应 Lv.10，ESC 返回大厅');
     </script>
 </body>
 </html>
