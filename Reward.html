@@ -1,0 +1,1097 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>幸运抽奖 · 广仙世界</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+        body {
+            background: #f5efe6;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            width: 100vw;
+            overflow: hidden;
+            font-family: 'PingFang SC', 'Microsoft YaHei', system-ui, sans-serif;
+        }
+
+        /* ===== 主容器 ===== */
+        .container {
+            width: 100vw;
+            height: 56.25vw;
+            max-height: 100vh;
+            max-width: 177.78vh;
+            position: relative;
+            background: #f5efe6;
+            overflow: hidden;
+        }
+
+        /* ===== 顶部导航 ===== */
+        .top-bar {
+            position: absolute;
+            top: 2.5%;
+            left: 0;
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 3%;
+            z-index: 10;
+        }
+        .btn-back {
+            background: #ccc;
+            color: #333;
+            font-size: 1.8vw;
+            font-weight: bold;
+            padding: 0.5vw 2vw;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: 0.15s;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+        }
+        .btn-back:hover {
+            background: #bbb;
+            transform: scale(1.02);
+        }
+        .btn-back:active {
+            transform: scale(0.96);
+        }
+        .page-title {
+            font-size: 3.2vw;
+            font-weight: 900;
+            color: #1a1a1a;
+            letter-spacing: 0.06em;
+        }
+        .top-right {
+            width: 10vw;
+        }
+
+        /* ===== 主体布局 ===== */
+        .main-area {
+            position: absolute;
+            top: 12%;
+            left: 4%;
+            width: 92%;
+            height: 78%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 4%;
+        }
+
+        /* ===== 转盘区域 ===== */
+        .wheel-wrapper {
+            flex: 0 0 50%;
+            aspect-ratio: 1/1;
+            max-width: 45vw;
+            max-height: 45vw;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        #wheelCanvas {
+            width: 100%;
+            height: 100%;
+            display: block;
+            border-radius: 50%;
+            box-shadow: 0 8px 40px rgba(0, 0, 0, 0.15);
+            transition: transform 0.1s;
+        }
+        /* 指针（固定在转盘上方） */
+        .pointer {
+            position: absolute;
+            top: -2%;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 0;
+            height: 0;
+            border-left: 2.5vw solid transparent;
+            border-right: 2.5vw solid transparent;
+            border-top: 4.5vw solid #e74c3c;
+            z-index: 5;
+            filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.3));
+        }
+        .pointer::after {
+            content: '';
+            position: absolute;
+            top: -4.8vw;
+            left: -1.2vw;
+            width: 2.4vw;
+            height: 2.4vw;
+            border-radius: 50%;
+            background: #ffd700;
+            box-shadow: 0 2px 12px rgba(255, 215, 0, 0.5);
+        }
+
+        /* ===== 右侧按钮区域 ===== */
+        .btn-area {
+            flex: 0 0 42%;
+            display: flex;
+            flex-direction: column;
+            gap: 2vw;
+            align-items: center;
+            justify-content: center;
+        }
+        .btn-draw {
+            width: 85%;
+            max-width: 28vw;
+            background: #ffb300;
+            color: white;
+            font-size: 2.8vw;
+            font-weight: 900;
+            padding: 1.2vw 2vw;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: 0.15s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 1.2vw;
+            box-shadow: 0 4px 16px rgba(255, 179, 0, 0.3);
+        }
+        .btn-draw:hover:not(:disabled) {
+            background: #ffa000;
+            transform: scale(1.03);
+        }
+        .btn-draw:active:not(:disabled) {
+            transform: scale(0.96);
+        }
+        .btn-draw:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            box-shadow: none;
+            transform: none;
+        }
+        .btn-draw .coin-icon {
+            width: 3.5vw;
+            height: 3.5vw;
+            object-fit: contain;
+        }
+        .btn-draw .btn-label {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            line-height: 1.2;
+        }
+        .btn-draw .btn-label .main {
+            font-size: 2.8vw;
+        }
+        .btn-draw .btn-label .sub {
+            font-size: 1.4vw;
+            opacity: 0.85;
+        }
+
+        /* ===== 余额显示 ===== */
+        .balance-display {
+            font-size: 1.8vw;
+            color: #555;
+            margin-top: 0.5vw;
+            background: rgba(255, 255, 255, 0.7);
+            padding: 0.4vw 1.5vw;
+            border-radius: 20px;
+            backdrop-filter: blur(4px);
+        }
+        .balance-display span {
+            color: #d4a017;
+            font-weight: 700;
+        }
+
+        /* ================================================================
+           结果弹窗
+           ================================================================ */
+        #resultModal {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 50;
+            background: rgba(0, 0, 0, 0.55);
+            backdrop-filter: blur(6px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            pointer-events: auto;
+        }
+        #resultModal.show {
+            display: flex;
+        }
+
+        .result-card {
+            width: 80%;
+            max-width: 600px;
+            max-height: 85%;
+            background: #f5efe6;
+            border-radius: 20px;
+            padding: 2.5vw 3vw;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            overflow: hidden;
+        }
+
+        .result-close {
+            position: absolute;
+            top: 1.5vw;
+            right: 2.5vw;
+            font-size: 4vw;
+            font-weight: 900;
+            color: #333;
+            cursor: pointer;
+            line-height: 1;
+            transition: 0.15s;
+            z-index: 5;
+        }
+        .result-close:hover {
+            transform: scale(1.2);
+            color: #e74c3c;
+        }
+
+        .result-title {
+            font-size: 4vw;
+            font-weight: 900;
+            color: #1a1a1a;
+            margin-bottom: 1.5vw;
+            text-align: center;
+        }
+        .result-title .highlight {
+            color: #d4a017;
+        }
+
+        /* 卡片滑动容器 */
+        .cards-container {
+            width: 100%;
+            flex: 1;
+            overflow: hidden;
+            position: relative;
+            min-height: 20vw;
+            margin-bottom: 1.5vw;
+        }
+        .cards-track {
+            display: flex;
+            gap: 1.5vw;
+            transition: transform 0.3s ease;
+            padding: 0.5vw 0;
+        }
+        .prize-card {
+            flex: 0 0 28%;
+            min-width: 120px;
+            background: white;
+            border-radius: 12px;
+            border: 0.4vw solid #ffd700;
+            padding: 1.5vw 1vw;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+            text-align: center;
+        }
+        .prize-card .card-icon {
+            width: 5vw;
+            height: 5vw;
+            object-fit: contain;
+            margin-bottom: 0.8vw;
+        }
+        .prize-card .card-name {
+            font-size: 1.8vw;
+            font-weight: 700;
+            color: #1a1a1a;
+        }
+        .prize-card .card-sub {
+            font-size: 1.3vw;
+            color: #888;
+            margin-top: 0.2vw;
+        }
+        .prize-card.bonus {
+            border-color: #ff6b00;
+            background: #fff8f0;
+        }
+        .prize-card.bonus .card-name {
+            color: #d4a017;
+        }
+
+        /* 滑动条 */
+        .slider-container {
+            width: 80%;
+            margin-top: 0.5vw;
+            margin-bottom: 1vw;
+        }
+        .slider-container input[type="range"] {
+            width: 100%;
+            height: 0.6vw;
+            -webkit-appearance: none;
+            appearance: none;
+            background: #ddd;
+            border-radius: 10px;
+            outline: none;
+            transition: 0.2s;
+        }
+        .slider-container input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 2vw;
+            height: 2vw;
+            border-radius: 50%;
+            background: #ffd700;
+            cursor: pointer;
+            box-shadow: 0 2px 8px rgba(255, 215, 0, 0.3);
+        }
+        .slider-container input[type="range"]::-moz-range-thumb {
+            width: 2vw;
+            height: 2vw;
+            border-radius: 50%;
+            background: #ffd700;
+            cursor: pointer;
+        }
+
+        .btn-confirm-result {
+            background: #ffb300;
+            color: white;
+            font-size: 2.4vw;
+            font-weight: 700;
+            padding: 0.8vw 5vw;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: 0.15s;
+            box-shadow: 0 4px 12px rgba(255, 179, 0, 0.25);
+        }
+        .btn-confirm-result:hover {
+            background: #ffa000;
+            transform: scale(1.03);
+        }
+        .btn-confirm-result:active {
+            transform: scale(0.96);
+        }
+
+        /* ===== 响应式 ===== */
+        @media (orientation: portrait) {
+            .container {
+                transform: rotate(-90deg) scale(0.8);
+                transform-origin: center center;
+            }
+        }
+        @media (max-width: 600px) {
+            .main-area {
+                flex-direction: column;
+                gap: 2vw;
+                top: 14%;
+                height: 74%;
+            }
+            .wheel-wrapper {
+                flex: 0 0 55%;
+                max-width: 55vw;
+                max-height: 55vw;
+            }
+            .btn-area {
+                flex: 0 0 30%;
+                gap: 1.5vw;
+            }
+            .btn-draw {
+                font-size: 3.5vw;
+                padding: 1.5vw 3vw;
+                max-width: 40vw;
+            }
+            .btn-draw .coin-icon {
+                width: 5vw;
+                height: 5vw;
+            }
+            .btn-draw .btn-label .main {
+                font-size: 3.5vw;
+            }
+            .btn-draw .btn-label .sub {
+                font-size: 1.8vw;
+            }
+            .page-title {
+                font-size: 4.5vw;
+            }
+            .btn-back {
+                font-size: 2.8vw;
+                padding: 0.8vw 3vw;
+            }
+            .balance-display {
+                font-size: 2.8vw;
+            }
+            .result-card {
+                width: 92%;
+                padding: 4vw 5vw;
+            }
+            .result-title {
+                font-size: 6vw;
+            }
+            .prize-card {
+                flex: 0 0 35%;
+                min-width: 80px;
+                padding: 2vw 1.5vw;
+            }
+            .prize-card .card-icon {
+                width: 8vw;
+                height: 8vw;
+            }
+            .prize-card .card-name {
+                font-size: 2.8vw;
+            }
+            .prize-card .card-sub {
+                font-size: 2vw;
+            }
+            .btn-confirm-result {
+                font-size: 3.5vw;
+                padding: 1.5vw 8vw;
+            }
+            .slider-container input[type="range"]::-webkit-slider-thumb {
+                width: 4vw;
+                height: 4vw;
+            }
+            .slider-container input[type="range"]::-moz-range-thumb {
+                width: 4vw;
+                height: 4vw;
+            }
+            .pointer {
+                border-left-width: 3.5vw;
+                border-right-width: 3.5vw;
+                border-top-width: 6vw;
+            }
+            .pointer::after {
+                top: -6.8vw;
+                left: -1.8vw;
+                width: 3.6vw;
+                height: 3.6vw;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- 顶部栏 -->
+        <div class="top-bar">
+            <button class="btn-back" onclick="goBackToHall()">← 返回大厅</button>
+            <div class="page-title">🎯 幸运抽奖</div>
+            <div class="top-right"></div>
+        </div>
+
+        <!-- 主区域 -->
+        <div class="main-area">
+            <!-- 转盘 -->
+            <div class="wheel-wrapper">
+                <canvas id="wheelCanvas"></canvas>
+                <div class="pointer"></div>
+            </div>
+
+            <!-- 按钮区域 -->
+            <div class="btn-area">
+                <button class="btn-draw" id="drawOneBtn" onclick="draw(1)">
+                    <img src="https://xiaoye6661234.github.io/GuangXianWorld/CuangXianCoin.png" class="coin-icon" alt="币" />
+                    <div class="btn-label">
+                        <span class="main">250 币 / 次</span>
+                        <span class="sub">单次抽奖</span>
+                    </div>
+                </button>
+                <button class="btn-draw" id="drawTenBtn" onclick="draw(10)">
+                    <img src="https://xiaoye6661234.github.io/GuangXianWorld/CuangXianCoin.png" class="coin-icon" alt="币" />
+                    <div class="btn-label">
+                        <span class="main">2250 币 / 10次</span>
+                        <span class="sub">十连抽 (优惠250币)</span>
+                    </div>
+                </button>
+                <div class="balance-display">
+                    🪙 余额：<span id="coinBalance">1000</span> 广仙币
+                </div>
+            </div>
+        </div>
+
+        <!-- 结果弹窗 -->
+        <div id="resultModal">
+            <div class="result-card">
+                <div class="result-close" onclick="closeResult()">✕</div>
+                <div class="result-title" id="resultTitle">🎉 恭喜获得</div>
+                <div class="cards-container" id="cardsContainer">
+                    <div class="cards-track" id="cardsTrack"></div>
+                </div>
+                <div class="slider-container" id="sliderContainer" style="display:none;">
+                    <input type="range" id="cardSlider" min="0" max="0" value="0" oninput="slideCards(this.value)" />
+                </div>
+                <button class="btn-confirm-result" onclick="closeResult()">确 定</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ================================================================
+        //  1. 统一 data.json 操作
+        // ================================================================
+
+        function loadData() {
+            var raw = localStorage.getItem('data.json');
+            if (!raw) return null;
+            try {
+                return JSON.parse(raw);
+            } catch (e) {
+                return null;
+            }
+        }
+
+        function saveData(data) {
+            localStorage.setItem('data.json', JSON.stringify(data));
+            localStorage.setItem('GuangXianData', JSON.stringify(data));
+        }
+
+        function createDefaultData() {
+            var now = new Date().toISOString().split('T')[0];
+            return {
+                user: {
+                    username: '',
+                    password: '',
+                    nickname: '云游仙友',
+                    avatar: 'https://xiaoye6661234.github.io/GuangXianWorld/Default avatar.jpg',
+                    region: '',
+                    bgImage: '',
+                    level: 1,
+                    coins: 1000,
+                    exp: 0,
+                    nextExp: 1000,
+                    role: '',
+                    joinedDate: now,
+                    lastLoginDate: now,
+                    loginStreak: 0,
+                    signHistory: [],
+                    settings: { bgm: true, bgmVolume: 40, sfxVolume: 50 },
+                    hasClaimedNotice: false,
+                    lastDailyWelfare: '',
+                    lastFreeClaim: '',
+                    adWatchCount: 0,
+                    adWatchDate: '',
+                    // 抽奖相关
+                    hasDrawnBefore: false,
+                    totalDraws: 0
+                },
+                inventory: [],
+                equippedWeapon: null,
+                taskProgress: 0,
+                taskClaimed1: false,
+                taskClaimed5: false,
+                taskClaimed10: false,
+                chapter: 1
+            };
+        }
+
+        // ================================================================
+        //  2. 奖品配置
+        // ================================================================
+
+        var PRIZES = [{
+            id: 'coin_250',
+            name: '250广仙币',
+            value: 250,
+            type: 'coins',
+            prob: 0.18,
+            icon: 'https://xiaoye6661234.github.io/GuangXianWorld/CuangXianCoin.png',
+            color: '#4fc3f7'
+        }, {
+            id: 'coin_50',
+            name: '50广仙币',
+            value: 50,
+            type: 'coins',
+            prob: 0.20,
+            icon: 'https://xiaoye6661234.github.io/GuangXianWorld/CuangXianCoin.png',
+            color: '#ffffff'
+        }, {
+            id: 'coin_100',
+            name: '100广仙币',
+            value: 100,
+            type: 'coins',
+            prob: 0.20,
+            icon: 'https://xiaoye6661234.github.io/GuangXianWorld/CuangXianCoin.png',
+            color: '#4fc3f7'
+        }, {
+            id: 'coin_2500',
+            name: '2500广仙币',
+            value: 2500,
+            type: 'coins',
+            prob: 0.01,
+            icon: 'https://xiaoye6661234.github.io/GuangXianWorld/CuangXianCoin.png',
+            color: '#ffffff'
+        }, {
+            id: 'coin_750',
+            name: '750广仙币',
+            value: 750,
+            type: 'coins',
+            prob: 0.06,
+            icon: 'https://xiaoye6661234.github.io/GuangXianWorld/CuangXianCoin.png',
+            color: '#4fc3f7'
+        }, {
+            id: 'level_up_2',
+            name: '升两级',
+            value: 2,
+            type: 'level',
+            prob: 0.03,
+            icon: 'https://xiaoye6661234.github.io/GuangXianWorld/CuangXianCoin.png',
+            color: '#ffffff'
+        }, {
+            id: 'level_up_1',
+            name: '升一级',
+            value: 1,
+            type: 'level',
+            prob: 0.10,
+            icon: 'https://xiaoye6661234.github.io/GuangXianWorld/CuangXianCoin.png',
+            color: '#4fc3f7'
+        }, {
+            id: 'thanks',
+            name: '谢谢参与',
+            value: 0,
+            type: 'none',
+            prob: 0.22,
+            icon: 'https://xiaoye6661234.github.io/GuangXianWorld/CuangXianCoin.png',
+            color: '#ffffff'
+        }];
+
+        // ================================================================
+        //  3. 转盘绘制
+        // ================================================================
+
+        var canvas = document.getElementById('wheelCanvas');
+        var ctx = canvas.getContext('2d');
+        var wheelAngle = 0; // 当前转盘旋转角度（度）
+        var isSpinning = false;
+
+        function resizeCanvas() {
+            var rect = canvas.parentElement.getBoundingClientRect();
+            var size = rect.width;
+            canvas.width = size;
+            canvas.height = size;
+            drawWheel(0);
+        }
+        window.addEventListener('resize', resizeCanvas);
+
+        function drawWheel(rotationDeg) {
+            var size = canvas.width;
+            var cx = size / 2;
+            var cy = size / 2;
+            var radius = size / 2 - 4;
+
+            ctx.clearRect(0, 0, size, size);
+
+            var numSectors = PRIZES.length;
+            var anglePerSector = (2 * Math.PI) / numSectors;
+
+            // 绘制每个扇区
+            for (var i = 0; i < numSectors; i++) {
+                var startAngle = i * anglePerSector + rotationDeg * Math.PI / 180;
+                var endAngle = startAngle + anglePerSector;
+
+                // 扇区颜色（交替浅蓝和白色）
+                var color = (i % 2 === 0) ? '#b3e5fc' : '#ffffff';
+                ctx.beginPath();
+                ctx.moveTo(cx, cy);
+                ctx.arc(cx, cy, radius, startAngle, endAngle);
+                ctx.closePath();
+                ctx.fillStyle = color;
+                ctx.fill();
+                ctx.strokeStyle = '#90caf9';
+                ctx.lineWidth = 1.5;
+                ctx.stroke();
+
+                // 绘制文字（在扇区中间）
+                var midAngle = startAngle + anglePerSector / 2;
+                var textR = radius * 0.55;
+                var tx = cx + Math.cos(midAngle) * textR;
+                var ty = cy + Math.sin(midAngle) * textR;
+
+                var prize = PRIZES[i];
+                var label = prize.name;
+                if (label.length > 5) {
+                    if (label === '250广仙币') label = '250币';
+                    else if (label === '50广仙币') label = '50币';
+                    else if (label === '100广仙币') label = '100币';
+                    else if (label === '2500广仙币') label = '2500币';
+                    else if (label === '750广仙币') label = '750币';
+                    else if (label === '谢谢参与') label = '谢谢';
+                    else if (label === '升两级') label = '↑2级';
+                    else if (label === '升一级') label = '↑1级';
+                }
+
+                ctx.save();
+                ctx.translate(tx, ty);
+                ctx.rotate(midAngle);
+                ctx.fillStyle = '#1a1a1a';
+                ctx.font = 'bold ' + (size / 22) + 'px "PingFang SC", "Microsoft YaHei", sans-serif';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillText(label, 0, 0);
+                ctx.restore();
+            }
+
+            // 外圈
+            ctx.beginPath();
+            ctx.arc(cx, cy, radius, 0, 2 * Math.PI);
+            ctx.strokeStyle = '#4fc3f7';
+            ctx.lineWidth = 4;
+            ctx.stroke();
+
+            // 中心装饰
+            var grad = ctx.createRadialGradient(cx, cy, 0, cx, cy, radius * 0.12);
+            grad.addColorStop(0, '#ffd700');
+            grad.addColorStop(1, '#f9a825');
+            ctx.beginPath();
+            ctx.arc(cx, cy, radius * 0.12, 0, 2 * Math.PI);
+            ctx.fillStyle = grad;
+            ctx.fill();
+            ctx.strokeStyle = '#e6a800';
+            ctx.lineWidth = 2;
+            ctx.stroke();
+        }
+
+        // ================================================================
+        //  4. 抽奖逻辑
+        // ================================================================
+
+        function getPrize() {
+            var r = Math.random();
+            var cumulative = 0;
+            for (var i = 0; i < PRIZES.length; i++) {
+                cumulative += PRIZES[i].prob;
+                if (r < cumulative) {
+                    return PRIZES[i];
+                }
+            }
+            return PRIZES[PRIZES.length - 1];
+        }
+
+        function applyPrize(prize, data, isFirstDraw) {
+            var bonus = 0;
+            if (isFirstDraw) {
+                bonus = 250;
+            }
+
+            if (prize.type === 'coins') {
+                data.user.coins = (data.user.coins || 0) + prize.value + bonus;
+            } else if (prize.type === 'level') {
+                data.user.level = (data.user.level || 1) + prize.value;
+                data.user.nextExp = 900 + data.user.level * 100;
+                if (bonus > 0) {
+                    data.user.coins = (data.user.coins || 0) + bonus;
+                }
+            } else {
+                // 'none' 谢谢参与
+                if (bonus > 0) {
+                    data.user.coins = (data.user.coins || 0) + bonus;
+                }
+            }
+
+            data.user.totalDraws = (data.user.totalDraws || 0) + 1;
+            if (isFirstDraw) {
+                data.user.hasDrawnBefore = true;
+            }
+            return bonus;
+        }
+
+        function draw(count) {
+            if (isSpinning) return;
+            var data = loadData();
+            if (!data) {
+                alert('请先登录！');
+                window.location.href = 'Signin.html';
+                return;
+            }
+            if (!data.user) {
+                alert('数据异常，请重新登录！');
+                window.location.href = 'Signin.html';
+                return;
+            }
+
+            var cost = (count === 1) ? 250 : 2250;
+            if ((data.user.coins || 0) < cost) {
+                alert('广仙币不足！当前余额：' + (data.user.coins || 0) + ' 币');
+                return;
+            }
+
+            // 检查是否是第一次抽奖
+            var isFirstDraw = !data.user.hasDrawnBefore;
+
+            // 扣除费用
+            data.user.coins = (data.user.coins || 0) - cost;
+
+            // 执行抽奖
+            var results = [];
+            var totalBonus = 0;
+            for (var i = 0; i < count; i++) {
+                var prize = getPrize();
+                var bonus = 0;
+                if (i === 0 && isFirstDraw) {
+                    bonus = 250;
+                }
+                var prizeClone = JSON.parse(JSON.stringify(prize));
+                prizeClone.bonus = bonus;
+                results.push(prizeClone);
+                // 应用奖励（累积）
+                if (prize.type === 'coins') {
+                    data.user.coins = (data.user.coins || 0) + prize.value;
+                    if (bonus > 0) {
+                        data.user.coins = (data.user.coins || 0) + bonus;
+                        totalBonus += bonus;
+                    }
+                } else if (prize.type === 'level') {
+                    data.user.level = (data.user.level || 1) + prize.value;
+                    data.user.nextExp = 900 + data.user.level * 100;
+                    if (bonus > 0) {
+                        data.user.coins = (data.user.coins || 0) + bonus;
+                        totalBonus += bonus;
+                    }
+                } else {
+                    if (bonus > 0) {
+                        data.user.coins = (data.user.coins || 0) + bonus;
+                        totalBonus += bonus;
+                    }
+                }
+            }
+
+            // 更新抽奖状态
+            data.user.totalDraws = (data.user.totalDraws || 0) + count;
+            if (isFirstDraw) {
+                data.user.hasDrawnBefore = true;
+            }
+
+            // 保存数据
+            saveData(data);
+
+            // 更新余额显示
+            document.getElementById('coinBalance').innerText = data.user.coins || 0;
+
+            // 转盘旋转动画
+            spinWheel(function() {
+                // 动画结束后显示结果
+                showResults(results, totalBonus, count);
+            });
+        }
+
+        // ================================================================
+        //  5. 转盘旋转动画
+        // ================================================================
+
+        function spinWheel(callback) {
+            if (isSpinning) return;
+            isSpinning = true;
+
+            // 随机选择目标角度（转3-5圈 + 随机偏移）
+            var extraTurns = 3 + Math.random() * 2;
+            var targetAngle = wheelAngle + extraTurns * 360 + Math.random() * 360;
+
+            var duration = 1200 + Math.random() * 600; // 1.2-1.8秒
+            var startTime = performance.now();
+            var startAngle = wheelAngle;
+
+            function animate(time) {
+                var elapsed = time - startTime;
+                var progress = Math.min(elapsed / duration, 1);
+                // easeOutCubic
+                var ease = 1 - Math.pow(1 - progress, 3);
+                var currentAngle = startAngle + (targetAngle - startAngle) * ease;
+                wheelAngle = currentAngle;
+                drawWheel(currentAngle);
+
+                if (progress < 1) {
+                    requestAnimationFrame(animate);
+                } else {
+                    wheelAngle = targetAngle;
+                    drawWheel(targetAngle);
+                    isSpinning = false;
+                    if (callback) callback();
+                }
+            }
+            requestAnimationFrame(animate);
+        }
+
+        // ================================================================
+        //  6. 结果展示
+        // ================================================================
+
+        function showResults(results, totalBonus, count) {
+            var modal = document.getElementById('resultModal');
+            var track = document.getElementById('cardsTrack');
+            var title = document.getElementById('resultTitle');
+            var slider = document.getElementById('cardSlider');
+            var sliderContainer = document.getElementById('sliderContainer');
+
+            track.innerHTML = '';
+
+            var isFirstDraw = true;
+            for (var i = 0; i < results.length; i++) {
+                var r = results[i];
+                var card = document.createElement('div');
+                card.className = 'prize-card';
+                if (r.bonus > 0) {
+                    card.classList.add('bonus');
+                }
+
+                var displayName = r.name;
+                var displaySub = '';
+                if (r.type === 'coins') {
+                    displaySub = '广仙币 ×' + r.value;
+                    if (r.bonus > 0) {
+                        displaySub += ' (含保底+' + r.bonus + ')';
+                    }
+                } else if (r.type === 'level') {
+                    displaySub = '提升 ' + r.value + ' 级';
+                    if (r.bonus > 0) {
+                        displaySub += ' (保底+' + r.bonus + '币)';
+                    }
+                } else {
+                    displaySub = '下次好运！';
+                    if (r.bonus > 0) {
+                        displaySub += ' (保底+' + r.bonus + '币)';
+                    }
+                }
+
+                card.innerHTML = `
+                    <img src="${r.icon}" class="card-icon" alt="${r.name}" />
+                    <div class="card-name">${displayName}</div>
+                    <div class="card-sub">${displaySub}</div>
+                `;
+                track.appendChild(card);
+            }
+
+            // 更新标题
+            var totalReward = 0;
+            var levelUpCount = 0;
+            for (var i = 0; i < results.length; i++) {
+                var r = results[i];
+                if (r.type === 'coins') {
+                    totalReward += r.value;
+                }
+                if (r.type === 'level') {
+                    levelUpCount += r.value;
+                }
+                if (r.bonus > 0) {
+                    totalReward += r.bonus;
+                }
+            }
+            var titleText = '🎉 恭喜获得';
+            if (count === 1) {
+                var single = results[0];
+                if (single.type === 'coins') {
+                    titleText += ' ' + (single.value + (single.bonus || 0)) + ' 广仙币';
+                } else if (single.type === 'level') {
+                    titleText += ' 提升 ' + single.value + ' 级';
+                } else {
+                    titleText += ' 谢谢参与';
+                }
+            } else {
+                if (totalReward > 0 && levelUpCount > 0) {
+                    titleText += ' ' + totalReward + ' 币 + ' + levelUpCount + ' 级';
+                } else if (totalReward > 0) {
+                    titleText += ' ' + totalReward + ' 广仙币';
+                } else if (levelUpCount > 0) {
+                    titleText += ' 提升 ' + levelUpCount + ' 级';
+                } else {
+                    titleText += ' 谢谢参与';
+                }
+            }
+            title.innerText = titleText;
+
+            // 处理滑动
+            var trackWidth = track.scrollWidth;
+            var containerWidth = track.parentElement.clientWidth;
+            if (trackWidth > containerWidth) {
+                sliderContainer.style.display = 'block';
+                var max = Math.max(0, Math.ceil((trackWidth - containerWidth) / 20));
+                slider.max = max;
+                slider.value = 0;
+                slider.oninput = function() {
+                    slideCards(this.value);
+                };
+                // 同步滚动
+                track.style.transform = 'translateX(0)';
+            } else {
+                sliderContainer.style.display = 'none';
+                track.style.transform = 'translateX(0)';
+            }
+
+            modal.classList.add('show');
+        }
+
+        function slideCards(value) {
+            var track = document.getElementById('cardsTrack');
+            var container = track.parentElement;
+            var trackWidth = track.scrollWidth;
+            var containerWidth = container.clientWidth;
+            var maxScroll = trackWidth - containerWidth;
+            var offset = Math.min(value * 20, maxScroll);
+            track.style.transform = 'translateX(-' + offset + 'px)';
+        }
+
+        function closeResult() {
+            var modal = document.getElementById('resultModal');
+            modal.classList.remove('show');
+            // 更新余额显示
+            var data = loadData();
+            if (data) {
+                document.getElementById('coinBalance').innerText = data.user.coins || 0;
+            }
+        }
+
+        // ================================================================
+        //  7. 页面初始化
+        // ================================================================
+
+        function init() {
+            var data = loadData();
+            if (!data) {
+                alert('请先登录！');
+                window.location.href = 'Signin.html';
+                return;
+            }
+            if (!data.user) {
+                alert('数据异常，请重新登录！');
+                window.location.href = 'Signin.html';
+                return;
+            }
+            if (!data.user.role) {
+                window.location.href = 'ChooseRole.html';
+                return;
+            }
+            if (!data.user.nickname || data.user.nickname === '云游仙友' || !data.user.region) {
+                window.location.href = 'PersonalInformation.html';
+                return;
+            }
+
+            document.getElementById('coinBalance').innerText = data.user.coins || 0;
+
+            // 初始化转盘
+            setTimeout(function() {
+                resizeCanvas();
+            }, 100);
+        }
+
+        function goBackToHall() {
+            window.location.href = 'Hall.html';
+        }
+
+        // 监听窗口变化
+        window.addEventListener('resize', function() {
+            if (!isSpinning) {
+                resizeCanvas();
+            }
+        });
+
+        // 启动
+        init();
+
+        console.log('🎯 广仙世界 · 幸运抽奖已加载');
+        console.log('📖 共 ' + PRIZES.length + ' 种奖品，首次抽奖保底 250 币');
+        console.log('💾 数据与 data.json 完全互通');
+    </script>
+</body>
+</html>

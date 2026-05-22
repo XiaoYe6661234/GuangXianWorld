@@ -1,0 +1,725 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>赚钱 · 广仙世界</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+        body {
+            background: #f5efe6;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            width: 100vw;
+            overflow: hidden;
+            font-family: 'PingFang SC', 'Microsoft YaHei', system-ui, sans-serif;
+        }
+
+        /* ===== 主容器 ===== */
+        .container {
+            width: 100vw;
+            height: 56.25vw;
+            max-height: 100vh;
+            max-width: 177.78vh;
+            position: relative;
+            background: #f5efe6;
+            overflow: hidden;
+        }
+
+        /* ===== 顶部导航 ===== */
+        .top-bar {
+            position: absolute;
+            top: 2.5%;
+            left: 0;
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 3%;
+            z-index: 10;
+        }
+        .btn-back {
+            background: #ccc;
+            color: #333;
+            font-size: 1.8vw;
+            font-weight: bold;
+            padding: 0.5vw 2vw;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: 0.15s;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+        }
+        .btn-back:hover {
+            background: #bbb;
+            transform: scale(1.02);
+        }
+        .btn-back:active {
+            transform: scale(0.96);
+        }
+        .page-title {
+            font-size: 3.2vw;
+            font-weight: 900;
+            color: #1a1a1a;
+            letter-spacing: 0.06em;
+        }
+        .top-right {
+            width: 10vw;
+        }
+
+        /* ===== 说明文字 ===== */
+        .instruction {
+            position: absolute;
+            top: 14%;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 88%;
+            text-align: center;
+            font-size: 2vw;
+            font-weight: 600;
+            color: #1a1a1a;
+            line-height: 1.6;
+            z-index: 5;
+        }
+        .instruction .highlight {
+            color: #d4a017;
+        }
+        .instruction .highlight-red {
+            color: #c0392b;
+        }
+
+        /* ===== 卡片区域 ===== */
+        .cards-area {
+            position: absolute;
+            top: 32%;
+            left: 5%;
+            width: 90%;
+            height: 40%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 3%;
+            z-index: 5;
+        }
+        .card-slot {
+            flex: 0 0 20%;
+            aspect-ratio: 3/4;
+            max-width: 18vw;
+            cursor: pointer;
+            transition: 0.2s;
+            border-radius: 12px;
+            box-shadow: 0 6px 24px rgba(0, 0, 0, 0.15);
+            position: relative;
+            overflow: hidden;
+            background: #f5efe6;
+        }
+        .card-slot:hover:not(.used) {
+            transform: translateY(-6px);
+            box-shadow: 0 12px 36px rgba(0, 0, 0, 0.25);
+        }
+        .card-slot:active:not(.used) {
+            transform: scale(0.96);
+        }
+        .card-slot.used {
+            cursor: default;
+            transform: scale(0.92);
+            opacity: 0.3;
+            box-shadow: none;
+            pointer-events: none;
+        }
+        .card-slot img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+            border-radius: 12px;
+        }
+        .card-slot .card-label {
+            position: absolute;
+            bottom: 6%;
+            left: 50%;
+            transform: translateX(-50%);
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 1.4vw;
+            font-weight: 700;
+            text-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+            background: rgba(0, 0, 0, 0.3);
+            padding: 0.2vw 1vw;
+            border-radius: 20px;
+            backdrop-filter: blur(2px);
+            white-space: nowrap;
+        }
+
+        /* ===== 状态信息 ===== */
+        .status-bar {
+            position: absolute;
+            bottom: 6%;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            align-items: center;
+            gap: 3vw;
+            z-index: 5;
+            background: rgba(255, 255, 255, 0.8);
+            padding: 0.6vw 2.5vw;
+            border-radius: 30px;
+            backdrop-filter: blur(4px);
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+        }
+        .status-bar .remain {
+            font-size: 1.8vw;
+            font-weight: 600;
+            color: #1a1a1a;
+        }
+        .status-bar .remain span {
+            color: #d4a017;
+            font-weight: 900;
+        }
+        .status-bar .balance {
+            font-size: 1.8vw;
+            font-weight: 600;
+            color: #1a1a1a;
+        }
+        .status-bar .balance span {
+            color: #d4a017;
+            font-weight: 900;
+        }
+
+        /* ================================================================
+           结果弹窗
+           ================================================================ */
+        #resultModal {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 50;
+            background: rgba(0, 0, 0, 0.55);
+            backdrop-filter: blur(6px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            pointer-events: auto;
+        }
+        #resultModal.show {
+            display: flex;
+        }
+
+        .result-card {
+            width: 55%;
+            max-width: 420px;
+            max-height: 70%;
+            background: #f5efe6;
+            border-radius: 20px;
+            padding: 2.5vw 3vw;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+        }
+
+        .result-close {
+            position: absolute;
+            top: 1.2vw;
+            right: 2vw;
+            font-size: 3.5vw;
+            font-weight: 900;
+            color: #333;
+            cursor: pointer;
+            line-height: 1;
+            transition: 0.15s;
+            z-index: 5;
+        }
+        .result-close:hover {
+            transform: scale(1.2);
+            color: #e74c3c;
+        }
+
+        .result-title {
+            font-size: 3.5vw;
+            font-weight: 900;
+            color: #1a1a1a;
+            margin-bottom: 1.5vw;
+            text-align: center;
+        }
+        .result-title .highlight {
+            color: #d4a017;
+        }
+
+        .result-prize-card {
+            width: 55%;
+            aspect-ratio: 3/4;
+            max-width: 16vw;
+            background: white;
+            border-radius: 12px;
+            border: 0.4vw solid #ffd700;
+            padding: 1.5vw;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            margin-bottom: 1.5vw;
+        }
+        .result-prize-card .prize-icon {
+            width: 5vw;
+            height: 5vw;
+            object-fit: contain;
+            margin-bottom: 0.8vw;
+        }
+        .result-prize-card .prize-name {
+            font-size: 2.2vw;
+            font-weight: 700;
+            color: #1a1a1a;
+        }
+        .result-prize-card .prize-sub {
+            font-size: 1.4vw;
+            color: #888;
+            margin-top: 0.2vw;
+        }
+        .result-prize-card.empty {
+            border-color: #ccc;
+            background: #f9f9f9;
+        }
+        .result-prize-card.empty .prize-name {
+            color: #999;
+        }
+
+        .btn-confirm-result {
+            background: #ffb300;
+            color: white;
+            font-size: 2.2vw;
+            font-weight: 700;
+            padding: 0.8vw 4vw;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: 0.15s;
+            box-shadow: 0 4px 12px rgba(255, 179, 0, 0.25);
+        }
+        .btn-confirm-result:hover {
+            background: #ffa000;
+            transform: scale(1.03);
+        }
+        .btn-confirm-result:active {
+            transform: scale(0.96);
+        }
+
+        /* ===== 响应式 ===== */
+        @media (orientation: portrait) {
+            .container {
+                transform: rotate(-90deg) scale(0.8);
+                transform-origin: center center;
+            }
+        }
+        @media (max-width: 600px) {
+            .instruction {
+                font-size: 3.2vw;
+                top: 16%;
+            }
+            .cards-area {
+                top: 34%;
+                gap: 2%;
+            }
+            .card-slot {
+                flex: 0 0 22%;
+                max-width: 22vw;
+                border-radius: 8px;
+            }
+            .card-slot .card-label {
+                font-size: 2.2vw;
+                padding: 0.4vw 1.5vw;
+            }
+            .status-bar {
+                padding: 1vw 4vw;
+                gap: 4vw;
+                bottom: 4%;
+            }
+            .status-bar .remain {
+                font-size: 2.8vw;
+            }
+            .status-bar .balance {
+                font-size: 2.8vw;
+            }
+            .page-title {
+                font-size: 4.5vw;
+            }
+            .btn-back {
+                font-size: 2.8vw;
+                padding: 0.8vw 3vw;
+            }
+            .result-card {
+                width: 85%;
+                padding: 4vw 5vw;
+            }
+            .result-title {
+                font-size: 5vw;
+            }
+            .result-prize-card {
+                width: 60%;
+                max-width: 25vw;
+                padding: 2vw;
+            }
+            .result-prize-card .prize-icon {
+                width: 8vw;
+                height: 8vw;
+            }
+            .result-prize-card .prize-name {
+                font-size: 3.2vw;
+            }
+            .result-prize-card .prize-sub {
+                font-size: 2.2vw;
+            }
+            .btn-confirm-result {
+                font-size: 3.5vw;
+                padding: 1.2vw 6vw;
+            }
+            .result-close {
+                font-size: 5vw;
+                top: 1.5vw;
+                right: 2.5vw;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- 顶部导航 -->
+        <div class="top-bar">
+            <button class="btn-back" onclick="goBackToHall()">← 返回大厅</button>
+            <div class="page-title">💰 赚钱</div>
+            <div class="top-right"></div>
+        </div>
+
+        <!-- 说明文字 -->
+        <div class="instruction">
+            从以下卡牌随机选择一张吧，有 <span class="highlight-red">1/2</span> 的概率，会抽到空牌，
+            有 <span class="highlight">1/4</span> 的概率会抽到 <span class="highlight">250广仙币</span>，
+            有 <span class="highlight">1/4</span> 的概率会抽到 <span class="highlight">1000广仙币</span> 哟！
+        </div>
+
+        <!-- 卡片区域 -->
+        <div class="cards-area" id="cardsArea">
+            <div class="card-slot" data-index="0" onclick="pickCard(this)">
+                <img src="https://xiaoye6661234.github.io/GuangXianWorld/Card.jpg" alt="卡牌" />
+                <div class="card-label">✧ 翻牌</div>
+            </div>
+            <div class="card-slot" data-index="1" onclick="pickCard(this)">
+                <img src="https://xiaoye6661234.github.io/GuangXianWorld/Card.jpg" alt="卡牌" />
+                <div class="card-label">✧ 翻牌</div>
+            </div>
+            <div class="card-slot" data-index="2" onclick="pickCard(this)">
+                <img src="https://xiaoye6661234.github.io/GuangXianWorld/Card.jpg" alt="卡牌" />
+                <div class="card-label">✧ 翻牌</div>
+            </div>
+            <div class="card-slot" data-index="3" onclick="pickCard(this)">
+                <img src="https://xiaoye6661234.github.io/GuangXianWorld/Card.jpg" alt="卡牌" />
+                <div class="card-label">✧ 翻牌</div>
+            </div>
+        </div>
+
+        <!-- 状态栏 -->
+        <div class="status-bar">
+            <div class="remain">今日剩余：<span id="remainCount">2</span> 次</div>
+            <div class="balance">🪙 余额：<span id="coinBalance">1000</span></div>
+        </div>
+
+        <!-- 结果弹窗 -->
+        <div id="resultModal">
+            <div class="result-card">
+                <div class="result-close" onclick="closeResult()">✕</div>
+                <div class="result-title" id="resultTitle">🎉 恭喜获得</div>
+                <div class="result-prize-card" id="resultPrizeCard">
+                    <img id="prizeIcon" src="" class="prize-icon" alt="奖品" />
+                    <div class="prize-name" id="prizeName">250 广仙币</div>
+                    <div class="prize-sub" id="prizeSub">广仙币 ×250</div>
+                </div>
+                <button class="btn-confirm-result" onclick="closeResult()">确 定</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ================================================================
+        //  1. 统一 data.json 操作
+        // ================================================================
+
+        function loadData() {
+            var raw = localStorage.getItem('data.json');
+            if (!raw) return null;
+            try {
+                return JSON.parse(raw);
+            } catch (e) {
+                return null;
+            }
+        }
+
+        function saveData(data) {
+            localStorage.setItem('data.json', JSON.stringify(data));
+            localStorage.setItem('GuangXianData', JSON.stringify(data));
+        }
+
+        function createDefaultData() {
+            var now = new Date().toISOString().split('T')[0];
+            return {
+                user: {
+                    username: '',
+                    password: '',
+                    nickname: '云游仙友',
+                    avatar: 'https://xiaoye6661234.github.io/GuangXianWorld/Default avatar.jpg',
+                    region: '',
+                    bgImage: '',
+                    level: 1,
+                    coins: 1000,
+                    exp: 0,
+                    nextExp: 1000,
+                    role: '',
+                    joinedDate: now,
+                    lastLoginDate: now,
+                    loginStreak: 0,
+                    signHistory: [],
+                    settings: { bgm: true, bgmVolume: 40, sfxVolume: 50 },
+                    hasClaimedNotice: false,
+                    lastDailyWelfare: '',
+                    lastFreeClaim: '',
+                    adWatchCount: 0,
+                    adWatchDate: '',
+                    // 赚钱相关
+                    moneyPicks: 0,
+                    moneyPickDate: ''
+                },
+                inventory: [],
+                equippedWeapon: null,
+                taskProgress: 0,
+                taskClaimed1: false,
+                taskClaimed5: false,
+                taskClaimed10: false,
+                chapter: 1
+            };
+        }
+
+        // ================================================================
+        //  2. 游戏状态
+        // ================================================================
+
+        var remainingPicks = 0;
+        var isPicking = false;
+        var selectedCard = null;
+
+        // ================================================================
+        //  3. 初始化
+        // ================================================================
+
+        function init() {
+            var data = loadData();
+            if (!data) {
+                alert('请先登录！');
+                window.location.href = 'Signin.html';
+                return;
+            }
+            if (!data.user) {
+                alert('数据异常，请重新登录！');
+                window.location.href = 'Signin.html';
+                return;
+            }
+            if (!data.user.role) {
+                window.location.href = 'ChooseRole.html';
+                return;
+            }
+            if (!data.user.nickname || data.user.nickname === '云游仙友' || !data.user.region) {
+                window.location.href = 'PersonalInformation.html';
+                return;
+            }
+
+            updateUI(data);
+            checkDailyReset(data);
+        }
+
+        function checkDailyReset(data) {
+            var today = new Date().toISOString().split('T')[0];
+            var pickDate = data.user.moneyPickDate || '';
+            if (pickDate !== today) {
+                data.user.moneyPicks = 0;
+                data.user.moneyPickDate = today;
+                saveData(data);
+            }
+            remainingPicks = Math.max(0, 2 - (data.user.moneyPicks || 0));
+            updateUI(data);
+        }
+
+        function updateUI(data) {
+            if (!data) data = loadData();
+            if (!data) return;
+            document.getElementById('coinBalance').innerText = data.user.coins || 0;
+            document.getElementById('remainCount').innerText = remainingPicks;
+        }
+
+        // ================================================================
+        //  4. 抽卡逻辑
+        // ================================================================
+
+        function pickCard(el) {
+            if (isPicking) return;
+            if (el.classList.contains('used')) return;
+
+            var data = loadData();
+            if (!data) return;
+
+            // 检查剩余次数
+            if (remainingPicks <= 0) {
+                alert('今日次数已用完，明天再来吧！');
+                return;
+            }
+
+            // 标记为已使用
+            el.classList.add('used');
+            // 更新次数
+            data.user.moneyPicks = (data.user.moneyPicks || 0) + 1;
+            remainingPicks = Math.max(0, 2 - data.user.moneyPicks);
+            data.user.moneyPickDate = new Date().toISOString().split('T')[0];
+
+            // 随机结果
+            var rand = Math.random();
+            var prizeType = 'empty';
+            var prizeValue = 0;
+            if (rand < 0.25) {
+                prizeType = 'coins_1000';
+                prizeValue = 1000;
+            } else if (rand < 0.50) {
+                prizeType = 'coins_250';
+                prizeValue = 250;
+            } else {
+                prizeType = 'empty';
+                prizeValue = 0;
+            }
+
+            // 应用奖励
+            if (prizeValue > 0) {
+                data.user.coins = (data.user.coins || 0) + prizeValue;
+            }
+
+            // 保存数据
+            saveData(data);
+            updateUI(data);
+
+            // 显示结果
+            showResult(prizeType, prizeValue);
+            isPicking = true;
+        }
+
+        // ================================================================
+        //  5. 结果显示
+        // ================================================================
+
+        function showResult(type, value) {
+            var modal = document.getElementById('resultModal');
+            var title = document.getElementById('resultTitle');
+            var card = document.getElementById('resultPrizeCard');
+            var icon = document.getElementById('prizeIcon');
+            var name = document.getElementById('prizeName');
+            var sub = document.getElementById('prizeSub');
+
+            if (type === 'empty') {
+                title.innerText = '😅 可惜';
+                card.className = 'result-prize-card empty';
+                icon.src = 'https://xiaoye6661234.github.io/GuangXianWorld/CuangXianCoin.png';
+                icon.style.opacity = '0.3';
+                name.innerText = '空牌';
+                sub.innerText = '下次好运！';
+            } else {
+                title.innerText = '🎉 恭喜获得';
+                card.className = 'result-prize-card';
+                icon.style.opacity = '1';
+                icon.src = 'https://xiaoye6661234.github.io/GuangXianWorld/CuangXianCoin.png';
+                name.innerText = value + ' 广仙币';
+                sub.innerText = '广仙币 ×' + value;
+            }
+
+            modal.classList.add('show');
+        }
+
+        function closeResult() {
+            var modal = document.getElementById('resultModal');
+            modal.classList.remove('show');
+            isPicking = false;
+            // 检查是否所有卡片都被使用
+            var usedCards = document.querySelectorAll('.card-slot.used');
+            if (usedCards.length >= 4) {
+                // 所有卡片用完，重置
+                setTimeout(resetCards, 300);
+            }
+            // 更新UI
+            var data = loadData();
+            if (data) updateUI(data);
+        }
+
+        // ================================================================
+        //  6. 卡片重置
+        // ================================================================
+
+        function resetCards() {
+            var slots = document.querySelectorAll('.card-slot');
+            slots.forEach(function(slot) {
+                slot.classList.remove('used');
+            });
+            // 重置剩余次数
+            var data = loadData();
+            if (data) {
+                var today = new Date().toISOString().split('T')[0];
+                var pickDate = data.user.moneyPickDate || '';
+                if (pickDate === today) {
+                    remainingPicks = Math.max(0, 2 - (data.user.moneyPicks || 0));
+                } else {
+                    remainingPicks = 2;
+                }
+                updateUI(data);
+            }
+        }
+
+        // ================================================================
+        //  7. 页面跳转
+        // ================================================================
+
+        function goBackToHall() {
+            // 保存数据
+            var data = loadData();
+            if (data) saveData(data);
+            window.location.href = 'Hall.html';
+        }
+
+        // ================================================================
+        //  8. 启动
+        // ================================================================
+
+        // 页面加载时初始化
+        window.addEventListener('DOMContentLoaded', function() {
+            init();
+        });
+
+        // 监听页面可见性变化，用于恢复状态
+        document.addEventListener('visibilitychange', function() {
+            if (!document.hidden) {
+                var data = loadData();
+                if (data) {
+                    checkDailyReset(data);
+                }
+            }
+        });
+
+        console.log('💰 广仙世界 · 赚钱已加载');
+        console.log('📖 规则: 4张卡牌, 1/2空牌, 1/4得250币, 1/4得1000币, 每日2次');
+        console.log('💾 数据与 data.json 完全互通');
+    </script>
+</body>
+</html>

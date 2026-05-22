@@ -36,10 +36,12 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background-image: url('https://xiaoye6661234.github.io/GuangXianWorld/Lobby Background.png');
+            background-image: url('https://xiaoye6661234.github.io/GuangXianWorld/Background-Ice.jpg');
             background-size: cover;
             background-position: center;
         }
+
+        /* ===== 顶部栏 ===== */
         .top-bar {
             position: absolute;
             top: 3%;
@@ -50,6 +52,17 @@
             padding: 0 2%;
             box-sizing: border-box;
             z-index: 10;
+            pointer-events: none;
+        }
+        .top-bar>* {
+            pointer-events: auto;
+        }
+
+        /* 左上按钮组 */
+        .top-left-buttons {
+            display: flex;
+            gap: 1vw;
+            align-items: center;
         }
         .btn-adventure {
             background: #ffb300;
@@ -61,12 +74,35 @@
             font-weight: bold;
             cursor: pointer;
             transition: 0.1s;
+            box-shadow: 0 4px 12px rgba(255, 179, 0, 0.3);
         }
         .btn-adventure:active {
             transform: scale(0.97);
         }
+        .btn-difficult {
+            background: #8b0000;
+            color: white;
+            font-size: 2.2vw;
+            padding: 0.5vw 1.8vw;
+            border: 2px solid #ff4444;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.1s;
+            box-shadow: 0 4px 12px rgba(139, 0, 0, 0.3);
+            text-shadow: 0 0 8px rgba(255, 0, 0, 0.3);
+        }
+        .btn-difficult:hover {
+            background: #a00000;
+            transform: scale(1.02);
+        }
+        .btn-difficult:active {
+            transform: scale(0.97);
+        }
+
+        /* 金币栏 */
         .currency-box {
-            background: #e0e0e0;
+            background: rgba(224, 224, 224, 0.9);
             border-radius: 20px;
             padding: 0.3vw 1.5vw;
             display: flex;
@@ -74,6 +110,8 @@
             font-weight: bold;
             font-size: 2.5vw;
             gap: 1vw;
+            backdrop-filter: blur(2px);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
         }
         .currency-box img {
             width: 3vw;
@@ -91,7 +129,17 @@
             cursor: pointer;
             font-size: 2.2vw;
             font-weight: bold;
+            transition: 0.1s;
         }
+        .currency-box .add-btn:hover {
+            background: #555;
+            transform: scale(1.05);
+        }
+        .currency-box .add-btn:active {
+            transform: scale(0.95);
+        }
+
+        /* 右上角图标 */
         .top-icons {
             display: flex;
             gap: 1.5vw;
@@ -101,10 +149,13 @@
             width: 4vw;
             cursor: pointer;
             transition: 0.1s;
+            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
         }
         .top-icons img:active {
             transform: scale(0.95);
         }
+
+        /* ===== 左下角用户卡片 ===== */
         .user-card {
             position: absolute;
             bottom: 5%;
@@ -115,31 +166,45 @@
             z-index: 10;
             cursor: pointer;
         }
+        .user-card .card-inner {
+            display: flex;
+            align-items: center;
+            gap: 1vw;
+            background: rgba(0, 0, 0, 0.6);
+            border-radius: 12px;
+            padding: 0.8vw 1.5vw;
+            backdrop-filter: blur(4px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
         .user-card img {
-            width: 9vw;
-            height: 9vw;
-            border: 3px solid white;
-            border-radius: 4px;
+            width: 8vw;
+            height: 8vw;
+            border: 2px solid white;
+            border-radius: 8px;
             object-fit: cover;
             background: #ccc;
         }
         .user-info .nickname {
-            background: rgba(0, 0, 0, 0.7);
+            background: rgba(0, 0, 0, 0.6);
             color: white;
             font-size: 2.2vw;
             font-weight: bold;
-            padding: 0.3vw 1.5vw;
+            padding: 0.2vw 1.5vw;
             border-radius: 6px;
             margin-bottom: 0.3vw;
+            display: inline-block;
         }
         .user-info .lvl {
-            background: rgba(0, 0, 0, 0.7);
+            background: rgba(0, 0, 0, 0.6);
             color: white;
             font-size: 2.8vw;
             font-weight: bold;
-            padding: 0.3vw 1.5vw;
+            padding: 0.2vw 1.5vw;
             border-radius: 6px;
+            display: inline-block;
         }
+
+        /* ===== 中间角色 ===== */
         .center-char {
             position: absolute;
             left: 50%;
@@ -147,7 +212,70 @@
             transform: translateX(-50%);
             height: 65%;
             z-index: 5;
+            filter: drop-shadow(0 8px 20px rgba(0,0,0,0.3));
         }
+
+        /* ===== 右下角功能按钮 ===== */
+        .action-buttons {
+            position: absolute;
+            bottom: 8%;
+            right: 3%;
+            display: flex;
+            flex-direction: column;
+            gap: 1vw;
+            z-index: 10;
+            pointer-events: none;
+        }
+        .action-buttons>* {
+            pointer-events: auto;
+        }
+        .action-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.8vw;
+            padding: 0.6vw 2vw;
+            border: none;
+            border-radius: 12px;
+            font-size: 2.2vw;
+            font-weight: bold;
+            color: white;
+            cursor: pointer;
+            transition: 0.15s;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            min-width: 12vw;
+        }
+        .action-btn:hover {
+            transform: scale(1.04);
+        }
+        .action-btn:active {
+            transform: scale(0.96);
+        }
+        .action-btn img {
+            width: 2.8vw;
+            height: 2.8vw;
+            object-fit: contain;
+        }
+        .btn-task {
+            background: #a855f7;
+        }
+        .btn-task:hover {
+            background: #9333ea;
+        }
+        .btn-money {
+            background: #22c55e;
+        }
+        .btn-money:hover {
+            background: #16a34a;
+        }
+        .btn-reward {
+            background: #0ea5e9;
+        }
+        .btn-reward:hover {
+            background: #0284c7;
+        }
+
+        /* ===== 弹窗 ===== */
         .modal-overlay {
             position: absolute;
             top: 0;
@@ -304,30 +432,6 @@
             font-size: 2vw;
             font-weight: bold;
         }
-        .watch-ad-btn {
-            background: #ff8800;
-            color: white;
-            font-size: 2.2vw;
-            padding: 0.6vw 2.5vw;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: bold;
-            margin-top: 0.5vw;
-            transition: 0.2s;
-        }
-        .watch-ad-btn:hover {
-            background: #ff7700;
-            transform: scale(1.03);
-        }
-        .watch-ad-btn:active {
-            transform: scale(0.96);
-        }
-        .watch-ad-btn:disabled {
-            background: #aaa;
-            cursor: not-allowed;
-            transform: none;
-        }
         .settings-container {
             padding: 8% 8%;
         }
@@ -477,9 +581,18 @@
             .recharge-item .amount {
                 font-size: 3.5vw;
             }
-            .watch-ad-btn {
+            .action-btn {
                 font-size: 3.5vw;
-                padding: 1vw 4vw;
+                padding: 1vw 3vw;
+                min-width: 18vw;
+            }
+            .action-btn img {
+                width: 4vw;
+                height: 4vw;
+            }
+            .btn-difficult {
+                font-size: 2.8vw;
+                padding: 0.8vw 2vw;
             }
         }
     </style>
@@ -488,13 +601,20 @@
     <div class="container">
         <div class="hall-bg"></div>
 
+        <!-- ===== 顶部栏 ===== -->
         <div class="top-bar">
-            <button class="btn-adventure" id="adventureBtn">开始冒险!</button>
+            <!-- 左上角 -->
+            <div class="top-left-buttons">
+                <button class="btn-adventure" id="adventureBtn">开始冒险!</button>
+                <button class="btn-difficult" id="difficultBtn">超难模式!</button>
+            </div>
+            <!-- 中央金币 -->
             <div class="currency-box">
                 <img src="https://xiaoye6661234.github.io/GuangXianWorld/CuangXianCoin.png" alt="金币" />
                 <span id="coinDisplay">1000</span>
                 <div class="add-btn" onclick="openModal('recharge')">+</div>
             </div>
+            <!-- 右上角图标 -->
             <div class="top-icons">
                 <img src="https://xiaoye6661234.github.io/GuangXianWorld/email.png" alt="邮件" onclick="openModal('mail')" />
                 <img src="https://xiaoye6661234.github.io/GuangXianWorld/Notice.png" alt="公告" onclick="openModal('notice')" />
@@ -503,16 +623,37 @@
             </div>
         </div>
 
+        <!-- ===== 左下角用户卡片 ===== -->
         <div class="user-card" onclick="openModal('profile')">
-            <img id="avatarDisplay" src="https://xiaoye6661234.github.io/GuangXianWorld/Default avatar.jpg" alt="头像" />
-            <div class="user-info">
-                <div class="nickname" id="nickDisplay">昵称</div>
-                <div class="lvl" id="lvlDisplay">LV.1</div>
+            <div class="card-inner">
+                <img id="avatarDisplay" src="https://xiaoye6661234.github.io/GuangXianWorld/Default avatar.jpg" alt="头像" />
+                <div class="user-info">
+                    <div class="nickname" id="nickDisplay">昵称</div>
+                    <div class="lvl" id="lvlDisplay">LV.1</div>
+                </div>
             </div>
         </div>
 
+        <!-- ===== 中间角色 ===== -->
         <img src="https://xiaoye6661234.github.io/GuangXianWorld/Ming.png" class="center-char" id="centerChar" alt="角色" />
 
+        <!-- ===== 右下角功能按钮 ===== -->
+        <div class="action-buttons">
+            <button class="action-btn btn-task" id="taskBtn">
+                <img src="https://xiaoye6661234.github.io/GuangXianWorld/Task.png" alt="任务" />
+                任务
+            </button>
+            <button class="action-btn btn-money" id="moneyBtn">
+                <img src="https://xiaoye6661234.github.io/GuangXianWorld/CuangXianCoin.png" alt="赚钱" />
+                赚钱
+            </button>
+            <button class="action-btn btn-reward" id="rewardBtn">
+                <img src="https://xiaoye6661234.github.io/GuangXianWorld/Reward.png" alt="抽奖" />
+                抽奖
+            </button>
+        </div>
+
+        <!-- ===== 弹窗 ===== -->
         <div id="modalOverlay" class="modal-overlay">
             <div class="modal-content" id="modalContent">
                 <div class="modal-close" onclick="closeModal()">✕</div>
@@ -533,7 +674,6 @@
         var dataCache = null;
 
         function loadData() {
-            // 如果缓存有效，直接返回
             if (dataCache) return dataCache;
             var raw = localStorage.getItem('data.json');
             if (!raw) return null;
@@ -547,10 +687,8 @@
 
         function saveData(data) {
             try {
-                // 更新缓存
                 dataCache = data;
                 localStorage.setItem('data.json', JSON.stringify(data));
-                // 兼容旧数据
                 localStorage.setItem('GuangXianData', JSON.stringify(data));
                 return true;
             } catch (e) {
@@ -647,33 +785,11 @@
             }
         }
 
-        // 手动导出 data.json（仅当用户主动点击时）
-        function manualExportData() {
-            playClickSound();
-            var data = loadData();
-            if (!data) return;
-            try {
-                var jsonStr = JSON.stringify(data, null, 2);
-                var blob = new Blob([jsonStr], { type: 'application/json' });
-                var url = URL.createObjectURL(blob);
-                var a = document.createElement('a');
-                a.href = url;
-                a.download = 'data.json';
-                document.body.appendChild(a);
-                a.click();
-                document.body.removeChild(a);
-                URL.revokeObjectURL(url);
-                alert('✅ data.json 已导出！');
-            } catch (e) {
-                alert('❌ 导出失败: ' + e.message);
-            }
-        }
-
         // 页面加载
         loadAndRender();
 
         // ================================================================
-        //  弹窗管理
+        //  弹窗管理（去除了广告选项）
         // ================================================================
 
         function openModal(type) {
@@ -723,12 +839,13 @@
                 var remainingAds = Math.max(0, 5 - adWatchCount);
                 var adsToday = adWatchCount;
 
+                // 移除了“看广告领币”板块，只保留每日免费
                 body.innerHTML = `
                     <div class="recharge-container">
                         <div class="modal-title" style="margin-bottom:2vw;">获取广仙币</div>
                         <div class="recharge-row">
                             <!-- 每日免费 -->
-                            <div class="recharge-col">
+                            <div class="recharge-col" style="max-width:300px;">
                                 <div class="col-title">📅 每日免费</div>
                                 <div class="recharge-item" onclick="receiveFree()">
                                     <div class="coin-box">
@@ -737,18 +854,6 @@
                                     <div class="amount">×250</div>
                                 </div>
                                 <div style="font-size:1.2vw; color:#666; margin-top:0.3vw;">每日一次</div>
-                            </div>
-
-                            <!-- 看广告 -->
-                            <div class="recharge-col">
-                                <div class="col-title">📺 看广告领币</div>
-                                <div class="col-sub">今日已看 <strong>${adsToday}</strong> / 5 次</div>
-                                <button class="watch-ad-btn" id="watchAdBtn" onclick="watchAd()" ${remainingAds <= 0 ? 'disabled' : ''}>
-                                    ${remainingAds > 0 ? `🎬 看广告 (剩余${remainingAds}次)` : '✅ 今日已满'}
-                                </button>
-                                <div style="font-size:1.2vw; color:#888; margin-top:0.3vw;">
-                                    每次观看10秒，获得 <strong style="color:#ff8800;">250</strong> 广仙币
-                                </div>
                             </div>
                         </div>
                     </div>
@@ -864,74 +969,66 @@
         }
 
         // ================================================================
-        //  看广告系统
+        //  功能按钮跳转
         // ================================================================
 
-        // 广告页面列表
-        var AD_PAGES = ['AD1.html', 'AD2.html', 'AD3.html'];
-
-        // 观看广告
-        function watchAd() {
+        // 冒险按钮（原有）
+        document.getElementById('adventureBtn').addEventListener('click', function() {
             playClickSound();
+            window.location.href = 'Game.html';
+        });
 
+        // 超难模式
+        document.getElementById('difficultBtn').addEventListener('click', function() {
+            playClickSound();
+            window.location.href = 'Dofficult.html';
+        });
+
+        // 任务
+        document.getElementById('taskBtn').addEventListener('click', function() {
+            playClickSound();
+            window.location.href = 'Task.html';
+        });
+
+        // 赚钱
+        document.getElementById('moneyBtn').addEventListener('click', function() {
+            playClickSound();
+            window.location.href = 'Money.html';
+        });
+
+        // 抽奖
+        document.getElementById('rewardBtn').addEventListener('click', function() {
+            playClickSound();
+            window.location.href = 'Reward.html';
+        });
+
+        // ================================================================
+        //  领取功能
+        // ================================================================
+
+        function claimNotice() {
+            playClickSound();
             var data = loadData();
             if (!data) return;
-
-            var today = new Date().toISOString().split('T')[0];
-            var adWatchDate = data.user.adWatchDate || '';
-            var adWatchCount = (adWatchDate === today) ? (data.user.adWatchCount || 0) : 0;
-
-            if (adWatchCount >= 5) {
-                alert('今日广告次数已用完，明天再来吧！');
+            if (data.user.hasClaimedNotice) {
+                alert('你已经领取过公告福利了！');
                 return;
             }
-
-            // 随机选择一个广告页面
-            var randomIndex = Math.floor(Math.random() * AD_PAGES.length);
-            var adPage = AD_PAGES[randomIndex];
-
-            // 打开广告页面
-            var adWindow = window.open(adPage, '_blank', 'width=400,height=600,menubar=no,toolbar=no,location=no,status=no,scrollbars=no');
-
-            if (!adWindow) {
-                alert('请允许弹窗，以便观看广告。');
-                return;
-            }
-
-            // 记录本次广告观看的请求
-            // 将在广告页面完成倒计时后通过 postMessage 通知
-        }
-
-        // 监听来自广告页面的消息
-        window.addEventListener('message', function(event) {
-    if (event.data && event.data.type === 'adCompleted') {
-        var data = loadData();
-        if (!data) return;
-        var today = new Date().toISOString().split('T')[0];
-        var adWatchDate = data.user.adWatchDate || '';
-        var adWatchCount = (adWatchDate === today) ? (data.user.adWatchCount || 0) : 0;
-        if (adWatchCount >= 5) {
-            alert('今日广告次数已用完。');
-            return;
-        }
-        data.user.adWatchCount = adWatchCount + 1;
-        data.user.adWatchDate = today;
-        data.user.coins = (data.user.coins || 0) + 250;
-
-        if (saveData(data)) {
-            updateUI(data);
-            // 延迟一点刷新弹窗，确保数据已保存
-            setTimeout(function() {
-                if (currentModal === 'recharge') {
-                    openModal('recharge');
+            data.user.coins = (data.user.coins || 0) + 1000;
+            data.user.hasClaimedNotice = true;
+            if (saveData(data)) {
+                updateUI(data);
+                var btn = document.getElementById('claimNoticeBtn');
+                if (btn) {
+                    btn.innerText = '✅ 已领取';
+                    btn.disabled = true;
+                    btn.classList.add('disabled');
                 }
-            }, 300);
-            alert('🎉 观看广告成功！获得 250 广仙币！');
-        } else {
-            alert('❌ 保存失败，请重试！');
+                alert('🎉 恭喜领取 1000 广仙币！');
+            } else {
+                alert('❌ 保存失败，请重试！');
+            }
         }
-    }
-});
 
         function claimDailyWelfare() {
             playClickSound();
@@ -1090,7 +1187,6 @@
             } else {
                 bgm.volume = parseInt(val) / 100;
             }
-            // 使用 event 参数
             var span = event.target.nextElementSibling;
             if (span) span.textContent = val + '%';
         }
@@ -1159,11 +1255,6 @@
 
         document.getElementById('modalOverlay').addEventListener('click', function(e) {
             if (e.target === this) closeModal();
-        });
-
-        document.getElementById('adventureBtn').addEventListener('click', function() {
-            playClickSound();
-            window.location.href = 'Game.html';
         });
     </script>
 </body>
